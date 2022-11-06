@@ -1,0 +1,10 @@
+<resources>
+    <string name="app_name">PenaltyCatalog</string>
+
+    <string name="Penalty">Penalty</string>
+    <string name="Players">Players</string>
+    <string name="PenaltyHistory">History</string>
+    <string name="Cancellations">Cancel</string>
+    <string name="Events">Events</string>
+
+</resources>
