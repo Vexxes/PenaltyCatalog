@@ -13,43 +13,52 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
-import androidx.navigation.compose.composable
+import de.vexxes.penaltycatalog.navigation.navGraph.mainScreensGraph
 import de.vexxes.penaltycatalog.ui.theme.Typography
+import de.vexxes.penaltycatalog.viewmodels.PlayerViewModel
 
 @Composable
-fun SetupNavGraph(paddingValues: PaddingValues, navController: NavHostController) {
+fun SetupNavGraph(
+    paddingValues: PaddingValues,
+    navController: NavHostController,
+    playerViewModel: PlayerViewModel
+) {
     NavHost(
         modifier = Modifier.padding(paddingValues),
         navController = navController,
-        startDestination = Screen.Penalties.route
+        route = Graph.ROOT,
+        startDestination = Graph.MAIN
     ) {
-        composable(route = Screen.Penalties.route) {
-            // TODO: Call penalties screen
-            ScreenText(text = Screen.Penalties.name)
-        }
-
-        composable(route = Screen.Players.route) {
-            // TODO Call player screen
-            ScreenText(text = Screen.Players.name)
-        }
-
-        composable(route = Screen.PenaltyHistory.route) {
-            // TODO Call penalty history screen
-            ScreenText(text = Screen.PenaltyHistory.name)
-        }
-
-        composable(route = Screen.Cancellations.route) {
-            // TODO Call cancellations screen
-            ScreenText(text = Screen.Cancellations.name)
-        }
-
-        composable(route = Screen.Events.route) {
-            // TODO Call events screen
-            ScreenText(text = Screen.Events.name)
-        }
+        mainScreensGraph(
+            navController = navController,
+            playerViewModel = playerViewModel
+        )
     }
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun MainScreen(
+    navController: NavHostController,
+    playerViewModel: PlayerViewModel
+) {
+    Scaffold(
+        bottomBar = { BottomBar(navController = navController) }
+    ) { paddingValues ->
+        SetupNavGraph(
+            paddingValues = paddingValues,
+            navController = navController,
+            playerViewModel = playerViewModel
+        )
+    }
+}
+
+object Graph {
+    const val ROOT = "root_graph"
+    const val MAIN = "main_graph"
+}
+
+// TODO: Remove later
 @Composable
 fun ScreenText(text: String) {
     Text(
@@ -60,14 +69,4 @@ fun ScreenText(text: String) {
         textAlign = TextAlign.Center,
         style = Typography.headlineLarge
     )
-}
-
-@OptIn(ExperimentalMaterial3Api::class)
-@Composable
-fun MainScreen(navController: NavHostController) {
-    Scaffold(
-        bottomBar = { BottomBar(navController = navController) }
-    ) { paddingValues ->
-        SetupNavGraph(paddingValues = paddingValues, navController = navController)
-    }
 }
