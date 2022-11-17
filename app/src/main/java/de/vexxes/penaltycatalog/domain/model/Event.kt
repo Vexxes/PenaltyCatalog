@@ -3,7 +3,7 @@ package de.vexxes.penaltycatalog.domain.model
 import kotlinx.serialization.Serializable
 
 @Serializable
-data class Events(
+data class Event(
     val id: Int,
     val title: String,
     val startOfEvent: String,

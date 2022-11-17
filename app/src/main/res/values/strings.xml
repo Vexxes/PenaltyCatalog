@@ -7,4 +7,11 @@
     <string name="Cancellations">Cancel</string>
     <string name="Events">Events</string>
 
+    <string name="AddPlayer">Add Player</string>
+
+    <string name="SearchTopBar">Search</string>
+    <string name="FilterListTopBar">Filter List</string>
+    <string name="SearchPlaceholder">Search..</string>
+    <string name="CloseTopBar">Close</string>
+
 </resources>

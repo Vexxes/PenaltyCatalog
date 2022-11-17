@@ -1,56 +1,65 @@
 package de.vexxes.penaltycatalog.presentation.screen.player
 
-import androidx.compose.ui.Modifier
-import androidx.compose.runtime.Composable
-import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.tooling.preview.Preview
-import de.vexxes.penaltycatalog.domain.model.Player
-import androidx.compose.ui.Alignment.Companion.CenterVertically
-import androidx.compose.ui.unit.dp
-import androidx.compose.material3.Text
+import android.util.Log
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.height
-import androidx.compose.ui.geometry.CornerRadius
-import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-
+import androidx.compose.material3.Text
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment.Companion.CenterVertically
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.geometry.CornerRadius
+import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
+import de.vexxes.penaltycatalog.domain.model.Player
 import de.vexxes.penaltycatalog.ui.theme.Red80
-import de.vexxes.penaltycatalog.ui.theme.Yellow100
 import de.vexxes.penaltycatalog.ui.theme.Typography
-import de.vexxes.penaltycatalog.util.RequestState
+import de.vexxes.penaltycatalog.ui.theme.Yellow100
 
 @Composable
 fun PlayerListContent(
-    players: RequestState<List<Player>>,
-    navigateToPlayerDetailScreen: (playerId: Int) -> Unit
+    players: List<Player>,
+    navigateToPlayerDetailScreen: (playerId: String) -> Unit
 ) {
+    /* TODO What to do,  if request state is not successful
     if (players is RequestState.Success) {
         DisplayPlayers(
             players = players.data,
             navigateToPlayerDetailScreen = navigateToPlayerDetailScreen
         )
-    }
+    }*/
+
+    DisplayPlayers(
+        players = players,
+        navigateToPlayerDetailScreen = navigateToPlayerDetailScreen
+    )
 }
 
 @Composable
 private fun DisplayPlayers(
     players: List<Player>,
-    navigateToPlayerDetailScreen: (playerId: Int) -> Unit
+    navigateToPlayerDetailScreen: (playerId: String) -> Unit
 ) {
-    LazyColumn {
+    LazyColumn(
+        verticalArrangement = Arrangement.spacedBy(8.dp)
+    ){
         items(
             items = players,
             key = { player ->
-                player.id
+                player._id
             }
         ) { player ->
+            Log.d("PlayerId", "Id: $player._id Size: ${players.size}" )
             PlayerItem(
                 player = player,
                 navigateToPlayerDetailScreen = navigateToPlayerDetailScreen
@@ -62,22 +71,21 @@ private fun DisplayPlayers(
 @Composable
 private fun PlayerItem(
     player: Player,
-    navigateToPlayerDetailScreen: (playerId: Int) -> Unit
+    navigateToPlayerDetailScreen: (playerId: String) -> Unit
 ) {
     Row(
         modifier = Modifier
             .clickable {
-                navigateToPlayerDetailScreen(player.id)
+                navigateToPlayerDetailScreen(player._id)
             }
             .fillMaxWidth()
             .height(60.dp)
     ) {
-
         PlayerItemNumber(
             modifier = Modifier
-                    .weight(0.1f)
-                    .padding(2.dp)
-                    .align(CenterVertically),
+                .weight(0.1f)
+                .padding(2.dp)
+                .align(CenterVertically),
             text = player.number.toString()
         )
 
@@ -104,23 +112,22 @@ private fun PlayerItem(
             twoMinutes = player.twoMinutes.toString(),
             redCards = player.redCards.toString()
         )
-
     }
 }
 
 @Composable
 @Preview(showBackground = true)
 private fun PlayerItemPreview() {
-    val player = Player(id = 0,
+    val player = Player(_id = "",
         number = 5,
         firstName = "Thomas",
         lastName = "Schneider",
         zipcode = 49424,
         city = "Goldenstedt",
-        playedGames = 3,
-        goals = 12,
-        yellowCards = 0,
-        twoMinutes = 0,
+        playedGames = 4,
+        goals = 16,
+        yellowCards = 1,
+        twoMinutes = 1,
         redCards = 0
     )
 

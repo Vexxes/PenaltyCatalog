@@ -3,7 +3,7 @@ package de.vexxes.penaltycatalog.domain.repository
 import de.vexxes.penaltycatalog.domain.model.ApiResponse
 
 // TODO Create needed functions as suspend
-interface PlayerRepository {
+interface Repository {
 
     suspend fun getAllPlayers(): ApiResponse
 

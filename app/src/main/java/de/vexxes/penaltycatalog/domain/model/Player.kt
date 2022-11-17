@@ -4,7 +4,7 @@ import kotlinx.serialization.Serializable
 
 @Serializable
 data class Player(
-    val id: Int,
+    val _id: String,
     val number: Int,
     val firstName: String,
     val lastName: String,

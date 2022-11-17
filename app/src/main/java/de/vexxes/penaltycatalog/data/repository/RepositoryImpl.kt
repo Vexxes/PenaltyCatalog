@@ -3,13 +3,13 @@ package de.vexxes.penaltycatalog.data.repository
 import dagger.hilt.android.scopes.ViewModelScoped
 import de.vexxes.penaltycatalog.data.remote.KtorApi
 import de.vexxes.penaltycatalog.domain.model.ApiResponse
-import de.vexxes.penaltycatalog.domain.repository.PlayerRepository
+import de.vexxes.penaltycatalog.domain.repository.Repository
 import javax.inject.Inject
 
 @ViewModelScoped
-class PlayerRepositoryImpl @Inject constructor(
+class RepositoryImpl @Inject constructor(
     private val ktorApi: KtorApi
-): PlayerRepository {
+): Repository {
 
     // TODO Implement functions from KtorApi
     override suspend fun getAllPlayers(): ApiResponse {

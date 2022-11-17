@@ -5,8 +5,8 @@ import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
 import de.vexxes.penaltycatalog.data.remote.KtorApi
-import de.vexxes.penaltycatalog.data.repository.PlayerRepositoryImpl
-import de.vexxes.penaltycatalog.domain.repository.PlayerRepository
+import de.vexxes.penaltycatalog.data.repository.RepositoryImpl
+import de.vexxes.penaltycatalog.domain.repository.Repository
 import javax.inject.Singleton
 
 @Module
@@ -15,10 +15,10 @@ object RepositoryModule {
 
     @Provides
     @Singleton
-    fun providePlayerRepository(
+    fun provideRepository(
         ktorApi: KtorApi
-    ): PlayerRepository {
-        return PlayerRepositoryImpl(
+    ): Repository {
+        return RepositoryImpl(
             ktorApi = ktorApi
         )
     }

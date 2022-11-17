@@ -6,6 +6,7 @@ import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
 import de.vexxes.penaltycatalog.data.remote.KtorApi
+import de.vexxes.penaltycatalog.util.BASE_URL
 import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.json.Json
 import okhttp3.JavaNetCookieJar
@@ -37,13 +38,12 @@ object NetworkModule {
             .build()
     }
 
-    //TODO Adjust base url and replace with constant
     @Provides
     @Singleton
     fun provideRetrofit(okHttpClient: OkHttpClient): Retrofit {
         val contentType = "application/json".toMediaType()
         return Retrofit.Builder()
-            .baseUrl("http://localhost:8080")
+            .baseUrl(BASE_URL)
             .client(okHttpClient)
             .addConverterFactory(Json.asConverterFactory(contentType))
             .build()

@@ -7,7 +7,11 @@ import java.lang.Exception
 @Serializable
 data class ApiResponse(
     val success: Boolean,
-    val Player: Player? = null,
+    val penalty: Penalty? = null,
+    val player: List<Player>? = null,
+    val penaltyHistory: PenaltyHistory? = null,
+    val cancellation: Cancellation? = null,
+    val event: Event? = null,
     val message: String? = null,
     @Transient
     val error: Exception? = null
