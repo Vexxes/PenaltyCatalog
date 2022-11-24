@@ -5,9 +5,10 @@ import androidx.navigation.NavGraphBuilder
 import androidx.navigation.compose.composable
 import androidx.navigation.navigation
 import de.vexxes.penaltycatalog.navigation.Graph
-import de.vexxes.penaltycatalog.navigation.Screen
+import de.vexxes.penaltycatalog.navigation.ScreenNavigation
 import de.vexxes.penaltycatalog.navigation.ScreenText
-import de.vexxes.penaltycatalog.presentation.screen.player.PlayerListScreen
+import de.vexxes.penaltycatalog.navigation.composables.playerSingle
+import de.vexxes.penaltycatalog.presentation.screen.playerList.PlayerListScreen
 import de.vexxes.penaltycatalog.viewmodels.PlayerViewModel
 
 //TODO Check if navController can be removed as parameter
@@ -16,36 +17,45 @@ fun NavGraphBuilder.mainScreensGraph(
     playerViewModel: PlayerViewModel
 ) {
     navigation(
-        startDestination = Screen.Penalties.route,
+        startDestination = ScreenNavigation.Penalties.route,
         route = Graph.MAIN
     ) {
-        composable(route = Screen.Penalties.route) {
+        /*TODO Outsource the composable to different files*/
+
+        composable(route = ScreenNavigation.Penalties.route) {
             // TODO: Call penalties screen
-            ScreenText(text = Screen.Penalties.name)
+            ScreenText(text = ScreenNavigation.Penalties.name)
         }
 
-        composable(route = Screen.Players.route) {
-            // TODO Call player screen
-//            ScreenText(text = Screen.Players.name)
+        composable(route = ScreenNavigation.Players.route) {
             PlayerListScreen(
-                navigateToPlayerDetailScreen = { },
+                navigateToPlayerDetailScreen = { playerId ->
+                    navController.navigate(route = "player_single_screen/$playerId")
+                },
                 playerViewModel = playerViewModel
             )
         }
 
-        composable(route = Screen.PenaltyHistory.route) {
+        composable(route = ScreenNavigation.PenaltyHistory.route) {
             // TODO Call penalty history screen
-            ScreenText(text = Screen.PenaltyHistory.name)
+            ScreenText(text = ScreenNavigation.PenaltyHistory.name)
         }
 
-        composable(route = Screen.Cancellations.route) {
+        composable(route = ScreenNavigation.Cancellations.route) {
             // TODO Call cancellations screen
-            ScreenText(text = Screen.Cancellations.name)
+            ScreenText(text = ScreenNavigation.Cancellations.name)
         }
 
-        composable(route = Screen.Events.route) {
+        composable(route = ScreenNavigation.Events.route) {
             // TODO Call events screen
-            ScreenText(text = Screen.Events.name)
+            ScreenText(text = ScreenNavigation.Events.name)
         }
+
+        playerSingle(
+            playerViewModel = playerViewModel,
+            navigateToPlayerList = {
+                navController.navigate(ScreenNavigation.Players.route)
+            }
+        )
     }
 }

@@ -1,8 +1,6 @@
 package de.vexxes.penaltycatalog.viewmodels
 
-import android.util.Log
 import androidx.compose.runtime.MutableState
-import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -15,7 +13,6 @@ import de.vexxes.penaltycatalog.util.SearchAppBarState
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import java.lang.Exception
 import javax.inject.Inject
 
 @HiltViewModel
@@ -23,51 +20,64 @@ class PlayerViewModel @Inject constructor(
     private val repository: Repository
 ): ViewModel() {
 
-    private val _players: MutableState<List<Player>> = mutableStateOf(emptyList())
-    val players: State<List<Player>> = _players
+    var players: MutableState<List<Player>> = mutableStateOf(emptyList())
+        private set
 
-    private val _number: MutableState<Int> = mutableStateOf(0)
-    val number: State<Int> = _number
+     var player: MutableState<Player> = mutableStateOf(Player())
+         private set
 
-    private val _firstName: MutableState<String> = mutableStateOf("")
-    val firstName: State<String> = _firstName
+     val id: MutableState<String> = mutableStateOf("")
 
-    private val _lastName: MutableState<String> = mutableStateOf("")
-    val lastName: State<String> = _lastName
+    var number: MutableState<String> = mutableStateOf("")
+        private set
 
-    private val _zipcode: MutableState<Int> = mutableStateOf(0)
-    val zipcode: State<Int> = _zipcode
+    var firstName: MutableState<String> = mutableStateOf("")
+        private set
 
-    private val _city: MutableState<String> = mutableStateOf("")
-    val city: State<String> = _city
+    var lastName: MutableState<String> = mutableStateOf("")
+        private set
 
-    private val _playedGames: MutableState<Int> = mutableStateOf(0)
-    val playedGames: State<Int> = _playedGames
+    var birthday: MutableState<String> = mutableStateOf("")
+        private set
 
-    private val _goals: MutableState<Int> = mutableStateOf(0)
-    val goals: State<Int> = _goals
+    var street: MutableState<String> = mutableStateOf("")
+        private set
 
-    private val _yellowCards: MutableState<Int> = mutableStateOf(0)
-    val yellowCards: State<Int> = _yellowCards
+    var zipcode: MutableState<String> = mutableStateOf("")
+        private set
 
-    private val _twoMinutes: MutableState<Int> = mutableStateOf(0)
-    val twoMinutes: State<Int> = _twoMinutes
+    var city: MutableState<String> = mutableStateOf("")
+        private set
 
-    private val _redCards: MutableState<Int> = mutableStateOf(0)
-    val redCards: State<Int> = _redCards
+    var playedGames: MutableState<String> = mutableStateOf("")
+        private set
 
-    val searchAppBarState: MutableState<SearchAppBarState> = mutableStateOf(SearchAppBarState.CLOSED)
-    val searchTextState: MutableState<String> = mutableStateOf("")
+    var goals: MutableState<String> = mutableStateOf("")
+        private set
 
-    private val _apiResponse: MutableState<RequestState<ApiResponse>> = mutableStateOf(RequestState.Idle)
-    val apiResponsePlayer: State<RequestState<ApiResponse>> = _apiResponse
+    var yellowCards: MutableState<String> = mutableStateOf("")
+        private set
+
+    var twoMinutes: MutableState<String> = mutableStateOf("")
+        private set
+
+    var redCards: MutableState<String> = mutableStateOf("")
+        private set
+
+    var searchAppBarState: MutableState<SearchAppBarState> = mutableStateOf(SearchAppBarState.CLOSED)
+        private set
+
+    var searchTextState: MutableState<String> = mutableStateOf("")
+        private set
+
+    private var apiResponse: MutableState<RequestState<ApiResponse>> = mutableStateOf(RequestState.Idle)
 
     init {
         getAllPlayers()
     }
 
     fun getAllPlayers() {
-        _apiResponse.value = RequestState.Loading
+        apiResponse.value = RequestState.Loading
 
         viewModelScope.launch {
             try {
@@ -75,29 +85,69 @@ class PlayerViewModel @Inject constructor(
                     repository.getAllPlayers()
                 }
 
-                // TODO Create the correct response for get all players
-                _apiResponse.value = RequestState.Success(response)
-                Log.d("Response", response.toString())
+                apiResponse.value = RequestState.Success(response)
 
                 if(response.player != null) {
-                    // TODO Get player list instead of a single player
-                    _players.value = response.player
-                    Log.d("Response", players.value.toString())
-//                    _number.value = response.player.number
-//                    _firstName.value = response.player.firstName
-//                    _lastName.value = response.player.lastName
-//                    _zipcode.value = response.player.zipcode
-//                    _city.value = response.player.city
-//                    _playedGames.value = response.player.playedGames
-//                    _goals.value = response.player.goals
-//                    _yellowCards.value = response.player.yellowCards
-//                    _twoMinutes.value = response.player.twoMinutes
-//                    _redCards.value = response.player.redCards
+                    players.value = response.player
                 }
             }
             catch (e: Exception) {
-                _apiResponse.value = RequestState.Error(e)
+                apiResponse.value = RequestState.Error(e)
             }
         }
+    }
+
+    fun getPlayerById(playerId: String) {
+        apiResponse.value = RequestState.Loading
+
+        viewModelScope.launch {
+            try {
+                val response = withContext(Dispatchers.IO) {
+                    repository.getPlayerById(playerId = playerId)
+                }
+                apiResponse.value = RequestState.Success(response)
+
+                if (response.player != null) {
+                    convertResponseToPlayer(player = response.player.first())
+                } else {
+                    player.value = Player()
+                }
+            }
+            catch (e: Exception) {
+                apiResponse.value = RequestState.Error(e)
+            }
+        }
+    }
+
+    private fun convertResponseToPlayer(player: Player) {
+        this.player.value = player
+        number.value = if(player.number > 0) player.number.toString() else ""
+        firstName.value = player.firstName
+        lastName.value = player.lastName
+        birthday.value = player.birthday
+        street.value = player.street
+        zipcode.value = if(player.zipcode > 0) player.zipcode.toString() else ""
+        city.value = player.city
+        playedGames.value = if(player.playedGames > 0) player.playedGames.toString() else ""
+        goals.value = if(player.goals > 0) player.goals.toString() else ""
+        yellowCards.value = if(player.yellowCards > 0) player.yellowCards.toString() else ""
+        twoMinutes.value = if(player.twoMinutes > 0) player.twoMinutes.toString() else ""
+        redCards.value = if(player.redCards > 0) player.redCards.toString() else ""
+    }
+
+    fun resetPlayer() {
+        player.value = Player()
+        number.value = ""
+        firstName.value = player.value.firstName
+        lastName.value = player.value.lastName
+        birthday.value = player.value.birthday
+        street.value = player.value.street
+        zipcode.value = ""
+        city.value = player.value.city
+        playedGames.value = ""
+        goals.value = ""
+        yellowCards.value = ""
+        twoMinutes.value = ""
+        redCards.value = ""
     }
 }

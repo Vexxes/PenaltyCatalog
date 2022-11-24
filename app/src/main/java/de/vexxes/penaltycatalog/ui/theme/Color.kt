@@ -125,3 +125,4 @@ val NeutralVariant90 = Color(0xFFDDE3EA)
 
 val Yellow100 = Color(0xFFFFFF00)
 val Red80 = Color(0xFFFF3131)
+val Green40 = Color(0xFF00FF00)

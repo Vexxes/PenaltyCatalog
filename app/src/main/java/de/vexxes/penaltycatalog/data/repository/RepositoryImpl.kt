@@ -19,4 +19,12 @@ class RepositoryImpl @Inject constructor(
             ApiResponse(success = false, error = e)
         }
     }
+
+    override suspend fun getPlayerById(playerId: String): ApiResponse {
+        return try {
+            ktorApi.getPlayerById(playerId = playerId)
+        } catch (e: Exception) {
+            ApiResponse(success = false, error = e)
+        }
+    }
 }

@@ -13,5 +13,27 @@
     <string name="FilterListTopBar">Filter List</string>
     <string name="SearchPlaceholder">Search..</string>
     <string name="CloseTopBar">Close</string>
+    <string name="BackArrow">Back Arrow</string>
+    <string name="Edit">Edit</string>
+    <string name="Save">Save</string>
+    <string name="Cancel">Cancel</string>
+
+    <string name="Number">player number</string>
+    <string name="FirstName">first name</string>
+    <string name="LastName">last name</string>
+    <string name="Birthday">birthday</string>
+    <string name="Street">street</string>
+    <string name="Zipcode">zipcode</string>
+    <string name="City">city</string>
+
+    <string name="Address">Address</string>
+    <string name="OpenPenalties">Open Penalties</string>
+    <string name="PlayerStats">player stats</string>
+    <string name="PlayedGames">played games</string>
+    <string name="Goals">goals</string>
+    <string name="YellowCards">yellow cards</string>
+    <string name="TwoMinutes">two minutes</string>
+    <string name="RedCards">red cards</string>
+
 
 </resources>

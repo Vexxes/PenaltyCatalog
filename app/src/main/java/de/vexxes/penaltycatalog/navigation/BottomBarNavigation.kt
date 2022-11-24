@@ -18,19 +18,19 @@ import de.vexxes.penaltycatalog.R
 @Composable
 fun BottomBar(navController: NavController) {
 
-    val penalty = Screen.Penalties
+    val penalty = ScreenNavigation.Penalties
     penalty.name = stringResource(id = R.string.Penalty)
 
-    val players = Screen.Players
+    val players = ScreenNavigation.Players
     players.name = stringResource(id = R.string.Players)
 
-    val penaltyHistory = Screen.PenaltyHistory
+    val penaltyHistory = ScreenNavigation.PenaltyHistory
     penaltyHistory.name = stringResource(id = R.string.PenaltyHistory)
 
-    val cancellations = Screen.Cancellations
+    val cancellations = ScreenNavigation.Cancellations
     cancellations.name = stringResource(id = R.string.Cancellations)
 
-    val events = Screen.Events
+    val events = ScreenNavigation.Events
     events.name = stringResource(id = R.string.Events)
 
     val screens = listOf(
@@ -56,7 +56,7 @@ fun BottomBar(navController: NavController) {
 
 @Composable
 fun RowScope.AddItem(
-    screen: Screen,
+    screen: ScreenNavigation,
     currentDestination: NavDestination?,
     navController: NavController
 ) {

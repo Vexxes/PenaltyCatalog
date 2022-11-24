@@ -6,5 +6,6 @@ import de.vexxes.penaltycatalog.domain.model.ApiResponse
 interface Repository {
 
     suspend fun getAllPlayers(): ApiResponse
+    suspend fun getPlayerById(playerId: String): ApiResponse
 
 }

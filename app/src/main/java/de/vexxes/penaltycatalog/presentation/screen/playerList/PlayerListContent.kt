@@ -1,4 +1,4 @@
-package de.vexxes.penaltycatalog.presentation.screen.player
+package de.vexxes.penaltycatalog.presentation.screen.playerList
 
 import android.util.Log
 import androidx.compose.foundation.Canvas
@@ -38,7 +38,7 @@ fun PlayerListContent(
             navigateToPlayerDetailScreen = navigateToPlayerDetailScreen
         )
     }*/
-
+    
     DisplayPlayers(
         players = players,
         navigateToPlayerDetailScreen = navigateToPlayerDetailScreen
@@ -52,14 +52,14 @@ private fun DisplayPlayers(
 ) {
     LazyColumn(
         verticalArrangement = Arrangement.spacedBy(8.dp)
-    ){
+    ) {
         items(
             items = players,
             key = { player ->
                 player._id
             }
         ) { player ->
-            Log.d("PlayerId", "Id: $player._id Size: ${players.size}" )
+            Log.d("PlayerId", "Id: $player._id Size: ${players.size}")
             PlayerItem(
                 player = player,
                 navigateToPlayerDetailScreen = navigateToPlayerDetailScreen
@@ -122,6 +122,8 @@ private fun PlayerItemPreview() {
         number = 5,
         firstName = "Thomas",
         lastName = "Schneider",
+        birthday = "21.06.1997",
+        street = "Bussardweg 3C",
         zipcode = 49424,
         city = "Goldenstedt",
         playedGames = 4,
