@@ -6,7 +6,7 @@ import java.lang.Exception
 
 @Serializable
 data class ApiResponse(
-    val success: Boolean,
+    val success: Boolean = false,
     val penalty: Penalty? = null,
     val player: List<Player>? = null,
     val penaltyHistory: PenaltyHistory? = null,

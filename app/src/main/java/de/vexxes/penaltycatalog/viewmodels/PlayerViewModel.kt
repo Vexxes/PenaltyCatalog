@@ -1,5 +1,6 @@
 package de.vexxes.penaltycatalog.viewmodels
 
+import android.util.Log
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
@@ -71,6 +72,7 @@ class PlayerViewModel @Inject constructor(
         private set
 
     private var apiResponse: MutableState<RequestState<ApiResponse>> = mutableStateOf(RequestState.Idle)
+    private var lastResponse: MutableState<ApiResponse> = mutableStateOf(ApiResponse())
 
     init {
         getAllPlayers()
@@ -119,24 +121,74 @@ class PlayerViewModel @Inject constructor(
         }
     }
 
-    private fun convertResponseToPlayer(player: Player) {
-        this.player.value = player
-        number.value = if(player.number > 0) player.number.toString() else ""
-        firstName.value = player.firstName
-        lastName.value = player.lastName
-        birthday.value = player.birthday
-        street.value = player.street
-        zipcode.value = if(player.zipcode > 0) player.zipcode.toString() else ""
-        city.value = player.city
-        playedGames.value = if(player.playedGames > 0) player.playedGames.toString() else ""
-        goals.value = if(player.goals > 0) player.goals.toString() else ""
-        yellowCards.value = if(player.yellowCards > 0) player.yellowCards.toString() else ""
-        twoMinutes.value = if(player.twoMinutes > 0) player.twoMinutes.toString() else ""
-        redCards.value = if(player.redCards > 0) player.redCards.toString() else ""
+    fun updatePlayer(): Boolean {
+        apiResponse.value = RequestState.Loading
+        viewModelScope.launch {
+            try {
+                if (verifyPlayer()) {
+
+                    val locPlayer = Player(
+                        _id = id.value,
+                        number = number.value.toInt(),
+                        firstName = firstName.value,
+                        lastName = lastName.value,
+                        birthday = birthday.value,
+                        street = street.value,
+                        zipcode = if(zipcode.value.isNotEmpty()) zipcode.value.toInt() else 0,
+                        city = city.value,
+                        playedGames = if(playedGames.value.isNotEmpty()) playedGames.value.toInt() else 0,
+                        goals = if(goals.value.isNotEmpty()) goals.value.toInt() else 0,
+                        yellowCards = if(yellowCards.value.isNotEmpty()) yellowCards.value.toInt() else 0,
+                        twoMinutes = if(twoMinutes.value.isNotEmpty()) twoMinutes.value.toInt() else 0,
+                        redCards = if(redCards.value.isNotEmpty()) redCards.value.toInt() else 0
+                    )
+
+                    lastResponse.value = repository.updatePlayer(
+                        player = locPlayer
+                    )
+                    apiResponse.value = RequestState.Success(lastResponse.value)
+
+                }
+            } catch (e: Exception) {
+                apiResponse.value = RequestState.Error(e)
+                Log.d("ApiResponse", e.toString())
+            }
+        }
+
+        return if(lastResponse.value.success) {
+            getAllPlayers()
+            true
+        } else
+            false
+    }
+
+    fun deletePlayer(): Boolean {
+        apiResponse.value = RequestState.Loading
+        viewModelScope.launch {
+            try {
+                lastResponse.value = repository.deletePlayer(playerId = id.value)
+                apiResponse.value = RequestState.Success(lastResponse.value)
+            } catch (e: Exception) {
+                apiResponse.value = RequestState.Error(e)
+                lastResponse.value = ApiResponse(success = false)
+            }
+        }
+
+        return if(lastResponse.value.success) {
+            getAllPlayers()
+            true
+        } else
+            false
+    }
+
+    private fun verifyPlayer(): Boolean {
+        /*TODO Should have returned false, since the values were empty. Check again, otherwise multiple entries are inserted*/
+        return (number.value.isNotEmpty() && firstName.value.isNotEmpty() && lastName.value.isNotEmpty())
     }
 
     fun resetPlayer() {
         player.value = Player()
+        id.value = ""
         number.value = ""
         firstName.value = player.value.firstName
         lastName.value = player.value.lastName
@@ -149,5 +201,22 @@ class PlayerViewModel @Inject constructor(
         yellowCards.value = ""
         twoMinutes.value = ""
         redCards.value = ""
+    }
+
+    private fun convertResponseToPlayer(player: Player) {
+        this.player.value = player
+        id.value = player._id
+        number.value = if(player.number > 0) player.number.toString() else ""
+        firstName.value = player.firstName
+        lastName.value = player.lastName
+        birthday.value = player.birthday
+        street.value = player.street
+        zipcode.value = if(player.zipcode > 0) player.zipcode.toString() else ""
+        city.value = player.city
+        playedGames.value = if(player.playedGames > 0) player.playedGames.toString() else ""
+        goals.value = if(player.goals > 0) player.goals.toString() else ""
+        yellowCards.value = if(player.yellowCards > 0) player.yellowCards.toString() else ""
+        twoMinutes.value = if(player.twoMinutes > 0) player.twoMinutes.toString() else ""
+        redCards.value = if(player.redCards > 0) player.redCards.toString() else ""
     }
 }

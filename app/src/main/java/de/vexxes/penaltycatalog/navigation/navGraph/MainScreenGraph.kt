@@ -5,9 +5,11 @@ import androidx.navigation.NavGraphBuilder
 import androidx.navigation.compose.composable
 import androidx.navigation.navigation
 import de.vexxes.penaltycatalog.navigation.Graph
+import de.vexxes.penaltycatalog.navigation.Screen
 import de.vexxes.penaltycatalog.navigation.ScreenNavigation
 import de.vexxes.penaltycatalog.navigation.ScreenText
-import de.vexxes.penaltycatalog.navigation.composables.playerSingle
+import de.vexxes.penaltycatalog.navigation.composables.playerDetailComposable
+import de.vexxes.penaltycatalog.navigation.composables.playerEditComposable
 import de.vexxes.penaltycatalog.presentation.screen.playerList.PlayerListScreen
 import de.vexxes.penaltycatalog.viewmodels.PlayerViewModel
 
@@ -30,7 +32,10 @@ fun NavGraphBuilder.mainScreensGraph(
         composable(route = ScreenNavigation.Players.route) {
             PlayerListScreen(
                 navigateToPlayerDetailScreen = { playerId ->
-                    navController.navigate(route = "player_single_screen/$playerId")
+                    navController.navigate(route = Screen.PlayerDetail.route + "/$playerId")
+                },
+                navigateToPlayerEditScreen = { playerId ->
+                    navController.navigate(route = Screen.PlayerEdit.route + "/$playerId")
                 },
                 playerViewModel = playerViewModel
             )
@@ -51,10 +56,21 @@ fun NavGraphBuilder.mainScreensGraph(
             ScreenText(text = ScreenNavigation.Events.name)
         }
 
-        playerSingle(
+        playerDetailComposable(
             playerViewModel = playerViewModel,
             navigateToPlayerList = {
                 navController.navigate(ScreenNavigation.Players.route)
+            },
+            onEditClicked = { playerId ->
+                navController.navigate(Screen.PlayerEdit.route + "/$playerId")
+            }
+        )
+
+        playerEditComposable(
+            playerViewModel = playerViewModel,
+            navigateBack = {
+                navController.popBackStack()
+//                navController.navigate(Screen.PlayerDetail.route)
             }
         )
     }

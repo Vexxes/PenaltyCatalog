@@ -44,9 +44,14 @@ sealed class ScreenNavigation(val route: String, var name: String, val iconSelec
 
 }
 
-sealed class Screen(val route: String) {
-    object PlayerSingle: Screen(
-        route = "player_single_screen/{playerId}"
+sealed class Screen(val route: String, val argument: String = "") {
+    object PlayerDetail: Screen(
+        route = "player_detail_screen",
+        argument = "/{playerId}"
+    )
+    object PlayerEdit: Screen(
+        route = "player_edit_screen",
+        argument = "/{playerId}"
     )
 
 }

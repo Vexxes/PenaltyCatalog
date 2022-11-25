@@ -9,19 +9,15 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
-import de.vexxes.penaltycatalog.component.BackEditTopBar
 import de.vexxes.penaltycatalog.component.BackSaveTopBar
-import de.vexxes.penaltycatalog.domain.model.Player
 import de.vexxes.penaltycatalog.viewmodels.PlayerViewModel
 
 @Composable
-fun PlayerScreen(
+fun PlayerEditScreen(
     playerViewModel: PlayerViewModel,
     onBackClicked: () -> Unit,
-    onEditClicked: (String) -> Unit,
-    onSaveClicked: (String) -> Unit
+    onSaveClicked: (String?) -> Unit
 ) {
-    val player by playerViewModel.player
     val id by playerViewModel.id
     val number by playerViewModel.number
     val firstName by playerViewModel.firstName
@@ -40,73 +36,40 @@ fun PlayerScreen(
         onBackClicked()
     }
 
-    if(player._id != "") {
-        PlayerDetailScreen(
-            player = player,
-            onBackClicked = onBackClicked,
-            onEditClicked = { onEditClicked(player._id) }
-        )
-    } else {
-        PlayerNewScreen(
-            id = id,
-            number = number,
-            onNumberChanged = { playerViewModel.number.value = it },
-            firstName = firstName,
-            onFirstNameChanged = { playerViewModel.firstName.value = it },
-            lastName = lastName,
-            onLastNameChanged = { playerViewModel.lastName.value = it },
-            birthday = birthday,
-            onBirthdayChanged = { playerViewModel.birthday.value = it },
-            street = street,
-            onStreetChanged = { playerViewModel.street.value = it },
-            zipcode = zipcode,
-            onZipcodeChanged = { playerViewModel.zipcode.value = it },
-            city = city,
-            onCityChanged = { playerViewModel.city.value = it },
-            playedGames = playedGames,
-            onPlayedGamesChanged = { playerViewModel.playedGames.value = it},
-            goals = goals,
-            onGoalsChanged = { playerViewModel.goals.value = it},
-            yellowCards = yellowCards,
-            onYellowCardsChanged = { playerViewModel.yellowCards.value = it},
-            twoMinutes = twoMinutes,
-            onTwoMinutesChanged = { playerViewModel.twoMinutes.value = it },
-            redCards = redCards,
-            onRedCardsChanged = { playerViewModel.redCards.value = it },
-            onBackClicked = onBackClicked,
-            onSaveClicked = { onSaveClicked(id) }
-        )
-    }
-}
-
-@OptIn(ExperimentalMaterial3Api::class)
-@Composable
-private fun PlayerDetailScreen(
-    player: Player,
-    onBackClicked: () -> Unit,
-    onEditClicked: (String) -> Unit
-) {
-    Scaffold(
-        topBar = {
-            BackEditTopBar(
-                onBackClicked = { onBackClicked() },
-                onEditClicked = { onEditClicked(player._id) }
-            )
-        },
-
-        content = {
-            Box(
-                modifier = Modifier.padding(it)
-            ) {
-                PlayerDetailContent(player = player)
-            }
-        }
+    PlayerEditScreen(
+        id = id,
+        number = number,
+        onNumberChanged = { playerViewModel.number.value = it },
+        firstName = firstName,
+        onFirstNameChanged = { playerViewModel.firstName.value = it },
+        lastName = lastName,
+        onLastNameChanged = { playerViewModel.lastName.value = it },
+        birthday = birthday,
+        onBirthdayChanged = { playerViewModel.birthday.value = it },
+        street = street,
+        onStreetChanged = { playerViewModel.street.value = it },
+        zipcode = zipcode,
+        onZipcodeChanged = { playerViewModel.zipcode.value = it },
+        city = city,
+        onCityChanged = { playerViewModel.city.value = it },
+        playedGames = playedGames,
+        onPlayedGamesChanged = { playerViewModel.playedGames.value = it},
+        goals = goals,
+        onGoalsChanged = { playerViewModel.goals.value = it},
+        yellowCards = yellowCards,
+        onYellowCardsChanged = { playerViewModel.yellowCards.value = it},
+        twoMinutes = twoMinutes,
+        onTwoMinutesChanged = { playerViewModel.twoMinutes.value = it },
+        redCards = redCards,
+        onRedCardsChanged = { playerViewModel.redCards.value = it },
+        onBackClicked = onBackClicked,
+        onSaveClicked = { onSaveClicked(id) }
     )
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-private fun PlayerNewScreen(
+private fun PlayerEditScreen(
     id: String,
     number: String,
     onNumberChanged: (String) -> Unit,
@@ -133,12 +96,12 @@ private fun PlayerNewScreen(
     redCards: String,
     onRedCardsChanged: (String) -> Unit,
     onBackClicked: () -> Unit,
-    onSaveClicked: (String) -> Unit
+    onSaveClicked: (String?) -> Unit
 ) {
     Scaffold(
         topBar = {
             BackSaveTopBar(
-                onBackClicked = { onBackClicked() },
+                onBackClicked = onBackClicked,
                 onSaveClicked = { onSaveClicked(id) }
             )
         },
@@ -147,7 +110,7 @@ private fun PlayerNewScreen(
             Box(
                 modifier = Modifier.padding(paddingValues)
             ) {
-                PlayerNewContent(
+                PlayerEditContent(
                     number = number,
                     onNumberChanged = onNumberChanged,
                     firstName = firstName,
@@ -180,33 +143,8 @@ private fun PlayerNewScreen(
 
 @Preview(showBackground = true)
 @Composable
-private fun PlayerDetailScreenPreview() {
-    val player = Player(
-        _id = "63717e8314ab74703f0ab5cb",
-        number = 5,
-        firstName = "Thomas",
-        lastName = "Schneider",
-        street = "Bussardweg 3C",
-        birthday = "21.06.1997",
-        zipcode = 49424,
-        city = "Goldenstedt",
-        playedGames = 4,
-        goals = 16,
-        yellowCards = 1,
-        twoMinutes = 1,
-        redCards = 0
-    )
-    PlayerDetailScreen(
-        player = player,
-        onBackClicked = { },
-        onEditClicked = { }
-    )
-}
-
-@Preview(showBackground = true)
-@Composable
-private fun PlayerNewScreenPreview() {
-    PlayerNewScreen(
+private fun PlayerEditScreenPreview() {
+    PlayerEditScreen(
         id = "",
         number = "",
         onNumberChanged = { },

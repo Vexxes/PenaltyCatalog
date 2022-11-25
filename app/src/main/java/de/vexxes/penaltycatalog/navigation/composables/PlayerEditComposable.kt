@@ -1,5 +1,6 @@
 package de.vexxes.penaltycatalog.navigation.composables
 
+import android.util.Log
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.slideInHorizontally
@@ -14,15 +15,15 @@ import androidx.navigation.NavType
 import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
 import de.vexxes.penaltycatalog.navigation.Screen
-import de.vexxes.penaltycatalog.presentation.screen.player.PlayerScreen
+import de.vexxes.penaltycatalog.presentation.screen.player.PlayerEditScreen
 import de.vexxes.penaltycatalog.viewmodels.PlayerViewModel
 
-fun NavGraphBuilder.playerSingle(
+fun NavGraphBuilder.playerEditComposable(
     playerViewModel: PlayerViewModel,
-    navigateToPlayerList: () -> Unit
+    navigateBack: () -> Unit
 ) {
     composable(
-        route = Screen.PlayerSingle.route,
+        route = Screen.PlayerEdit.route + Screen.PlayerEdit.argument,
         arguments = listOf(navArgument("playerId") {
             type = NavType.StringType
         })
@@ -31,11 +32,8 @@ fun NavGraphBuilder.playerSingle(
         // Get playerId from argument
         val playerId = navBackStackEntry.arguments?.getString("playerId")
         LaunchedEffect(key1 = playerId) {
-            if(!playerId.isNullOrEmpty() && playerId != "-1") {
-                playerViewModel.getPlayerById(playerId = playerId)
-            } else {
+            if(playerId == "-1")
                 playerViewModel.resetPlayer()
-            }
         }
 
         var visible by remember {
@@ -48,15 +46,19 @@ fun NavGraphBuilder.playerSingle(
             enter = slideInHorizontally(animationSpec = tween(durationMillis = 300)) { fullWidth -> fullWidth },
             exit = slideOutHorizontally(animationSpec = tween(durationMillis = 300)) { fullWidth -> fullWidth }
         ) {
-            // TODO Call player detail screen
-            PlayerScreen(
+            PlayerEditScreen(
                 playerViewModel = playerViewModel,
                 onBackClicked = {
                     visible = false
-                    navigateToPlayerList()
+                    navigateBack()
                 },
-                onEditClicked = { /*TODO Handle on edit clicked*/ },
-                onSaveClicked = { /*TODO Handle on save clicked*/ }
+                onSaveClicked = {
+                    Log.d("Action", "Save $it")
+                    if(playerViewModel.updatePlayer()) {
+                        navigateBack()
+                        /*TODO Show snackbar after successfully updating / inserting player*/
+                    }
+                }
             )
         }
     }

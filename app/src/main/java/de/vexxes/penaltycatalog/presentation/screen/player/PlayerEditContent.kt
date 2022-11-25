@@ -14,7 +14,12 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.text.input.KeyboardType
@@ -24,7 +29,7 @@ import androidx.compose.ui.unit.dp
 import de.vexxes.penaltycatalog.R
 
 @Composable
-fun PlayerNewContent(
+fun PlayerEditContent(
     number: String,
     onNumberChanged: (String) -> Unit,
     firstName: String,
@@ -112,8 +117,8 @@ private fun CancelIcon(
 
 @Preview(showBackground = true)
 @Composable
-fun PlayerNewContentPreview() {
-    PlayerNewContent(
+fun PlayerEditContentPreview() {
+    PlayerEditContent(
         number = "",
         onNumberChanged = { },
         firstName = "",
@@ -286,10 +291,15 @@ private fun InputOutlinedField(
     label: String,
     keyboardOptions: KeyboardOptions = KeyboardOptions(capitalization = KeyboardCapitalization.Words)
 ) {
+    var focused by remember { mutableStateOf(false) }
+
     OutlinedTextField(
         modifier = modifier
             .fillMaxWidth()
-            .padding(4.dp),
+            .padding(4.dp)
+            .onFocusChanged { focusState ->
+                focused = focusState.isFocused
+            },
         value = text,
         onValueChange = {
             onTextChanged(it)
@@ -301,7 +311,7 @@ private fun InputOutlinedField(
             Text(text = label, softWrap = false, overflow = TextOverflow.Visible)
         },
         trailingIcon = {
-            if (text.isNotBlank())
+            if (text.isNotBlank() && focused)
                 CancelIcon(
                     onClick = { onTextChanged("") }
                 )

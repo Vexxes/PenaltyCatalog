@@ -2,6 +2,7 @@ package de.vexxes.penaltycatalog.component
 
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
@@ -14,8 +15,9 @@ import de.vexxes.penaltycatalog.R
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun BackEditTopBar(
+fun BackDeleteEditTopBar(
     onBackClicked: () -> Unit,
+    onDeleteClicked: () -> Unit,
     onEditClicked: () -> Unit
 ) {
     TopAppBar(
@@ -35,25 +37,50 @@ fun BackEditTopBar(
         },
 
         actions = {
-            IconButton(
-                onClick = {
-                    onEditClicked()
-                }
-            ) {
-                Icon(
-                    imageVector = Icons.Default.Edit,
-                    contentDescription = stringResource(id = R.string.Edit)
-                )
-            }
+            DeleteAction(onDeleteClicked = onDeleteClicked)
+            EditAction(onEditClicked = onEditClicked)
         }
     )
+}
+
+@Composable
+private fun DeleteAction(
+    onDeleteClicked: () -> Unit
+) {
+    IconButton(
+        onClick = {
+            onDeleteClicked()
+        }
+    ) {
+        Icon(
+            imageVector = Icons.Default.Delete,
+            contentDescription = stringResource(id = R.string.Delete)
+        )
+    }
+}
+
+@Composable
+private fun EditAction(
+    onEditClicked: () -> Unit
+) {
+    IconButton(
+        onClick = {
+            onEditClicked()
+        }
+    ) {
+        Icon(
+            imageVector = Icons.Default.Edit,
+            contentDescription = stringResource(id = R.string.Edit)
+        )
+    }
 }
 
 @Preview(showBackground = true)
 @Composable
 fun BackEditTopBarPreview() {
-    BackEditTopBar(
+    BackDeleteEditTopBar(
         onBackClicked = { },
+        onDeleteClicked = { },
         onEditClicked = { }
     )
 }

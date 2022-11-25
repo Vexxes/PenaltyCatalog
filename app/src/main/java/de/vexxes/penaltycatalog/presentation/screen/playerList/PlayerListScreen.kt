@@ -24,6 +24,7 @@ import de.vexxes.penaltycatalog.viewmodels.PlayerViewModel
 @Composable
 fun PlayerListScreen(
     navigateToPlayerDetailScreen: (playerId: String) -> Unit,
+    navigateToPlayerEditScreen: (playerId: String) -> Unit,
     playerViewModel: PlayerViewModel
 ) {
 
@@ -73,7 +74,7 @@ fun PlayerListScreen(
         },
 
         floatingActionButton = {
-            PlayerFab(navigateToPlayerDetailScreen = navigateToPlayerDetailScreen)
+            PlayerFab(navigateToPlayerDetailScreen = navigateToPlayerEditScreen)
         }
     )
 }
