@@ -137,7 +137,7 @@ private fun PlayerEditScreen(
                     onRedCardsChanged = onRedCardsChanged
                 )
             }
-        }
+        },
     )
 }
 
@@ -171,6 +171,6 @@ private fun PlayerEditScreenPreview() {
         redCards = "",
         onRedCardsChanged = { },
         onBackClicked = { },
-        onSaveClicked = { }
+        onSaveClicked = { },
     )
 }

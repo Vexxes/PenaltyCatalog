@@ -13,9 +13,9 @@ class RepositoryImpl @Inject constructor(
 ): Repository {
 
     // TODO Implement functions from KtorApi
-    override suspend fun getAllPlayers(): ApiResponse {
+    override suspend fun getAllPlayers(sortOrder: Int): ApiResponse {
         return try {
-            ktorApi.getAllPlayers()
+            ktorApi.getAllPlayers(sortOrder = sortOrder)
         } catch (e: Exception) {
             ApiResponse(success = false, error = e)
         }
@@ -40,6 +40,14 @@ class RepositoryImpl @Inject constructor(
     override suspend fun deletePlayer(playerId: String): ApiResponse {
         return try {
             ktorApi.deletePlayer(playerId = playerId)
+        } catch (e: Exception) {
+            ApiResponse(success = false, error = e)
+        }
+    }
+
+    override suspend fun getPlayersBySearch(searchText: String): ApiResponse {
+        return try {
+            ktorApi.getPlayersBySearch(searchText = searchText)
         } catch (e: Exception) {
             ApiResponse(success = false, error = e)
         }

@@ -6,12 +6,13 @@ import retrofit2.http.Body
 import retrofit2.http.GET
 import retrofit2.http.PUT
 import retrofit2.http.Path
+import retrofit2.http.Query
 
 // TODO Add functions from ktor server
 interface KtorApi {
 
     @GET("get_players")
-    suspend fun getAllPlayers(): ApiResponse
+    suspend fun getAllPlayers(@Query("sortAscDesc") sortOrder: Int): ApiResponse
 
     @GET("get_player/{playerId}")
     suspend fun getPlayerById(@Path("playerId") playerId: String): ApiResponse
@@ -21,4 +22,7 @@ interface KtorApi {
 
     @PUT("delete_player/{playerId}")
     suspend fun deletePlayer(@Path("playerId") playerId: String): ApiResponse
+
+    @GET("get_players_by_search")
+    suspend fun getPlayersBySearch(@Query("searchText") searchText: String): ApiResponse
 }

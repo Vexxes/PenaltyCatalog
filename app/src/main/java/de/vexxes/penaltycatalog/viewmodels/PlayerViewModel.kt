@@ -11,6 +11,8 @@ import de.vexxes.penaltycatalog.domain.model.Player
 import de.vexxes.penaltycatalog.domain.repository.Repository
 import de.vexxes.penaltycatalog.util.RequestState
 import de.vexxes.penaltycatalog.util.SearchAppBarState
+import de.vexxes.penaltycatalog.util.SortOrder
+import de.vexxes.penaltycatalog.util.toValue
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -65,10 +67,13 @@ class PlayerViewModel @Inject constructor(
     var redCards: MutableState<String> = mutableStateOf("")
         private set
 
+    var sortOrder: MutableState<SortOrder> = mutableStateOf(SortOrder.ASCENDING)
+        private set
+
     var searchAppBarState: MutableState<SearchAppBarState> = mutableStateOf(SearchAppBarState.CLOSED)
         private set
 
-    var searchTextState: MutableState<String> = mutableStateOf("")
+    var searchText: MutableState<String> = mutableStateOf("")
         private set
 
     private var apiResponse: MutableState<RequestState<ApiResponse>> = mutableStateOf(RequestState.Idle)
@@ -84,7 +89,8 @@ class PlayerViewModel @Inject constructor(
         viewModelScope.launch {
             try {
                 val response = withContext(Dispatchers.IO) {
-                    repository.getAllPlayers()
+                    println(sortOrder.value.toValue())
+                    repository.getAllPlayers(sortOrder = sortOrder.value.toValue())
                 }
 
                 apiResponse.value = RequestState.Success(response)
@@ -121,6 +127,28 @@ class PlayerViewModel @Inject constructor(
         }
     }
 
+    fun getPlayersBySearch() {
+        apiResponse.value = RequestState.Loading
+
+        viewModelScope.launch {
+            try {
+                val response = withContext(Dispatchers.IO) {
+                    repository.getPlayersBySearch(searchText = searchText.value)
+                }
+                apiResponse.value = RequestState.Success(response)
+
+                if(response.player != null) {
+                    players.value = response.player
+                }
+                Log.d("GetPlayersBySearch", response.toString())
+            }
+            catch (e: Exception) {
+                apiResponse.value = RequestState.Error(e)
+                Log.d("GetPlayersBySearch", e.toString())
+            }
+        }
+    }
+
     fun updatePlayer(): Boolean {
         apiResponse.value = RequestState.Loading
         viewModelScope.launch {
@@ -147,7 +175,6 @@ class PlayerViewModel @Inject constructor(
                         player = locPlayer
                     )
                     apiResponse.value = RequestState.Success(lastResponse.value)
-
                 }
             } catch (e: Exception) {
                 apiResponse.value = RequestState.Error(e)

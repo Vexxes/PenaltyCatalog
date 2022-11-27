@@ -5,6 +5,8 @@ import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.slideInHorizontally
 import androidx.compose.animation.slideOutHorizontally
+import androidx.compose.material3.Snackbar
+import androidx.compose.material3.Text
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -56,6 +58,7 @@ fun NavGraphBuilder.playerEditComposable(
                     Log.d("Action", "Save $it")
                     if(playerViewModel.updatePlayer()) {
                         navigateBack()
+
                         /*TODO Show snackbar after successfully updating / inserting player*/
                     }
                 }

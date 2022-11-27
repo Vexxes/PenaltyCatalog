@@ -36,5 +36,8 @@
     <string name="TwoMinutes">two minutes</string>
     <string name="RedCards">red cards</string>
 
+    <string name="Ascending">Ascending</string>
+    <string name="Descending">Descending</string>
+
 
 </resources>

@@ -18,6 +18,8 @@ import de.vexxes.penaltycatalog.R
 import de.vexxes.penaltycatalog.component.GeneralTopBar
 import de.vexxes.penaltycatalog.domain.model.Player
 import de.vexxes.penaltycatalog.util.SearchAppBarState
+import de.vexxes.penaltycatalog.util.SortOrder
+import de.vexxes.penaltycatalog.util.toValue
 import de.vexxes.penaltycatalog.viewmodels.PlayerViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -30,7 +32,7 @@ fun PlayerListScreen(
 
     val players by playerViewModel.players
     val searchAppBarState by playerViewModel.searchAppBarState
-    val searchTextState by playerViewModel.searchTextState
+    val searchTextState by playerViewModel.searchText
 
     LaunchedEffect(key1 = true) {
         playerViewModel.getAllPlayers()
@@ -48,16 +50,22 @@ fun PlayerListScreen(
                 onSearchBarClicked = {
                     /*TODO Create action for onSearchBarClicked*/
                 },
-                onFilterListClicked = {
-                    /*TODO Create action fpr onFilterListClicked*/
+                onAscendingClicked = {
+                    playerViewModel.sortOrder.value = SortOrder.ASCENDING
+                    playerViewModel.getAllPlayers()
+                },
+                onDescendingClicked = {
+                    playerViewModel.sortOrder.value = SortOrder.DESCENDING
+                    playerViewModel.getAllPlayers()
                 },
                 onTextChanged = {
-                    playerViewModel.searchTextState.value = it
-                    //TODO Immediate search when text is changing
+                    playerViewModel.searchText.value = it
+                    playerViewModel.getPlayersBySearch()
                 },
                 onCloseClicked = {
                     playerViewModel.searchAppBarState.value = SearchAppBarState.CLOSED
-                    playerViewModel.searchTextState.value = ""
+                    playerViewModel.searchText.value = ""
+                    playerViewModel.getAllPlayers()
                 }
             )
         },
@@ -145,7 +153,8 @@ fun PlayerListScreenPreview() {
                 searchTextState = "",
                 onDefaultSearchClicked = { },
                 onSearchBarClicked = { },
-                onFilterListClicked = { },
+                onAscendingClicked = { },
+                onDescendingClicked = { },
                 onTextChanged = { },
                 onCloseClicked = { }
             )

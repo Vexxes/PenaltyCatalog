@@ -5,6 +5,8 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.FilterList
 import androidx.compose.material.icons.filled.Search
+import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -12,6 +14,10 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
@@ -24,15 +30,18 @@ fun GeneralTopBar(
     searchTextState: String,
     onDefaultSearchClicked: () -> Unit,
     onSearchBarClicked: () -> Unit,
-    onFilterListClicked: () -> Unit,
+    onAscendingClicked: () -> Unit,
+    onDescendingClicked: () -> Unit,
     onTextChanged: (String) -> Unit,
     onCloseClicked: () -> Unit
 ) {
+
     when(searchAppBarState) {
         SearchAppBarState.CLOSED -> {
             DefaultTopBar(
                 onSearchClicked = onDefaultSearchClicked,
-                onFilterListClicked = onFilterListClicked
+                onAscendingClicked = onAscendingClicked,
+                onDescendingClicked = onDescendingClicked
             )
         }
 
@@ -51,32 +60,68 @@ fun GeneralTopBar(
 @Composable
 fun DefaultTopBar(
     onSearchClicked: () -> Unit,
-    onFilterListClicked: () -> Unit
+    onAscendingClicked: () -> Unit,
+    onDescendingClicked: () -> Unit
 ) {
     TopAppBar(
         title = { },
 
         actions = {
-            IconButton(
-                onClick = {
-                    onSearchClicked()
-                }) {
-                Icon(
-                    imageVector = Icons.Default.Search,
-                    contentDescription = stringResource(id = R.string.SearchTopBar)
-                )
-            }
-            IconButton(
-                onClick = {
-                    onFilterListClicked()
-                }) {
-                Icon(
-                    imageVector = Icons.Default.FilterList,
-                    contentDescription = stringResource(id = R.string.FilterListTopBar)
-                )
-            }
+            SearchIcon(onSearchClicked = onSearchClicked)
+            SortIcon(
+                onAscendingClicked = onAscendingClicked,
+                onDescendingClicked = onDescendingClicked
+            )
         }
     )
+}
+
+@Composable
+private fun SearchIcon(
+    onSearchClicked: () -> Unit
+) {
+    IconButton(
+        onClick = {
+            onSearchClicked()
+        }) {
+        Icon(
+            imageVector = Icons.Default.Search,
+            contentDescription = stringResource(id = R.string.SearchTopBar)
+        )
+    }
+}
+
+@Composable
+private fun SortIcon(
+    onAscendingClicked: () -> Unit,
+    onDescendingClicked: () -> Unit
+) {
+    var expanded by remember { mutableStateOf(false) }
+
+    SortDropDownMenu(
+        expanded = expanded,
+        onDismiss = {
+            expanded = false
+        },
+        onAscendingClicked = {
+            expanded = false
+            onAscendingClicked()
+        },
+        onDescendingClicked = {
+            expanded = false
+            onDescendingClicked()
+        }
+    )
+
+    IconButton(
+        onClick = {
+            expanded = true
+        }) {
+        Icon(
+            imageVector = Icons.Default.FilterList,
+            contentDescription = stringResource(id = R.string.FilterListTopBar)
+        )
+    }
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -121,6 +166,31 @@ fun SearchTopBar(
     )
 }
 
+@Composable
+private fun SortDropDownMenu(
+    expanded: Boolean,
+    onDismiss: () -> Unit,
+    onAscendingClicked: () -> Unit,
+    onDescendingClicked: () -> Unit
+) {
+    DropdownMenu(
+        expanded = expanded,
+        onDismissRequest = {
+            onDismiss()
+        }
+    ) {
+        DropdownMenuItem(
+            onClick = { onAscendingClicked() },
+            text = { Text(text = stringResource(id = R.string.Ascending)) }
+        )
+
+        DropdownMenuItem(
+            onClick = { onDescendingClicked() },
+            text = { Text(text = stringResource(id = R.string.Descending)) }
+        )
+    }
+}
+
 @Preview(showBackground = true)
 @Composable
 fun DefaultTopBarPreview(
@@ -128,7 +198,8 @@ fun DefaultTopBarPreview(
 ) {
     DefaultTopBar(
         onSearchClicked = { },
-        onFilterListClicked = { }
+        onAscendingClicked = { },
+        onDescendingClicked = { }
     )
 }
 
@@ -142,5 +213,16 @@ fun SearchTopBarPreview(
         onTextChanged = { },
         onCloseClicked = { },
         onSearchClicked = { }
+    )
+}
+
+@Preview(showBackground = true)
+@Composable
+fun SortDropDownMenuPreview() {
+    SortDropDownMenu(
+        expanded = true,
+        onDismiss = { },
+        onAscendingClicked = { },
+        onDescendingClicked = { }
     )
 }
