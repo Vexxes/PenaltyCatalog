@@ -9,9 +9,11 @@ import de.vexxes.penaltycatalog.data.remote.KtorApi
 import de.vexxes.penaltycatalog.util.BASE_URL
 import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.json.Json
+import okhttp3.Interceptor
 import okhttp3.JavaNetCookieJar
 import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.OkHttpClient
+import okhttp3.Response
 import retrofit2.Retrofit
 import java.net.CookieManager
 import java.util.concurrent.TimeUnit
@@ -32,6 +34,7 @@ object NetworkModule {
     @Singleton
     fun provideHttpClient(cookieManager: CookieManager): OkHttpClient {
         return OkHttpClient.Builder()
+            .addInterceptor(OAuthInterceptor("Bearer","Admin"))
             .readTimeout(15, TimeUnit.SECONDS)
             .connectTimeout(15, TimeUnit.SECONDS)
             .cookieJar(JavaNetCookieJar(cookieManager))
@@ -55,4 +58,16 @@ object NetworkModule {
         return retrofit.create(KtorApi::class.java)
     }
 
+}
+
+class OAuthInterceptor(
+    private val tokenType: String,
+    private val accessToken: String
+) : Interceptor {
+    override fun intercept(chain: Interceptor.Chain): Response {
+        var request = chain.request()
+        request = request.newBuilder().header("Authorization", "$tokenType $accessToken").build()
+
+        return chain.proceed(request)
+    }
 }
