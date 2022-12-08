@@ -1,6 +1,14 @@
-package de.vexxes.penaltycatalog.navigation.composables
+package de.vexxes.penaltycatalog.navigation.composables.player
 
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavType
 import androidx.navigation.compose.composable
@@ -28,17 +36,27 @@ fun NavGraphBuilder.playerDetailComposable(
                 playerViewModel.getPlayerById(playerId = playerId)
         }
 
-        PlayerDetailScreen(
-            playerViewModel = playerViewModel,
-            onBackClicked = {
+        var visible by remember {
+            mutableStateOf(false)
+        }
+        LaunchedEffect(key1 = true) { visible = true}
+
+        AnimatedVisibility(
+            visible = visible,
+            enter = fadeIn(animationSpec = tween(durationMillis = 500)),
+            exit = fadeOut(animationSpec = tween(durationMillis = 500))
+        ) {
+            PlayerDetailScreen(
+                playerViewModel = playerViewModel,
+                onBackClicked = {
                     navigateToPlayerList()
                 },
-            onDeleteClicked = {
-                /*TODO Show dialog before deleting player*/
-                playerViewModel.deletePlayer()
-                navigateToPlayerList()
-            },
-            onEditClicked = { onEditClicked(it) }
-        )
+                onDeleteClicked = {
+                    playerViewModel.deletePlayer()
+                    navigateToPlayerList()
+                },
+                onEditClicked = { onEditClicked(it) }
+            )
+        }
     }
 }

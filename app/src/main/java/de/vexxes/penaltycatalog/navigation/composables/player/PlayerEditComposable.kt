@@ -1,12 +1,9 @@
-package de.vexxes.penaltycatalog.navigation.composables
+package de.vexxes.penaltycatalog.navigation.composables.player
 
-import android.util.Log
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.slideInHorizontally
 import androidx.compose.animation.slideOutHorizontally
-import androidx.compose.material3.Snackbar
-import androidx.compose.material3.Text
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -16,6 +13,7 @@ import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavType
 import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
+import de.vexxes.penaltycatalog.domain.model.ApiResponse
 import de.vexxes.penaltycatalog.navigation.Screen
 import de.vexxes.penaltycatalog.presentation.screen.player.PlayerEditScreen
 import de.vexxes.penaltycatalog.viewmodels.PlayerViewModel
@@ -35,13 +33,16 @@ fun NavGraphBuilder.playerEditComposable(
         val playerId = navBackStackEntry.arguments?.getString("playerId")
         LaunchedEffect(key1 = playerId) {
             if(playerId == "-1")
-                playerViewModel.resetPlayer()
+                playerViewModel.resetPlayerUiState()
         }
 
         var visible by remember {
             mutableStateOf(false)
         }
-        LaunchedEffect(key1 = true) { visible = true}
+        LaunchedEffect(key1 = true) {
+            visible = true
+            playerViewModel.lastResponse.value = ApiResponse()
+        }
 
         AnimatedVisibility(
             visible = visible,
@@ -55,12 +56,8 @@ fun NavGraphBuilder.playerEditComposable(
                     navigateBack()
                 },
                 onSaveClicked = {
-                    Log.d("Action", "Save $it")
-                    if(playerViewModel.updatePlayer()) {
-                        navigateBack()
-
-                        /*TODO Show snackbar after successfully updating / inserting player*/
-                    }
+                    visible = false
+                    playerViewModel.updatePlayer()
                 }
             )
         }

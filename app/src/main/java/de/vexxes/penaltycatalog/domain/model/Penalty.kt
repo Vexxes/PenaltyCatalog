@@ -4,8 +4,10 @@ import kotlinx.serialization.Serializable
 
 @Serializable
 data class Penalty(
-    val id: Int,
-    val nameOfPenalty: String,
-    val nameOfPenaltyCategory: String,
-    val value: Float
+    val _id: String = "",
+    val name: String = "",
+    val nameOfCategory: String = "",
+    val description: String = "",
+    val isBeer: Boolean = false,
+    val value: Int = 0      // if value is beer, then the value is money and stored as cents. For correct visualisation is has to be divided by 100
 )

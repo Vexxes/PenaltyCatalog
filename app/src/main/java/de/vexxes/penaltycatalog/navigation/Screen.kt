@@ -54,4 +54,14 @@ sealed class Screen(val route: String, val argument: String = "") {
         argument = "/{playerId}"
     )
 
+    object PenaltyDetail: Screen(
+        route = "penalty_detail_screen",
+        argument = "/{penaltyId}"
+    )
+
+    object PenaltyEdit: Screen(
+        route = "penalty_edit_screen",
+        argument = "/{penaltyId}"
+    )
+
 }

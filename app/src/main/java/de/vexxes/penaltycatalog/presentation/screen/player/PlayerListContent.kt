@@ -1,6 +1,5 @@
-package de.vexxes.penaltycatalog.presentation.screen.playerList
+package de.vexxes.penaltycatalog.presentation.screen.player
 
-import android.util.Log
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -21,6 +20,7 @@ import androidx.compose.ui.geometry.CornerRadius
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import de.vexxes.penaltycatalog.component.EmptyContent
 import de.vexxes.penaltycatalog.domain.model.Player
 import de.vexxes.penaltycatalog.ui.theme.Red80
 import de.vexxes.penaltycatalog.ui.theme.Typography
@@ -31,18 +31,14 @@ fun PlayerListContent(
     players: List<Player>,
     navigateToPlayerDetailScreen: (playerId: String) -> Unit
 ) {
-    /* TODO What to do,  if request state is not successful
-    if (players is RequestState.Success) {
+    if(players.isNotEmpty()) {
         DisplayPlayers(
-            players = players.data,
+            players = players,
             navigateToPlayerDetailScreen = navigateToPlayerDetailScreen
         )
-    }*/
-    
-    DisplayPlayers(
-        players = players,
-        navigateToPlayerDetailScreen = navigateToPlayerDetailScreen
-    )
+    } else {
+        EmptyContent()
+    }
 }
 
 @Composable
@@ -51,15 +47,15 @@ private fun DisplayPlayers(
     navigateToPlayerDetailScreen: (playerId: String) -> Unit
 ) {
     LazyColumn(
+        modifier = Modifier.fillMaxSize(),
         verticalArrangement = Arrangement.spacedBy(8.dp)
     ) {
         items(
             items = players,
             key = { player ->
-                player._id
+                player.hashCode()
             }
         ) { player ->
-            Log.d("PlayerId", "Id: $player._id Size: ${players.size}")
             PlayerItem(
                 player = player,
                 navigateToPlayerDetailScreen = navigateToPlayerDetailScreen
@@ -83,6 +79,7 @@ private fun PlayerItem(
     ) {
         PlayerItemNumber(
             modifier = Modifier
+                .padding(4.dp)
                 .weight(0.1f)
                 .padding(2.dp)
                 .align(CenterVertically),
@@ -91,6 +88,7 @@ private fun PlayerItem(
 
         PlayerItemName(
             modifier = Modifier
+                .padding(4.dp)
                 .weight(0.5f)
                 .padding(2.dp)
                 .align(CenterVertically),
@@ -100,14 +98,16 @@ private fun PlayerItem(
 
         PlayerItemGoals(
             modifier = Modifier
-                .weight(0.1f)
                 .padding(4.dp)
+                .weight(0.1f)
                 .align(CenterVertically),
             text = player.goals.toString()
         )
 
         PlayerItemIngamePenalties(
-            modifier = Modifier.weight(0.1f),
+            modifier = Modifier
+                .padding(2.dp)
+                .weight(0.1f),
             yellowCards = player.yellowCards.toString(),
             twoMinutes = player.twoMinutes.toString(),
             redCards = player.redCards.toString()
@@ -118,25 +118,32 @@ private fun PlayerItem(
 @Composable
 @Preview(showBackground = true)
 private fun PlayerItemPreview() {
-    val player = Player(_id = "",
-        number = 5,
-        firstName = "Thomas",
-        lastName = "Schneider",
-        birthday = "21.06.1997",
-        street = "Bussardweg 3C",
-        zipcode = 49424,
-        city = "Goldenstedt",
-        playedGames = 4,
-        goals = 16,
-        yellowCards = 1,
-        twoMinutes = 1,
-        redCards = 0
-    )
-
     PlayerItem(
-        player = player,
+        player = Player.generateFaker(),
         navigateToPlayerDetailScreen = { }
     )
+}
+
+@Preview(showBackground = true)
+@Composable
+fun PlayerListContentPreview() {
+
+    val players = listOf(
+        Player.generateFaker(),
+        Player.generateFaker(),
+        Player.generateFaker()
+    )
+
+    PlayerListContent(
+        players = players,
+        navigateToPlayerDetailScreen = { }
+    )
+}
+
+@Preview(showBackground = true)
+@Composable
+fun EmptyContentPreview() {
+    EmptyContent()
 }
 
 @Composable

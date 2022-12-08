@@ -1,6 +1,7 @@
 package de.vexxes.penaltycatalog.data.remote
 
 import de.vexxes.penaltycatalog.domain.model.ApiResponse
+import de.vexxes.penaltycatalog.domain.model.Penalty
 import de.vexxes.penaltycatalog.domain.model.Player
 import retrofit2.http.Body
 import retrofit2.http.GET
@@ -25,4 +26,26 @@ interface KtorApi {
 
     @GET("get_players_by_search")
     suspend fun getPlayersBySearch(@Query("searchText") searchText: String): ApiResponse
+
+
+
+    @GET("get_categories")
+    suspend fun getAllCategories(): ApiResponse
+
+    @GET("get_penalties")
+    suspend fun getAllPenalties(): ApiResponse
+
+    @GET("get_penalty/{penaltyId}")
+    suspend fun getPenaltyById(@Path("penaltyId") penaltyId: String): ApiResponse
+
+    @GET("get_penalties_by_search")
+    suspend fun getPenaltiesBySearch(@Query("searchText") searchText: String): ApiResponse
+
+    @PUT("/update_penalty")
+    suspend fun updatePenalty(@Body penalty: Penalty): ApiResponse
+
+    @PUT("delete_penalty/{penaltyId}")
+    suspend fun deletePenalty(@Path("penaltyId") penaltyId: String): ApiResponse
+
+
 }

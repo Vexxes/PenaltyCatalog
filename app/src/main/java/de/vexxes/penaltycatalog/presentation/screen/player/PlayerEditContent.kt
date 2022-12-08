@@ -3,114 +3,82 @@ package de.vexxes.penaltycatalog.presentation.screen.player
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.outlined.Cancel
-import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
-import androidx.compose.material3.OutlinedTextField
-import androidx.compose.material3.Text
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.text.input.KeyboardType
-import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import de.vexxes.penaltycatalog.R
+import de.vexxes.penaltycatalog.component.InputOutlinedField
+import de.vexxes.penaltycatalog.domain.model.Player
+import de.vexxes.penaltycatalog.domain.uistate.PlayerUiState
 
 @Composable
 fun PlayerEditContent(
-    number: String,
+    playerUiState: PlayerUiState,
     onNumberChanged: (String) -> Unit,
-    firstName: String,
     onFirstNameChanged: (String) -> Unit,
-    lastName: String,
     onLastNameChanged: (String) -> Unit,
-    birthday: String,
     onBirthdayChanged: (String) -> Unit,
-    street: String,
     onStreetChanged: (String) -> Unit,
-    zipcode: String,
     onZipcodeChanged: (String) -> Unit,
-    city: String,
     onCityChanged: (String) -> Unit,
-    playedGames: String,
     onPlayedGamesChanged: (String) -> Unit,
-    goals: String,
     onGoalsChanged: (String) -> Unit,
-    yellowCards: String,
     onYellowCardsChanged: (String) -> Unit,
-    twoMinutes: String,
     onTwoMinutesChanged: (String) -> Unit,
-    redCards: String,
-    onRedCardsChanged: (String) -> Unit
+    onRedCardsChanged: (String) -> Unit,
 ) {
     Column(
-        modifier = Modifier.fillMaxSize()
+        modifier = Modifier
+            .fillMaxSize()
+            .verticalScroll(rememberScrollState())
     ) {
         PlayerNumber(
-            number = number,
-            onNumberChanged = onNumberChanged
+            number = playerUiState.number,
+            onNumberChanged = onNumberChanged,
+            numberError = playerUiState.numberError
         )
 
         PlayerName(
-            firstName = firstName,
+            firstName = playerUiState.firstName,
             onFirstNameChanged = onFirstNameChanged,
-            lastName = lastName,
-            onLastNameChanged = onLastNameChanged
+            lastName = playerUiState.lastName,
+            onLastNameChanged = onLastNameChanged,
+            firstNameError = playerUiState.firstNameError,
+            lastNameError = playerUiState.lastNameError
         )
 
         PlayerBirthday(
-            birthday = birthday,
+            birthday = playerUiState.birthday,
             onBirthdayChanged = onBirthdayChanged
         )
 
         PlayerAddress(
-            street = street,
+            street = playerUiState.street,
             onStreetChanged = onStreetChanged,
-            zipcode = zipcode,
+            zipcode = playerUiState.zipcode,
             onZipcodeChanged = onZipcodeChanged,
-            city = city,
+            city = playerUiState.city,
             onCityChanged = onCityChanged
         )
 
         PlayerStats(
-            playedGames = playedGames,
+            playedGames = playerUiState.playedGames,
             onPlayedGamesChanged = onPlayedGamesChanged,
-            goals = goals,
+            goals = playerUiState.goals,
             onGoalsChanged = onGoalsChanged,
-            yellowCards = yellowCards,
+            yellowCards = playerUiState.yellowCards,
             onYellowCardsChanged = onYellowCardsChanged,
-            twoMinutes = twoMinutes,
+            twoMinutes = playerUiState.twoMinutes,
             onTwoMinutesChanged = onTwoMinutesChanged,
-            redCards = redCards,
+            redCards = playerUiState.redCards,
             onRedCardsChanged = onRedCardsChanged
-        )
-    }
-}
-
-@Composable
-private fun CancelIcon(
-    onClick: () -> Unit
-) {
-    IconButton(
-        onClick = {
-            onClick()
-        }
-    ) {
-        Icon(
-            imageVector = Icons.Outlined.Cancel,
-            contentDescription = stringResource(id = R.string.Cancel)
         )
     }
 }
@@ -118,30 +86,37 @@ private fun CancelIcon(
 @Preview(showBackground = true)
 @Composable
 fun PlayerEditContentPreview() {
+
+    val player = Player.generateFaker()
+    val playerUiState = PlayerUiState(
+        id = player._id,
+        number = player.number.toString(),
+        firstName = player.firstName,
+        lastName = player.lastName,
+        birthday = player.birthday,
+        street = player.street,
+        zipcode = player.zipcode.toString(),
+        city = player.city,
+        playedGames = player.playedGames.toString(),
+        goals = player.goals.toString(),
+        yellowCards = player.yellowCards.toString(),
+        twoMinutes = player.twoMinutes.toString(),
+        redCards = player.redCards.toString(),
+    )
+
     PlayerEditContent(
-        number = "",
+        playerUiState = playerUiState,
         onNumberChanged = { },
-        firstName = "",
         onFirstNameChanged = { },
-        lastName = "",
         onLastNameChanged = { },
-        birthday = "",
         onBirthdayChanged = { },
-        street = "",
         onStreetChanged = { },
-        zipcode = "",
         onZipcodeChanged = { },
-        city = "",
         onCityChanged = { },
-        playedGames = "",
         onPlayedGamesChanged = { },
-        goals = "",
         onGoalsChanged = { },
-        yellowCards = "",
         onYellowCardsChanged = { },
-        twoMinutes = "",
         onTwoMinutesChanged = { },
-        redCards = "",
         onRedCardsChanged = { },
     )
 }
@@ -149,12 +124,17 @@ fun PlayerEditContentPreview() {
 @Composable
 private fun PlayerNumber(
     number: String,
-    onNumberChanged: (String) -> Unit
+    onNumberChanged: (String) -> Unit,
+    numberError: Boolean
 ) {
     InputOutlinedField(
+        modifier = Modifier
+            .padding(8.dp),
         text = number,
         onTextChanged = onNumberChanged,
+        isError = numberError,
         label = stringResource(id = R.string.Number),
+        required = true,
         keyboardOptions = KeyboardOptions.Default.copy(keyboardType = KeyboardType.Number)
     )
 }
@@ -164,18 +144,28 @@ private fun PlayerName(
     firstName: String,
     onFirstNameChanged: (String) -> Unit,
     lastName: String,
-    onLastNameChanged: (String) -> Unit
+    onLastNameChanged: (String) -> Unit,
+    firstNameError: Boolean,
+    lastNameError: Boolean
 ) {
     Column {
         InputOutlinedField(
+            modifier = Modifier
+                .padding(8.dp),
             text = firstName,
             onTextChanged = onFirstNameChanged,
-            label = stringResource(id = R.string.FirstName)
+            isError = firstNameError,
+            label = stringResource(id = R.string.FirstName),
+            required = true
         )
         InputOutlinedField(
+            modifier = Modifier
+                .padding(8.dp),
             text = lastName,
             onTextChanged = onLastNameChanged,
-            label = stringResource(id = R.string.LastName)
+            isError = lastNameError,
+            label = stringResource(id = R.string.LastName),
+            required = true
         )
     }
 }
@@ -186,6 +176,8 @@ private fun PlayerBirthday(
     onBirthdayChanged: (String) -> Unit
 ) {
     InputOutlinedField(
+        modifier = Modifier
+            .padding(8.dp),
         text = birthday,
         onTextChanged = onBirthdayChanged,
         label = stringResource(id = R.string.Birthday)
@@ -203,20 +195,26 @@ private fun PlayerAddress(
 ) {
     Column {
         InputOutlinedField(
+            modifier = Modifier
+                .padding(8.dp),
             text = street,
             onTextChanged = onStreetChanged,
             label = stringResource(id = R.string.Street)
         )
         Row {
             InputOutlinedField(
-                modifier = Modifier.weight(0.5f),
+                modifier = Modifier
+                    .padding(8.dp)
+                    .weight(0.5f),
                 text = zipcode,
                 onTextChanged = onZipcodeChanged,
                 label = stringResource(id = R.string.Zipcode),
                 keyboardOptions = KeyboardOptions.Default.copy(keyboardType = KeyboardType.Number)
             )
             InputOutlinedField(
-                modifier = Modifier.weight(0.5f),
+                modifier = Modifier
+                    .padding(8.dp)
+                    .weight(0.5f),
                 text = city,
                 onTextChanged = onCityChanged,
                 label = stringResource(id = R.string.City)
@@ -241,14 +239,18 @@ private fun PlayerStats(
     Column {
         Row {
             InputOutlinedField(
-                modifier = Modifier.weight(0.5f),
+                modifier = Modifier
+                    .padding(8.dp)
+                    .weight(0.5f),
                 text = playedGames,
                 onTextChanged = onPlayedGamesChanged,
                 label = stringResource(id = R.string.PlayedGames),
                 keyboardOptions = KeyboardOptions.Default.copy(keyboardType = KeyboardType.Number)
             )
             InputOutlinedField(
-                modifier = Modifier.weight(0.5f),
+                modifier = Modifier
+                    .padding(8.dp)
+                    .weight(0.5f),
                 text = goals,
                 onTextChanged = onGoalsChanged,
                 label = stringResource(id = R.string.Goals),
@@ -257,21 +259,27 @@ private fun PlayerStats(
         }
         Row {
             InputOutlinedField(
-                modifier = Modifier.weight(0.33f),
+                modifier = Modifier
+                    .padding(8.dp)
+                    .weight(0.33f),
                 text = yellowCards,
                 onTextChanged = onYellowCardsChanged,
                 label = stringResource(id = R.string.YellowCards),
                 keyboardOptions = KeyboardOptions.Default.copy(keyboardType = KeyboardType.Number)
             )
             InputOutlinedField(
-                modifier = Modifier.weight(0.33f),
+                modifier = Modifier
+                    .padding(8.dp)
+                    .weight(0.33f),
                 text = twoMinutes,
                 onTextChanged = onTwoMinutesChanged,
                 label = stringResource(id = R.string.TwoMinutes),
                 keyboardOptions = KeyboardOptions.Default.copy(keyboardType = KeyboardType.Number)
             )
             InputOutlinedField(
-                modifier = Modifier.weight(0.33f),
+                modifier = Modifier
+                    .padding(8.dp)
+                    .weight(0.33f),
                 text = redCards,
                 onTextChanged = onRedCardsChanged,
                 label = stringResource(id = R.string.RedCards),
@@ -279,43 +287,4 @@ private fun PlayerStats(
             )
         }
     }
-}
-
-
-@OptIn(ExperimentalMaterial3Api::class)
-@Composable
-private fun InputOutlinedField(
-    modifier: Modifier = Modifier,
-    text: String,
-    onTextChanged: (String) -> Unit,
-    label: String,
-    keyboardOptions: KeyboardOptions = KeyboardOptions(capitalization = KeyboardCapitalization.Words)
-) {
-    var focused by remember { mutableStateOf(false) }
-
-    OutlinedTextField(
-        modifier = modifier
-            .fillMaxWidth()
-            .padding(4.dp)
-            .onFocusChanged { focusState ->
-                focused = focusState.isFocused
-            },
-        value = text,
-        onValueChange = {
-            onTextChanged(it)
-        },
-        label = {
-            Text(text = label, softWrap = false, overflow = TextOverflow.Visible)
-        },
-        placeholder = {
-            Text(text = label, softWrap = false, overflow = TextOverflow.Visible)
-        },
-        trailingIcon = {
-            if (text.isNotBlank() && focused)
-                CancelIcon(
-                    onClick = { onTextChanged("") }
-                )
-        },
-        keyboardOptions = keyboardOptions
-    )
 }

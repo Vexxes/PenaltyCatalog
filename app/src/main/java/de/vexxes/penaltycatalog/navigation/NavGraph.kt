@@ -15,13 +15,15 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import de.vexxes.penaltycatalog.navigation.navGraph.mainScreensGraph
 import de.vexxes.penaltycatalog.ui.theme.Typography
+import de.vexxes.penaltycatalog.viewmodels.PenaltyViewModel
 import de.vexxes.penaltycatalog.viewmodels.PlayerViewModel
 
 @Composable
 fun SetupNavGraph(
     paddingValues: PaddingValues,
     navController: NavHostController,
-    playerViewModel: PlayerViewModel
+    playerViewModel: PlayerViewModel,
+    penaltyViewModel: PenaltyViewModel
 ) {
     NavHost(
         modifier = Modifier.padding(paddingValues),
@@ -31,7 +33,8 @@ fun SetupNavGraph(
     ) {
         mainScreensGraph(
             navController = navController,
-            playerViewModel = playerViewModel
+            playerViewModel = playerViewModel,
+            penaltyViewModel = penaltyViewModel
         )
     }
 }
@@ -40,7 +43,8 @@ fun SetupNavGraph(
 @Composable
 fun MainScreen(
     navController: NavHostController,
-    playerViewModel: PlayerViewModel
+    playerViewModel: PlayerViewModel,
+    penaltyViewModel: PenaltyViewModel
 ) {
     Scaffold(
         bottomBar = { BottomBar(navController = navController) }
@@ -48,7 +52,8 @@ fun MainScreen(
         SetupNavGraph(
             paddingValues = paddingValues,
             navController = navController,
-            playerViewModel = playerViewModel
+            playerViewModel = playerViewModel,
+            penaltyViewModel = penaltyViewModel
         )
     }
 }

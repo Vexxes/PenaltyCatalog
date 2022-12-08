@@ -8,6 +8,7 @@
     <string name="Events">Events</string>
 
     <string name="AddPlayer">Add Player</string>
+    <string name="AddPenalty">Add Penalty</string>
 
     <string name="SearchTopBar">Search</string>
     <string name="FilterListTopBar">Filter List</string>
@@ -18,6 +19,10 @@
     <string name="Delete">Delete</string>
     <string name="Save">Save</string>
     <string name="Cancel">Cancel</string>
+    <string name="Confirm">Confirm</string>
+    <string name="Ok">@android:string/ok</string>
+    <string name="CancelCapital">@android:string/cancel</string>
+    <string name="ConfirmCapital">CONFIRM</string>
 
     <string name="Number">player number</string>
     <string name="FirstName">first name</string>
@@ -38,6 +43,18 @@
 
     <string name="Ascending">Ascending</string>
     <string name="Descending">Descending</string>
-
+    <string name="EmptyContent">No Results :(</string>
+    <string name="Required">*required</string>
+    <string name="FieldEmpty">field can\'t be empty</string>
+    <string name="Category">Category</string>
+    <string name="PenaltyName">penalty name</string>
+    <string name="PenaltyDescription">penalty description</string>
+    <string name="Amount">Amount</string>
+    <string name="DeclaredPenalties">Declared penalties</string>
+    <string name="BeerOrMoney">Beer or money</string>
+    <string name="Beer">Beer</string>
+    <string name="Money">Money</string>
+    <string name="Description">Description</string>
+    <string name="Box">Box</string>
 
 </resources>
