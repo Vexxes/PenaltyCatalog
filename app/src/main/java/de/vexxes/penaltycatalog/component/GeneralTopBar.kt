@@ -14,25 +14,30 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.focus.focusRequester
+import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import de.vexxes.penaltycatalog.R
+import de.vexxes.penaltycatalog.domain.model.SortOrder
 import de.vexxes.penaltycatalog.util.SearchAppBarState
+import kotlinx.coroutines.delay
 
 @Composable
 fun GeneralTopBar(
     searchAppBarState: SearchAppBarState,
     searchTextState: String,
     onDefaultSearchClicked: () -> Unit,
-    onSearchBarClicked: () -> Unit,
-    onAscendingClicked: () -> Unit,
-    onDescendingClicked: () -> Unit,
-    onTextChanged: (String) -> Unit,
+    onSortClicked: (SortOrder) -> Unit,
+    onSearchTextChanged: (String) -> Unit,
     onCloseClicked: () -> Unit
 ) {
 
@@ -40,17 +45,15 @@ fun GeneralTopBar(
         SearchAppBarState.CLOSED -> {
             DefaultTopBar(
                 onSearchClicked = onDefaultSearchClicked,
-                onAscendingClicked = onAscendingClicked,
-                onDescendingClicked = onDescendingClicked
+                onSortClicked = onSortClicked
             )
         }
 
         else -> {
             SearchTopBar(
                 text = searchTextState,
-                onTextChanged = onTextChanged,
-                onCloseClicked = onCloseClicked,
-                onSearchClicked = onSearchBarClicked
+                onSearchTextChanged = onSearchTextChanged,
+                onCloseClicked = onCloseClicked
             )
         }
     }
@@ -60,18 +63,14 @@ fun GeneralTopBar(
 @Composable
 fun DefaultTopBar(
     onSearchClicked: () -> Unit,
-    onAscendingClicked: () -> Unit,
-    onDescendingClicked: () -> Unit
+    onSortClicked: (SortOrder) -> Unit
 ) {
     TopAppBar(
         title = { },
 
         actions = {
             SearchIcon(onSearchClicked = onSearchClicked)
-            SortIcon(
-                onAscendingClicked = onAscendingClicked,
-                onDescendingClicked = onDescendingClicked
-            )
+            SortIcon(onSortClicked = onSortClicked)
         }
     )
 }
@@ -93,8 +92,7 @@ private fun SearchIcon(
 
 @Composable
 private fun SortIcon(
-    onAscendingClicked: () -> Unit,
-    onDescendingClicked: () -> Unit
+    onSortClicked: (SortOrder) -> Unit
 ) {
     var expanded by remember { mutableStateOf(false) }
 
@@ -103,13 +101,9 @@ private fun SortIcon(
         onDismiss = {
             expanded = false
         },
-        onAscendingClicked = {
+        onSortClicked = { sortOrder ->
             expanded = false
-            onAscendingClicked()
-        },
-        onDescendingClicked = {
-            expanded = false
-            onDescendingClicked()
+            onSortClicked(sortOrder)
         }
     )
 
@@ -124,34 +118,29 @@ private fun SortIcon(
     }
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
+@OptIn(ExperimentalMaterial3Api::class, ExperimentalComposeUiApi::class)
 @Composable
 fun SearchTopBar(
     text: String,
-    onTextChanged: (String) -> Unit,
-    onCloseClicked: () -> Unit,
-    onSearchClicked: () -> Unit
+    onSearchTextChanged: (String) -> Unit,
+    onCloseClicked: () -> Unit
 ) {
+    val showKeyboard by remember { mutableStateOf(true) }
+    val focusRequester = remember { FocusRequester() }
+    val keyboard = LocalSoftwareKeyboardController.current
+
     TextField(
-        modifier = Modifier.fillMaxWidth(),
+        modifier = Modifier
+            .fillMaxWidth()
+            .focusRequester(focusRequester),
         value = text,
-        onValueChange = { onTextChanged(it) },
+        onValueChange = { onSearchTextChanged(it) },
         placeholder = {
             Text(
                 text = stringResource(id = R.string.SearchPlaceholder)
             )
         },
         singleLine = true,
-        leadingIcon = {
-            IconButton(
-                onClick = { onSearchClicked() }
-            ) {
-                Icon(
-                    imageVector = Icons.Default.Search,
-                    contentDescription = stringResource(id = R.string.SearchTopBar)
-                )
-            }
-        },
         trailingIcon = {
             IconButton(
                 onClick = { onCloseClicked() }
@@ -162,16 +151,23 @@ fun SearchTopBar(
                 )
             }
         }
-
     )
+
+    // LaunchedEffect prevents endless focus request
+    LaunchedEffect(focusRequester) {
+        if(showKeyboard) {
+            focusRequester.requestFocus()
+            delay(100)
+            keyboard?.show()
+        }
+    }
 }
 
 @Composable
 private fun SortDropDownMenu(
     expanded: Boolean,
     onDismiss: () -> Unit,
-    onAscendingClicked: () -> Unit,
-    onDescendingClicked: () -> Unit
+    onSortClicked: (SortOrder) -> Unit
 ) {
     DropdownMenu(
         expanded = expanded,
@@ -179,15 +175,13 @@ private fun SortDropDownMenu(
             onDismiss()
         }
     ) {
-        DropdownMenuItem(
-            onClick = { onAscendingClicked() },
-            text = { Text(text = stringResource(id = R.string.Ascending)) }
-        )
-
-        DropdownMenuItem(
-            onClick = { onDescendingClicked() },
-            text = { Text(text = stringResource(id = R.string.Descending)) }
-        )
+        SortOrder.values().forEach { sortOrder ->
+            DropdownMenuItem(
+                onClick = { onSortClicked(sortOrder) },
+                leadingIcon = { Icon(imageVector = sortOrder.imageVector, contentDescription = "")},
+                text = { Text(text = sortOrder.name) }
+            )
+        }
     }
 }
 
@@ -198,8 +192,7 @@ fun DefaultTopBarPreview(
 ) {
     DefaultTopBar(
         onSearchClicked = { },
-        onAscendingClicked = { },
-        onDescendingClicked = { }
+        onSortClicked = { }
     )
 }
 
@@ -210,9 +203,8 @@ fun SearchTopBarPreview(
 ) {
     SearchTopBar(
         text = "",
-        onTextChanged = { },
-        onCloseClicked = { },
-        onSearchClicked = { }
+        onSearchTextChanged = { },
+        onCloseClicked = { }
     )
 }
 
@@ -222,7 +214,6 @@ fun SortDropDownMenuPreview() {
     SortDropDownMenu(
         expanded = true,
         onDismiss = { },
-        onAscendingClicked = { },
-        onDescendingClicked = { }
+        onSortClicked = { }
     )
 }

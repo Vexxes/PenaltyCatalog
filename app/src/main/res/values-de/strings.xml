@@ -1,0 +1,60 @@
+<resources>
+    <string name="app_name">Strafenkatalog</string>
+
+    <string name="Penalty">Strafe</string>
+    <string name="Players">Spieler</string>
+    <string name="PenaltyHistory">Historie</string>
+    <string name="Cancellations">Abbruch</string>
+    <string name="Events">Events</string>
+
+    <string name="AddPlayer">Spieler hinzufünge</string>
+    <string name="AddPenalty">Strafe hinzufügen</string>
+
+    <string name="SearchTopBar">Suche</string>
+    <string name="FilterListTopBar">Liste filtern</string>
+    <string name="SearchPlaceholder">Suchen..</string>
+    <string name="CloseTopBar">Schließen</string>
+    <string name="BackArrow">Pfeil zurück</string>
+    <string name="Edit">Bearbeiten</string>
+    <string name="Delete">Löschen</string>
+    <string name="Save">Speichern</string>
+    <string name="Cancel">Abbruch</string>
+    <string name="Confirm">Bestätigen</string>
+    <string name="Ok">OK</string>
+    <string name="CancelCapital">ABBRUCH</string>
+    <string name="ConfirmCapital">BESTÄTIGEN</string>
+
+    <string name="Number">Spieler Nummer</string>
+    <string name="FirstName">Vorname</string>
+    <string name="LastName">Nachname</string>
+    <string name="Birthday">Geburtstag</string>
+    <string name="Street">Straße</string>
+    <string name="Zipcode">Postleitzahl</string>
+    <string name="City">Stadt</string>
+
+    <string name="Address">Adresse</string>
+    <string name="OpenPenalties">Offene Strafen</string>
+    <string name="PlayerStats">Spieler Statistik</string>
+    <string name="PlayedGames">Spiele gespielt</string>
+    <string name="Goals">Tore</string>
+    <string name="YellowCards">Gelbe Karten</string>
+    <string name="TwoMinutes">Zwei Minuten</string>
+    <string name="RedCards">Rote Karten</string>
+
+    <string name="Ascending">Aufsteigend</string>
+    <string name="Descending">Absteigend</string>
+    <string name="EmptyContent">Keine Ergebnisse :(</string>
+    <string name="Required">*benötigt</string>
+    <string name="FieldEmpty">Feld darf nicht leer sein</string>
+    <string name="Category">Kategorie</string>
+    <string name="PenaltyName">Strafen Name</string>
+    <string name="Amount">Betrag</string>
+    <string name="DeclaredPenalties">Ausgesprochene Strafen</string>
+    <string name="BeerOrMoney">Bier oder Geld</string>
+    <string name="Beer">Bier</string>
+    <string name="Money">Geld</string>
+    <string name="Description">Beschreibung</string>
+    <string name="Box">Kiste</string>
+    <string name="PenaltyDescription">Beschreibung</string>
+
+</resources>

@@ -21,6 +21,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import de.vexxes.penaltycatalog.R
 import de.vexxes.penaltycatalog.domain.model.Player
+import de.vexxes.penaltycatalog.domain.uistate.PlayerUiState
 import de.vexxes.penaltycatalog.ui.theme.Green40
 import de.vexxes.penaltycatalog.ui.theme.Red80
 import de.vexxes.penaltycatalog.ui.theme.Typography
@@ -30,17 +31,23 @@ import java.util.Locale
 
 @Composable
 fun PlayerDetailContent(
-    player: Player
+    playerUiState: PlayerUiState
 ) {
     Column(
         modifier = Modifier
             .fillMaxSize()
     ) {
-        RowHeader(number = player.number.toString(), firstName = player.firstName, lastName = player.lastName)
-        RowBirthday(birthday = player.birthday)
-        RowAddress(street = player.street, zipcode = player.zipcode.toString(), city = player.city)
+        RowHeader(number = playerUiState.number, firstName = playerUiState.firstName, lastName = playerUiState.lastName)
+        RowBirthday(birthday = playerUiState.birthday)
+        RowAddress(street = playerUiState.street, zipcode = playerUiState.zipcode, city = playerUiState.city)
         RowOpenPenalties(10f) /*TODO Insert real open penalties*/
-        PlayerStats(player = player)
+        PlayerStats(
+            playedGames = playerUiState.playedGames,
+            goals = playerUiState.goals,
+            yellowCards = playerUiState.yellowCards,
+            twoMinutes = playerUiState.twoMinutes,
+            redCards = playerUiState.redCards
+        )
     }
 }
 
@@ -48,28 +55,27 @@ fun PlayerDetailContent(
 @Composable
 fun PlayerDetailContentPreview() {
 
-    val player = Player(
-        _id = "63717e8314ab74703f0ab5cb",
-        number = 5,
-        firstName = "Thomas",
-        lastName = "Schneider",
-        street = "Bussardweg 3C",
-        birthday = "21.06.1997",
-        zipcode = 49424,
-        city = "Goldenstedt",
-        playedGames = 4,
-        goals = 16,
-        yellowCards = 1,
-        twoMinutes = 1,
-        redCards = 0
+    val player = Player.generateFaker()
+    val playerUiState = PlayerUiState(
+        id = player._id,
+        number = player.number.toString(),
+        firstName = player.firstName,
+        lastName = player.lastName,
+        birthday = player.birthday,
+        street = player.street,
+        zipcode = player.zipcode.toString(),
+        city = player.city,
+        playedGames = player.playedGames.toString(),
+        goals = player.goals.toString(),
+        yellowCards = player.yellowCards.toString(),
+        twoMinutes = player.twoMinutes.toString(),
+        redCards = player.redCards.toString(),
     )
 
     PlayerDetailContent(
-        player = player
+        playerUiState = playerUiState
     )
 }
-
-
 
 @Composable
 private fun TableColumn(
@@ -242,7 +248,11 @@ private fun RowOpenPenalties(
 
 @Composable
 private fun PlayerStats(
-    player: Player
+    playedGames: String,
+    goals: String,
+    yellowCards: String,
+    twoMinutes: String,
+    redCards: String
 ) {
     Text(
         modifier = Modifier
@@ -307,35 +317,35 @@ private fun PlayerStats(
         ) {
 
             TableColumn(
-                text = player.playedGames.toString(),
+                text = playedGames,
                 textAlign = TextAlign.Center,
                 paddingValues = PaddingValues(end = 8.dp, top = 8.dp),
                 showDivider = true
             )
 
             TableColumn(
-                text = player.goals.toString(),
+                text = goals,
                 textAlign = TextAlign.Center,
                 paddingValues = PaddingValues(end = 8.dp, top = 8.dp),
                 showDivider = true
             )
 
             TableColumn(
-                text = player.yellowCards.toString(),
+                text = yellowCards,
                 textAlign = TextAlign.Center,
                 paddingValues = PaddingValues(end = 8.dp, top = 8.dp),
                 showDivider = true
             )
 
             TableColumn(
-                text = player.twoMinutes.toString(),
+                text = twoMinutes,
                 textAlign = TextAlign.Center,
                 paddingValues = PaddingValues(end = 8.dp, top = 8.dp),
                 showDivider = true
             )
 
             TableColumn(
-                text = player.redCards.toString(),
+                text = redCards,
                 textAlign = TextAlign.Center,
                 paddingValues = PaddingValues(end = 8.dp, top = 8.dp),
                 showDivider = false
