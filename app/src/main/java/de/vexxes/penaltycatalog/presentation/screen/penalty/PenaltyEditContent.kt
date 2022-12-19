@@ -95,7 +95,7 @@ private fun CategoryExposedMenu(
             modifier = Modifier
                 .menuAnchor(),
             readOnly = true,
-            text = categoryList.first().name, /*TODO Show correct name of category*/
+            text = if (categoryList.isEmpty()) "noch keine Kategorie eingepflegt" else categoryList.first().name, /*TODO Show correct name of category*/
             onTextChanged = { },
             label = stringResource(id = R.string.Category),
             trailingIcon = {
