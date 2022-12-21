@@ -207,7 +207,7 @@ private fun PenaltyAmount(
         val format = NumberFormat.getCurrencyInstance()
         format.maximumFractionDigits = 2
         format.currency = Currency.getInstance("EUR")
-        text = format.format(value / 100) // value is stored as cents, divide by 100
+        text = format.format(value.toDouble() / 100) // value is stored as cents, divide by 100
     }
 
     Row(
