@@ -8,13 +8,13 @@ import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
 import de.vexxes.penaltycatalog.domain.model.ApiResponse
 import de.vexxes.penaltycatalog.domain.model.Player
-import de.vexxes.penaltycatalog.domain.model.SortOrder
 import de.vexxes.penaltycatalog.domain.model.toValue
 import de.vexxes.penaltycatalog.domain.repository.Repository
 import de.vexxes.penaltycatalog.domain.uievent.PlayerUiEvent
+import de.vexxes.penaltycatalog.domain.uievent.SearchUiEvent
 import de.vexxes.penaltycatalog.domain.uistate.PlayerUiState
+import de.vexxes.penaltycatalog.domain.uistate.SearchUiState
 import de.vexxes.penaltycatalog.util.RequestState
-import de.vexxes.penaltycatalog.util.SearchAppBarState
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -31,13 +31,7 @@ class PlayerViewModel @Inject constructor(
     var playerUiState: MutableState<PlayerUiState> = mutableStateOf(PlayerUiState())
         private set
 
-    var sortOrder: MutableState<SortOrder> = mutableStateOf(SortOrder.ASCENDING)
-        private set
-
-    var searchAppBarState: MutableState<SearchAppBarState> = mutableStateOf(SearchAppBarState.CLOSED)
-        private set
-
-    var searchText: MutableState<String> = mutableStateOf("")
+    var searchUiState: MutableState<SearchUiState> = mutableStateOf(SearchUiState())
         private set
 
     var apiResponse: MutableState<RequestState<ApiResponse>> = mutableStateOf(RequestState.Idle)
@@ -103,7 +97,7 @@ class PlayerViewModel @Inject constructor(
         viewModelScope.launch {
             try {
                 val response = withContext(Dispatchers.IO) {
-                    repository.getAllPlayers(sortOrder = sortOrder.value.toValue())
+                    repository.getAllPlayers(sortOrder = searchUiState.value.sortOrder.toValue())
                 }
 
                 apiResponse.value = RequestState.Success(response)
@@ -150,7 +144,7 @@ class PlayerViewModel @Inject constructor(
         viewModelScope.launch {
             try {
                 val response = withContext(Dispatchers.IO) {
-                    repository.getPlayersBySearch(searchText = searchText.value)
+                    repository.getPlayersBySearch(searchText = searchUiState.value.searchText)
                 }
                 apiResponse.value = RequestState.Success(response)
 
@@ -215,7 +209,7 @@ class PlayerViewModel @Inject constructor(
         playerUiState.value = PlayerUiState()
     }
 
-    fun onEvent(event: PlayerUiEvent) {
+    fun onPlayerUiEvent(event: PlayerUiEvent) {
         when(event) {
             is PlayerUiEvent.NumberChanged -> {
                 playerUiState.value = playerUiState.value.copy(
@@ -287,6 +281,30 @@ class PlayerViewModel @Inject constructor(
                 playerUiState.value = playerUiState.value.copy(
                     redCards = event.redCards
                 )
+            }
+        }
+    }
+
+    fun onSearchUiEvent(event: SearchUiEvent) {
+        when(event) {
+            is SearchUiEvent.SortOrderChanged -> {
+                searchUiState.value = searchUiState.value.copy(
+                    sortOrder = event.sortOrder
+                )
+                getAllPlayers()
+            }
+
+            is SearchUiEvent.SearchAppBarStateChanged -> {
+                searchUiState.value = searchUiState.value.copy(
+                    searchAppBarState = event.searchAppBarState
+                )
+            }
+
+            is SearchUiEvent.SearchTextChanged -> {
+                searchUiState.value = searchUiState.value.copy(
+                    searchText = event.searchText
+                )
+                getPlayersBySearch()
             }
         }
     }

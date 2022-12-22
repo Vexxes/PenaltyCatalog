@@ -34,7 +34,7 @@ fun InputOutlinedField(
     isError: Boolean = false,
     label: String,
     required: Boolean = false,
-    keyboardOptions: KeyboardOptions = KeyboardOptions(capitalization = KeyboardCapitalization.Words)
+    keyboardOptions: KeyboardOptions = KeyboardOptions(capitalization = KeyboardCapitalization.Sentences)
 ) {
     var focused by remember { mutableStateOf(false) }
 

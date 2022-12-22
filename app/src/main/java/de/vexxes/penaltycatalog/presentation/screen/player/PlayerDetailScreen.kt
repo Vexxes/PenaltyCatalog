@@ -4,15 +4,10 @@ import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Warning
-import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.Icon
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Snackbar
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -25,6 +20,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import de.vexxes.penaltycatalog.R
 import de.vexxes.penaltycatalog.component.BackDeleteEditTopBar
+import de.vexxes.penaltycatalog.component.DeleteAlertDialog
 import de.vexxes.penaltycatalog.domain.model.ApiResponse
 import de.vexxes.penaltycatalog.domain.model.Player
 import de.vexxes.penaltycatalog.domain.uistate.PlayerUiState
@@ -48,6 +44,8 @@ fun PlayerDetailScreen(
 
     if(showAlertDialog) {
         DeleteAlertDialog(
+            title = "Permanently delete?",
+            text = "Player will be deleted permanently and can't be restored",
             onDismissRequest = {
                 showAlertDialog = false
             },
@@ -139,33 +137,6 @@ fun PlayerDetailSnackbar(
     }
 }
 
-@Composable
-private fun DeleteAlertDialog(
-    onDismissRequest: () -> Unit,
-    onConfirmClicked: () -> Unit,
-    onDismissButton: () -> Unit
-) {
-    AlertDialog(
-        onDismissRequest = { onDismissRequest() },
-        confirmButton = {
-            TextButton(onClick = { onConfirmClicked() }) {
-                Text(text = stringResource(id = R.string.ConfirmCapital))
-            }
-        },
-        dismissButton = {
-            TextButton(onClick = { onDismissButton() }) {
-                Text(text = stringResource(id = R.string.CancelCapital))
-            }
-        },
-        icon = {
-            Icon(imageVector = Icons.Default.Warning, contentDescription = "")
-        },
-        /*TODO Text should be parameters, so the dialog would be reusable*/
-        title = { Text(text = "Permanently delete?") },
-        text = { Text(text = "Player will be deleted permanently and can't be restored") }
-    )
-}
-
 @Preview(showBackground = true)
 @Composable
 private fun PlayerDetailScreenPreview() {
@@ -193,15 +164,5 @@ private fun PlayerDetailScreenPreview() {
         onEditClicked = { },
         apiResponse = ApiResponse(),
         resetApiResponse = { }
-    )
-}
-
-@Preview(showBackground = true)
-@Composable
-private fun DeleteAlertDialogPreview() {
-    DeleteAlertDialog(
-        onDismissRequest = { },
-        onConfirmClicked = { },
-        onDismissButton = { }
     )
 }

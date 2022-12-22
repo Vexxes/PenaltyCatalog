@@ -45,15 +45,6 @@ sealed class ScreenNavigation(val route: String, var name: String, val iconSelec
 }
 
 sealed class Screen(val route: String, val argument: String = "") {
-    object PlayerDetail: Screen(
-        route = "player_detail_screen",
-        argument = "/{playerId}"
-    )
-    object PlayerEdit: Screen(
-        route = "player_edit_screen",
-        argument = "/{playerId}"
-    )
-
     object PenaltyDetail: Screen(
         route = "penalty_detail_screen",
         argument = "/{penaltyId}"
@@ -63,5 +54,21 @@ sealed class Screen(val route: String, val argument: String = "") {
         route = "penalty_edit_screen",
         argument = "/{penaltyId}"
     )
+    object PlayerDetail: Screen(
+        route = "player_detail_screen",
+        argument = "/{playerId}"
+    )
+    object PlayerEdit: Screen(
+        route = "player_edit_screen",
+        argument = "/{playerId}"
+    )
 
+    object PenaltyHistoryDetail: Screen(
+        route = "penaltyHistory_detail_screen",
+        argument = "/{penaltyHistoryId}"
+    )
+    object PenaltyHistoryEdit: Screen(
+        route = "penaltyHistory_edit_screen",
+        argument = "/{penaltyHistoryId}"
+    )
 }

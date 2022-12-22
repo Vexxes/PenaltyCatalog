@@ -145,7 +145,9 @@ private fun RowBirthday(
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(top = 8.dp)
+            .height(40.dp)
+            .padding(top = 8.dp),
+        verticalAlignment = Alignment.CenterVertically
     ) {
         Text(
             modifier = Modifier
@@ -218,12 +220,13 @@ private fun RowOpenPenalties(
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(top = 8.dp)
+            .height(40.dp)
+            .padding(top = 8.dp),
+        verticalAlignment = Alignment.CenterVertically
     ) {
         Text(
             modifier = Modifier
-                .padding(start = 8.dp)
-                .align(Alignment.CenterVertically),
+                .padding(start = 8.dp),
             text = stringResource(id = R.string.OpenPenalties),
             style = Typography.bodyLarge
         )

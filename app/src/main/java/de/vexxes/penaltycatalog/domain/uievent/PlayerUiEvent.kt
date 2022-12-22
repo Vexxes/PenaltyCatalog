@@ -1,7 +1,6 @@
 package de.vexxes.penaltycatalog.domain.uievent
 
 sealed class PlayerUiEvent {
-//    data class IdChanged(val id: String): PlayerUiEvent()
     data class NumberChanged(val number: String): PlayerUiEvent()
     data class FirstNameChanged(val firstName: String): PlayerUiEvent()
     data class LastNameChanged(val lastName: String): PlayerUiEvent()

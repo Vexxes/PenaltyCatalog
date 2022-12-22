@@ -12,19 +12,18 @@ import androidx.compose.ui.tooling.preview.Preview
 import de.vexxes.penaltycatalog.component.BackSaveTopBar
 import de.vexxes.penaltycatalog.domain.model.PenaltyCategory
 import de.vexxes.penaltycatalog.domain.model.PenaltyType
+import de.vexxes.penaltycatalog.domain.uievent.PenaltyUiEvent
+import de.vexxes.penaltycatalog.domain.uistate.PenaltyUiState
 import de.vexxes.penaltycatalog.viewmodels.PenaltyViewModel
 
 @Composable
 fun PenaltyEditScreen(
     penaltyViewModel: PenaltyViewModel,
-    onBackClicked: () -> Unit
+    onBackClicked: () -> Unit,
+    onSaveClicked: (String?) -> Unit
 ) {
     val categoryList by penaltyViewModel.categories
-    val id by penaltyViewModel.id
-    val penaltyName by penaltyViewModel.penaltyName
-    val penaltyDescription by penaltyViewModel.penaltyDescription
-    val isBeer by penaltyViewModel.isBeer
-    val penaltyAmount by penaltyViewModel.penaltyAmount
+    val penaltyUiState by penaltyViewModel.penaltyUiState
 
     BackHandler {
         onBackClicked()
@@ -32,46 +31,32 @@ fun PenaltyEditScreen(
 
     /*TODO Replace with correct values*/
     PenaltyEditScaffold(
-        id = id,
+        penaltyUiState = penaltyUiState,
         categoryList = categoryList,
-        penaltyName = penaltyName,
-        penaltyDescription = penaltyDescription,
-        isBeer = isBeer,
-        penaltyAmount = penaltyAmount,
-        onCategoryChanged = {
-            penaltyViewModel.penaltyCategoryName.value = it
-        },
-        onPenaltyNameChanged = {
-            penaltyViewModel.penaltyName.value = it
-        },
-        onPenaltyDescriptionChanged = {
-            penaltyViewModel.penaltyDescription.value = it
-        },
+        onCategoryChanged = { penaltyViewModel.onPenaltyUiEvent(PenaltyUiEvent.CategoryNameChanged(it)) },
+        onPenaltyNameChanged = { penaltyViewModel.onPenaltyUiEvent(PenaltyUiEvent.NameChanged(it)) },
+        onPenaltyDescriptionChanged = { penaltyViewModel.onPenaltyUiEvent(PenaltyUiEvent.DescriptionChanged(it)) },
         onPenaltyAmountChanged = {
-            penaltyViewModel.penaltyAmount.value = it
+                penaltyViewModel.onPenaltyUiEvent(PenaltyUiEvent.ValueChanged(it))
         },
         onPenaltyTypeChanged = { penaltyType ->
             when(penaltyType) {
                 PenaltyType.BEER ->
-                    penaltyViewModel.isBeer.value = true
+                    penaltyViewModel.onPenaltyUiEvent(PenaltyUiEvent.IsBeerChanged(true))
                 PenaltyType.MONEY ->
-                    penaltyViewModel.isBeer.value = false
+                    penaltyViewModel.onPenaltyUiEvent(PenaltyUiEvent.IsBeerChanged(false))
             }
         },
         onBackClicked = onBackClicked,
-        onSaveClicked = { penaltyViewModel.updatePenalty() }
+        onSaveClicked = onSaveClicked
     )
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun PenaltyEditScaffold(
-    id: String,
+    penaltyUiState: PenaltyUiState,
     categoryList: List<PenaltyCategory>,
-    penaltyName: String,
-    penaltyDescription: String,
-    isBeer: Boolean,
-    penaltyAmount: String,
     onCategoryChanged: (String) -> Unit,
     onPenaltyNameChanged: (String) -> Unit,
     onPenaltyDescriptionChanged: (String) -> Unit,
@@ -84,7 +69,7 @@ private fun PenaltyEditScaffold(
         topBar = {
             BackSaveTopBar(
                 onBackClicked = onBackClicked,
-                onSaveClicked = { onSaveClicked(id) }
+                onSaveClicked = { onSaveClicked(penaltyUiState.id) }
             )
         },
 
@@ -93,11 +78,8 @@ private fun PenaltyEditScaffold(
                 modifier = Modifier.padding(paddingValues)
             ) {
                 PenaltyEditContent(
+                    penaltyUiState = penaltyUiState,
                     categoryList = categoryList,
-                    penaltyName = penaltyName,
-                    penaltyAmount = penaltyAmount,
-                    penaltyDescription = penaltyDescription,
-                    isBeer = isBeer,
                     onCategoryChanged = onCategoryChanged,
                     onPenaltyNameChanged = onPenaltyNameChanged,
                     onPenaltyDescriptionChanged = onPenaltyDescriptionChanged,
@@ -119,13 +101,16 @@ private fun PenaltyEditScreenPreview() {
         PenaltyCategory(name = "Sonstiges")
     )
 
-    PenaltyEditScaffold(
-        id = "",
-        categoryList = categoryList,
-        penaltyName = "",
-        penaltyDescription = "",
+    val penaltyUiState = PenaltyUiState(
+        name = "Getränke zur Besprechung",
+        description = "Mitzubringen in alphabetischer Reihenfolge nach dem Freitagstraining",
         isBeer = true,
-        penaltyAmount = "",
+        value = "1"
+    )
+
+    PenaltyEditScaffold(
+        penaltyUiState = penaltyUiState,
+        categoryList = categoryList,
         onCategoryChanged = { },
         onPenaltyNameChanged = { },
         onPenaltyDescriptionChanged = { },

@@ -4,6 +4,7 @@ import dagger.hilt.android.scopes.ViewModelScoped
 import de.vexxes.penaltycatalog.data.remote.KtorApi
 import de.vexxes.penaltycatalog.domain.model.ApiResponse
 import de.vexxes.penaltycatalog.domain.model.Penalty
+import de.vexxes.penaltycatalog.domain.model.PenaltyHistory
 import de.vexxes.penaltycatalog.domain.model.Player
 import de.vexxes.penaltycatalog.domain.repository.Repository
 import javax.inject.Inject
@@ -99,6 +100,46 @@ class RepositoryImpl @Inject constructor(
     override suspend fun deletePenalty(penaltyId: String): ApiResponse {
         return try {
             ktorApi.deletePenalty(penaltyId = penaltyId)
+        } catch (e: Exception) {
+            ApiResponse(success = false, error = e)
+        }
+    }
+
+    override suspend fun getAllPenaltyHistory(): ApiResponse {
+        return try {
+            ktorApi.getAllPenaltyHistory()
+        } catch (e: Exception) {
+            ApiResponse(success = false, error = e)
+        }
+    }
+
+    override suspend fun getPenaltyHistoryById(penaltyHistoryId: String): ApiResponse {
+        return try {
+            ktorApi.getPenaltyHistoryById(penaltyHistoryId = penaltyHistoryId)
+        } catch (e: Exception) {
+            ApiResponse(success = false, error = e)
+        }
+    }
+
+    override suspend fun getPenaltyHistoryBySearch(searchText: String): ApiResponse {
+        return try {
+            ktorApi.getPenaltyHistoryBySearch(searchText = searchText)
+        } catch (e: Exception) {
+            ApiResponse(success = false, error = e)
+        }
+    }
+
+    override suspend fun updatePenaltyHistory(penaltyHistory: PenaltyHistory): ApiResponse {
+        return try {
+            ktorApi.updatePenaltyHistory(penaltyHistory = penaltyHistory)
+        } catch (e: Exception) {
+            ApiResponse(success = false, error = e)
+        }
+    }
+
+    override suspend fun deletePenaltyHistory(penaltyHistoryId: String): ApiResponse {
+        return try {
+            ktorApi.deletePenaltyHistory(penaltyHistoryId = penaltyHistoryId)
         } catch (e: Exception) {
             ApiResponse(success = false, error = e)
         }

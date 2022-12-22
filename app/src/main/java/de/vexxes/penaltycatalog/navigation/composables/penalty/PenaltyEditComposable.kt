@@ -13,6 +13,7 @@ import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavType
 import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
+import de.vexxes.penaltycatalog.domain.model.ApiResponse
 import de.vexxes.penaltycatalog.navigation.Screen
 import de.vexxes.penaltycatalog.presentation.screen.penalty.PenaltyEditScreen
 import de.vexxes.penaltycatalog.viewmodels.PenaltyViewModel
@@ -31,14 +32,17 @@ fun NavGraphBuilder.penaltyEditComposable(
         // Get penaltyId from argument
         val penaltyId = navBackStackEntry.arguments?.getString("penaltyId")
         LaunchedEffect(key1 = penaltyId) {
-            if(penaltyId == "-1")
+            if (penaltyId == "-1")
                 penaltyViewModel.resetPenalty()
         }
 
         var visible by remember {
             mutableStateOf(false)
         }
-        LaunchedEffect(key1 = true) { visible = true}
+        LaunchedEffect(key1 = true) {
+            visible = true
+            penaltyViewModel.lastResponse.value = ApiResponse()
+        }
 
         AnimatedVisibility(
             visible = visible,
@@ -49,6 +53,11 @@ fun NavGraphBuilder.penaltyEditComposable(
                 penaltyViewModel = penaltyViewModel,
                 onBackClicked = {
                     visible = false
+                    navigateBack()
+                },
+                onSaveClicked = {
+                    visible = false
+                    penaltyViewModel.updatePenalty()
                     navigateBack()
                 }
             )

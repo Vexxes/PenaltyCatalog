@@ -28,6 +28,7 @@ import de.vexxes.penaltycatalog.component.GeneralTopBar
 import de.vexxes.penaltycatalog.domain.model.ApiResponse
 import de.vexxes.penaltycatalog.domain.model.Penalty
 import de.vexxes.penaltycatalog.domain.model.SortOrder
+import de.vexxes.penaltycatalog.domain.uievent.SearchUiEvent
 import de.vexxes.penaltycatalog.util.RequestState
 import de.vexxes.penaltycatalog.util.SearchAppBarState
 import de.vexxes.penaltycatalog.viewmodels.PenaltyViewModel
@@ -40,11 +41,9 @@ fun PenaltyListScreen(
     navigateToPenaltyDetailScreen: (penaltyId: String) -> Unit,
     navigateToPenaltyEditScreen: (penaltyId: String) -> Unit
 ) {
-
     val penalties by penaltyViewModel.penalties
     val apiResponse by penaltyViewModel.lastResponse
-    val searchAppBarState by penaltyViewModel.searchAppBarState
-    val searchText by penaltyViewModel.searchText
+    val searchUiState by penaltyViewModel.searchUiState
 
     val refreshPenalties = { penaltyViewModel.getAllPenalties() }
     val refreshing = penaltyViewModel.apiResponse.value is RequestState.Loading
@@ -54,27 +53,16 @@ fun PenaltyListScreen(
         refreshPenalties()
     }
 
-    Box(modifier = Modifier
-        .pullRefresh(pullRefreshState))
-    {
+    Box(modifier = Modifier.pullRefresh(pullRefreshState)) {
         PenaltyListScaffold(
-            searchAppBarState = searchAppBarState,
-            searchText = searchText,
-            onSearchTextChanged = {
-                penaltyViewModel.searchText.value = it
-                penaltyViewModel.getPenaltiesBySearch()
-            },
-            onDefaultSearchClicked = {
-                penaltyViewModel.searchAppBarState.value = SearchAppBarState.OPENED
-            },
-            onSortClicked = { /*sortOrder ->
-                playerViewModel.sortOrder.value = sortOrder
-                playerViewModel.getAllPlayers()*/
-            },
+            searchAppBarState = searchUiState.searchAppBarState,
+            searchText = searchUiState.searchText,
+            onSearchTextChanged = { penaltyViewModel.onSearchUiEvent(SearchUiEvent.SearchTextChanged(it)) },
+            onDefaultSearchClicked = { penaltyViewModel.onSearchUiEvent(SearchUiEvent.SearchAppBarStateChanged(SearchAppBarState.OPENED)) },
+            onSortClicked = { },
             onCloseClicked = {
-                penaltyViewModel.searchAppBarState.value = SearchAppBarState.CLOSED
-                penaltyViewModel.searchText.value = ""
-                penaltyViewModel.getAllPenalties()
+                penaltyViewModel.onSearchUiEvent(SearchUiEvent.SearchAppBarStateChanged(SearchAppBarState.CLOSED))
+                penaltyViewModel.onSearchUiEvent(SearchUiEvent.SearchTextChanged(""))
             },
             penalties = penalties,
             apiResponse = apiResponse,
@@ -83,9 +71,7 @@ fun PenaltyListScreen(
             navigateToPenaltyEditScreen = navigateToPenaltyEditScreen
         )
 
-        PullRefreshIndicator(refreshing = refreshing, state = pullRefreshState, modifier = Modifier.align(
-            Alignment.TopCenter)
-        )
+        PullRefreshIndicator(refreshing = refreshing, state = pullRefreshState, modifier = Modifier.align(Alignment.TopCenter))
     }
 }
 
@@ -117,9 +103,7 @@ fun PenaltyListScaffold(
         },
 
         content = {
-            Box(
-                modifier = Modifier.padding(it)
-            ) {
+            Box(modifier = Modifier.padding(it)) {
                 PenaltyListContent(
                     penalties = penalties,
                     navigateToPenaltyDetailScreen = navigateToPenaltyDetailScreen
@@ -128,7 +112,7 @@ fun PenaltyListScaffold(
         },
 
         floatingActionButton = {
-            PenaltyFab(navigateToPenaltyDetailScreen = navigateToPenaltyEditScreen)
+            PenaltyFab(navigateToPenaltyEditScreen = navigateToPenaltyEditScreen)
         },
 
         snackbarHost = {
@@ -142,11 +126,11 @@ fun PenaltyListScaffold(
 
 @Composable
 fun PenaltyFab(
-    navigateToPenaltyDetailScreen: (playerId: String) -> Unit
+    navigateToPenaltyEditScreen: (String) -> Unit
 ) {
     FloatingActionButton(
         onClick = {
-            navigateToPenaltyDetailScreen("-1")
+            navigateToPenaltyEditScreen("-1")
         }) {
         Icon(
             imageVector = Icons.Default.Add,
@@ -188,12 +172,12 @@ fun PenaltyListSnackbar(
 
 @Preview(showBackground = true)
 @Composable
-fun PenaltyListScreenPreview() {
+private fun PenaltyListScreenPreview() {
     val penalties = listOf(
         Penalty(
             _id = "",
             name = "Monatsbeitrag",
-            nameOfCategory = "Monatsbeitrag",
+            categoryName = "Monatsbeitrag",
             description = "",
             isBeer = false,
             value = 500
@@ -201,7 +185,7 @@ fun PenaltyListScreenPreview() {
         Penalty(
             _id = "",
             name = "Verspätete Zahlung des Monatsbeitrag",
-            nameOfCategory = "Monatsbeitrag",
+            categoryName = "Monatsbeitrag",
             description = "zzgl. pro Monat",
             isBeer = false,
             value = 500
@@ -209,7 +193,7 @@ fun PenaltyListScreenPreview() {
         Penalty(
             _id = "",
             name = "Getränke zur Besprechung",
-            nameOfCategory = "Sonstiges",
+            categoryName = "Sonstiges",
             description = "Mitzubringen in alphabetischer Reihenfolge nach dem Freitagstraining",
             isBeer = true,
             value = 1
@@ -235,6 +219,6 @@ fun PenaltyListScreenPreview() {
 @Composable
 fun PenaltyFabPreview() {
     PenaltyFab(
-        navigateToPenaltyDetailScreen = { }
+        navigateToPenaltyEditScreen = { }
     )
 }

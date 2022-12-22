@@ -91,7 +91,7 @@ private fun PenaltyItem(
             )
 
             PenaltyNameOfCategory(
-                text = penalty.nameOfCategory
+                text = penalty.categoryName
             )
         }
 
@@ -111,7 +111,7 @@ private fun PlayerItemPreview() {
     val penalty = Penalty(
         _id = "63717e8314ab74703f0ab5cb",
         name = "Getränke zur Besprechung",
-        nameOfCategory = "Sonstiges",
+        categoryName = "Sonstiges",
         description = "Mitzubringen in alphabetischer Reihenfolge nach dem Freitagstraining",
         isBeer = true,
         value = 1
@@ -130,7 +130,7 @@ fun PenaltyListContentPreview() {
         Penalty(
             _id = "",
             name = "Monatsbeitrag",
-            nameOfCategory = "Monatsbeitrag",
+            categoryName = "Monatsbeitrag",
             description = "",
             isBeer = false,
             value = 500
@@ -138,7 +138,7 @@ fun PenaltyListContentPreview() {
         Penalty(
             _id = "",
             name = "Verspätete Zahlung des Monatsbeitrag",
-            nameOfCategory = "Monatsbeitrag",
+            categoryName = "Monatsbeitrag",
             description = "zzgl. pro Monat",
             isBeer = false,
             value = 500
@@ -146,7 +146,7 @@ fun PenaltyListContentPreview() {
         Penalty(
             _id = "",
             name = "Getränke zur Besprechung",
-            nameOfCategory = "Sonstiges",
+            categoryName = "Sonstiges",
             description = "Mitzubringen in alphabetischer Reihenfolge nach dem Freitagstraining",
             isBeer = true,
             value = 1

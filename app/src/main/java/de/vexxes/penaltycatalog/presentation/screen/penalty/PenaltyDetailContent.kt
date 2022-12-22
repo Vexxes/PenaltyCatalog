@@ -14,23 +14,23 @@ import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import de.vexxes.penaltycatalog.R
-import de.vexxes.penaltycatalog.domain.model.Penalty
+import de.vexxes.penaltycatalog.domain.uistate.PenaltyUiState
 import de.vexxes.penaltycatalog.ui.theme.Typography
 import java.text.NumberFormat
 import java.util.Currency
 
 @Composable
 fun PenaltyDetailContent(
-    penalty: Penalty
+    penaltyUiState: PenaltyUiState
 ) {
     Column(
         modifier = Modifier
             .fillMaxSize()
     ) {
-        PenaltyHeader(text = penalty.name)
-        PenaltyCategoryHeader(text = penalty.nameOfCategory)
-        if(penalty.description.isNotEmpty()) { PenaltyDescription(text = penalty.description) }
-        PenaltyAmount(value = penalty.value, isBeer = penalty.isBeer)
+        PenaltyHeader(text = penaltyUiState.name)
+        PenaltyCategoryHeader(text = penaltyUiState.categoryName)
+        if(penaltyUiState.description.isNotEmpty()) { PenaltyDescription(text = penaltyUiState.description) }
+        PenaltyAmount(value = penaltyUiState.value.toInt(), isBeer = penaltyUiState.isBeer)
         DeclaredPenalties()
     }
 }
@@ -141,17 +141,17 @@ private fun DeclaredPenalties() {
 @Composable
 private fun PenaltyDetailContentMoneyPreview() {
 
-    val penalty = Penalty(
-        _id = "63717e8314ab74703f0ab5cb",
+    val penaltyUiState = PenaltyUiState(
+        id = "63717e8314ab74703f0ab5cb",
         name = "Monatsbeitrag",
-        nameOfCategory = "Monatsbeitrag",
+        categoryName = "Monatsbeitrag",
         description = "",
         isBeer = false,
-        value = 500
+        value = "500"
     )
 
     PenaltyDetailContent(
-        penalty = penalty
+        penaltyUiState = penaltyUiState
     )
 }
 
@@ -159,16 +159,16 @@ private fun PenaltyDetailContentMoneyPreview() {
 @Composable
 private fun PenaltyDetailContentBeerPreview() {
 
-    val penalty = Penalty(
-        _id = "63717e8314ab74703f0ab5cb",
+    val penaltyUiState = PenaltyUiState(
+        id = "63717e8314ab74703f0ab5cb",
         name = "Getränke zur Besprechung",
-        nameOfCategory = "Sonstiges",
-        description = "Mitzubringen in alphabetischer Reihenfolge nach dem Freitagstraining",
+        categoryName = "Sonstiges",
+        description = "",
         isBeer = true,
-        value = 1
+        value = "1"
     )
 
     PenaltyDetailContent(
-        penalty = penalty
+        penaltyUiState = penaltyUiState
     )
 }

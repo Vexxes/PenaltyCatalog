@@ -47,6 +47,8 @@
     <string name="Required">*required</string>
     <string name="FieldEmpty">field can\'t be empty</string>
     <string name="Category">Category</string>
+    <string name="Player">Player</string>
+    <string name="DateOfPenalty">Date of penalty</string>
     <string name="PenaltyName">penalty name</string>
     <string name="PenaltyDescription">penalty description</string>
     <string name="Amount">Amount</string>
@@ -56,5 +58,7 @@
     <string name="Money">Money</string>
     <string name="Description">Description</string>
     <string name="Box">Box</string>
+    <string name="Paid">Paid</string>
+    <string name="NotPaid">Not Paid</string>
 
 </resources>

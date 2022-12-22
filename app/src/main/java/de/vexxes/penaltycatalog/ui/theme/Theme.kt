@@ -64,6 +64,19 @@ val LightColorScheme = lightColorScheme(
     outline = NeutralVariant50,
 )
 
+val DarkColorSegButtons = darkColorSchemeSegButtons()
+val LightColorSegButtons = lightColorSchemeSegButtons()
+
+@Composable
+fun colorSchemeSegButtons(): ColorSegmentedButtons {
+    val darkTheme = isSystemInDarkTheme()
+
+    return when {
+        darkTheme -> DarkColorSegButtons
+        else -> LightColorSegButtons
+    }
+}
+
 @Composable
 fun PenaltyCatalogTheme(
     darkTheme: Boolean = isSystemInDarkTheme(),
@@ -79,13 +92,6 @@ fun PenaltyCatalogTheme(
         darkTheme -> DarkColorScheme
         else -> LightColorScheme
     }
-/*    val view = LocalView.current
-    if (!view.isInEditMode) {
-        SideEffect {
-            (view.context as Activity).window.statusBarColor = colorScheme.primary.toArgb()
-            ViewCompat.getWindowInsetsController(view)?.isAppearanceLightStatusBars = darkTheme
-        }
-    }*/
 
     MaterialTheme(
         colorScheme = colorScheme,

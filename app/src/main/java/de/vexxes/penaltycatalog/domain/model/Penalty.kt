@@ -6,8 +6,9 @@ import kotlinx.serialization.Serializable
 data class Penalty(
     val _id: String = "",
     val name: String = "",
-    val nameOfCategory: String = "",
+    val categoryName: String = "",
     val description: String = "",
     val isBeer: Boolean = false,
-    val value: Int = 0      // if value is beer, then the value is money and stored as cents. For correct visualisation is has to be divided by 100
+    val value: Int = 0,
+    val index: Int = 0
 )

@@ -28,6 +28,7 @@ import de.vexxes.penaltycatalog.component.GeneralTopBar
 import de.vexxes.penaltycatalog.domain.model.ApiResponse
 import de.vexxes.penaltycatalog.domain.model.Player
 import de.vexxes.penaltycatalog.domain.model.SortOrder
+import de.vexxes.penaltycatalog.domain.uievent.SearchUiEvent
 import de.vexxes.penaltycatalog.util.RequestState
 import de.vexxes.penaltycatalog.util.SearchAppBarState
 import de.vexxes.penaltycatalog.viewmodels.PlayerViewModel
@@ -40,11 +41,9 @@ fun PlayerListScreen(
     navigateToPlayerEditScreen: (playerId: String) -> Unit,
     playerViewModel: PlayerViewModel
 ) {
-
     val players by playerViewModel.players
     val apiResponse by playerViewModel.lastResponse
-    val searchAppBarState by playerViewModel.searchAppBarState
-    val searchText by playerViewModel.searchText
+    val searchUiState by playerViewModel.searchUiState
 
     val refreshPlayers = { playerViewModel.getAllPlayers() }
     val refreshing = playerViewModel.apiResponse.value is RequestState.Loading
@@ -58,23 +57,20 @@ fun PlayerListScreen(
         .pullRefresh(pullRefreshState))
     {
         PlayerListScaffold(
-            searchAppBarState = searchAppBarState,
-            searchText = searchText,
+            searchAppBarState = searchUiState.searchAppBarState,
+            searchText = searchUiState.searchText,
             onSearchTextChanged = {
-                playerViewModel.searchText.value = it
-                playerViewModel.getPlayersBySearch()
+                playerViewModel.onSearchUiEvent(SearchUiEvent.SearchTextChanged(it))
             },
             onDefaultSearchClicked = {
-                playerViewModel.searchAppBarState.value = SearchAppBarState.OPENED
+                playerViewModel.onSearchUiEvent(SearchUiEvent.SearchAppBarStateChanged(SearchAppBarState.OPENED))
             },
             onSortClicked = { sortOrder ->
-                playerViewModel.sortOrder.value = sortOrder
-                playerViewModel.getAllPlayers()
+                playerViewModel.onSearchUiEvent(SearchUiEvent.SortOrderChanged(sortOrder))
             },
             onCloseClicked = {
-                playerViewModel.searchAppBarState.value = SearchAppBarState.CLOSED
-                playerViewModel.searchText.value = ""
-                playerViewModel.getAllPlayers()
+                playerViewModel.onSearchUiEvent(SearchUiEvent.SearchAppBarStateChanged(SearchAppBarState.CLOSED))
+                playerViewModel.onSearchUiEvent(SearchUiEvent.SearchTextChanged(""))
             },
             players = players,
             apiResponse = apiResponse,

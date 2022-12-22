@@ -2,6 +2,7 @@ package de.vexxes.penaltycatalog.domain.repository
 
 import de.vexxes.penaltycatalog.domain.model.ApiResponse
 import de.vexxes.penaltycatalog.domain.model.Penalty
+import de.vexxes.penaltycatalog.domain.model.PenaltyHistory
 import de.vexxes.penaltycatalog.domain.model.Player
 
 // TODO Create needed functions as suspend
@@ -21,4 +22,12 @@ interface Repository {
     suspend fun getPenaltiesBySearch(searchText: String): ApiResponse
     suspend fun updatePenalty(penalty: Penalty): ApiResponse
     suspend fun deletePenalty(penaltyId: String): ApiResponse
+
+
+
+    suspend fun getAllPenaltyHistory(): ApiResponse
+    suspend fun getPenaltyHistoryById(penaltyHistoryId: String): ApiResponse
+    suspend fun getPenaltyHistoryBySearch(searchText: String): ApiResponse
+    suspend fun updatePenaltyHistory(penaltyHistory: PenaltyHistory): ApiResponse
+    suspend fun deletePenaltyHistory(penaltyHistoryId: String): ApiResponse
 }
