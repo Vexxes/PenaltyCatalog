@@ -18,9 +18,12 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ThumbDown
 import androidx.compose.material.icons.filled.ThumbUp
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
@@ -29,18 +32,16 @@ import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.DpSize
 import androidx.compose.ui.unit.dp
 import de.vexxes.penaltycatalog.R
 import de.vexxes.penaltycatalog.domain.uistate.PenaltyHistoryUiState
+import de.vexxes.penaltycatalog.domain.visualTransformation.CurrencyAmountInputVisualTransformation
 import de.vexxes.penaltycatalog.ui.theme.Typography
 import de.vexxes.penaltycatalog.ui.theme.colorSchemeSegButtons
-import kotlinx.datetime.Clock
-import kotlinx.datetime.TimeZone
-import kotlinx.datetime.toLocalDateTime
-import java.text.NumberFormat
-import java.util.Currency
+import java.time.LocalDate
 
 @Composable
 fun PenaltyHistoryDetailContent(
@@ -49,6 +50,7 @@ fun PenaltyHistoryDetailContent(
     Column(
         modifier = Modifier
             .fillMaxSize()
+            .padding(8.dp)
     ) {
         PenaltyHistoryHeader(text = penaltyHistoryUiState.penaltyName)
         PenaltyHistoryButtonsPaid(
@@ -56,9 +58,9 @@ fun PenaltyHistoryDetailContent(
             onButtonPressed = { /*TODO Implement function*/}
         ) /*TODO Change checkbox */
         PenaltyHistoryPlayerName(penaltyHistoryUiState.playerName)
-        PenaltyHistoryDateOfPenalty(penaltyHistoryUiState.timeOfPenalty.toLocalDateTime(TimeZone.UTC).date.toString())
+        PenaltyHistoryDateOfPenalty(penaltyHistoryUiState.timeOfPenalty.toString())
         PenaltyAmount(
-            value = penaltyHistoryUiState.penaltyValue.toInt(),
+            value = penaltyHistoryUiState.penaltyValue,
             isBeer = penaltyHistoryUiState.penaltyIsBeer
         )
     }
@@ -69,8 +71,6 @@ private fun PenaltyHistoryHeader(
     text: String
 ) {
     Text(
-        modifier = Modifier
-            .padding(8.dp),
         text = text,
         style = Typography.headlineMedium
     )
@@ -105,7 +105,6 @@ private fun PenaltyHistoryButtonsPaid(
         Box(
             modifier = Modifier
                 .size(size)
-                .padding(start = 8.dp, end = 8.dp)
                 .border(1.dp, MaterialTheme.colorScheme.outline, RoundedCornerShape(15.dp))
                 .clip(RoundedCornerShape(15.dp))
                 .background(if (penaltyPaid) colorSchemeSegButtons().backgroundPaid else MaterialTheme.colorScheme.surface)
@@ -118,7 +117,6 @@ private fun PenaltyHistoryButtonsPaid(
             ) {
                 Icon(
                     modifier = Modifier
-                        .padding(8.dp)
                         .alpha(alpha),
                     imageVector = Icons.Default.ThumbUp,
                     contentDescription = "",
@@ -176,7 +174,7 @@ private fun PenaltyHistoryPlayerName(
 ) {
     Text(
         modifier = Modifier
-            .padding(top = 32.dp, start = 8.dp, end = 8.dp),
+            .padding(top = 32.dp),
         text = stringResource(id = R.string.Player),
         style = Typography.labelLarge.copy(fontWeight = FontWeight.Bold),
         color = MaterialTheme.colorScheme.onSurfaceVariant
@@ -184,8 +182,7 @@ private fun PenaltyHistoryPlayerName(
 
     Text(
         modifier = Modifier
-            .fillMaxWidth()
-            .padding(start = 8.dp),
+            .fillMaxWidth(),
         text = text,
         style = Typography.titleLarge
     )
@@ -197,7 +194,7 @@ private fun PenaltyHistoryDateOfPenalty(
 ) {
     Text(
         modifier = Modifier
-            .padding(top = 32.dp, start = 8.dp, end = 8.dp),
+            .padding(top = 32.dp),
         text = stringResource(id = R.string.DateOfPenalty),
         style = Typography.labelLarge.copy(fontWeight = FontWeight.Bold),
         color = MaterialTheme.colorScheme.onSurfaceVariant
@@ -205,19 +202,19 @@ private fun PenaltyHistoryDateOfPenalty(
 
     Text(
         modifier = Modifier
-            .fillMaxWidth()
-            .padding(start = 8.dp),
+            .fillMaxWidth(),
         text = text,
         style = Typography.titleLarge
     )
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun PenaltyAmount(
-    value: Int,
+    value: String,
     isBeer: Boolean
 ) {
-    val text: String
+/*    val text: String
 
     Text(
         modifier = Modifier
@@ -242,6 +239,51 @@ private fun PenaltyAmount(
             .padding(start = 8.dp),
         text = text,
         style = Typography.titleLarge
+    )*/
+
+    Text(
+        modifier = Modifier
+            .padding(top = 32.dp),
+        text = stringResource(id = R.string.Amount),
+        style = Typography.labelLarge.copy(fontWeight = FontWeight.Bold),
+        color = MaterialTheme.colorScheme.onSurfaceVariant
+    )
+
+    OutlinedTextField(
+        value = value,
+        onValueChange = { },
+        modifier = Modifier
+            .fillMaxWidth()
+            .border(
+                width = 1.dp,
+                MaterialTheme.colorScheme.surface,
+                TextFieldDefaults.outlinedShape
+            ),
+        enabled = false,
+        readOnly = true,
+        textStyle = Typography.titleLarge,
+        visualTransformation = if (!isBeer) {
+            CurrencyAmountInputVisualTransformation(
+                fixedCursorAtTheEnd = true
+            )
+        } else {
+            VisualTransformation.None
+        },
+        leadingIcon = {
+            /*TODO: Currency symbol should only be shown, if isBeer is false*/
+            Text(
+                text = android.icu.text.NumberFormat.getCurrencyInstance().currency.symbol,
+                style = Typography.titleLarge
+            )
+        },
+        colors = TextFieldDefaults.outlinedTextFieldColors(
+            disabledTextColor = MaterialTheme.colorScheme.onSurface,
+            disabledBorderColor = MaterialTheme.colorScheme.outline,
+            disabledPlaceholderColor = MaterialTheme.colorScheme.onSurfaceVariant,
+            disabledLabelColor = MaterialTheme.colorScheme.onSurfaceVariant,
+            disabledLeadingIconColor = MaterialTheme.colorScheme.onSurfaceVariant,
+            disabledTrailingIconColor = MaterialTheme.colorScheme.onSurfaceVariant
+        )
     )
 }
 
@@ -254,7 +296,7 @@ private fun PenaltyHistoryDetailContentPreview1() {
         penaltyName = "Verspätete Zahlung des Monatsbeitrag",
         penaltyValue = "5",
         penaltyIsBeer = false,
-        timeOfPenalty = Clock.System.now(),
+        timeOfPenalty = LocalDate.now(),
         penaltyPaid = false
     )
 
@@ -264,15 +306,31 @@ private fun PenaltyHistoryDetailContentPreview1() {
 @Preview(showBackground = true)
 @Composable
 private fun PenaltyHistoryDetailContentPreview2() {
-    val penaltyUiState = PenaltyHistoryUiState(
+    val penaltyHistoryUiState = PenaltyHistoryUiState(
         id = "",
         playerName = "Thomas Schneider",
         penaltyName = "Verspätete Zahlung des Monatsbeitrag",
         penaltyValue = "5",
         penaltyIsBeer = false,
-        timeOfPenalty = Clock.System.now(),
+        timeOfPenalty = LocalDate.now(),
         penaltyPaid = true
     )
 
-    PenaltyHistoryDetailContent(penaltyUiState)
+    PenaltyHistoryDetailContent(penaltyHistoryUiState)
+}
+
+@Preview(showBackground = true)
+@Composable
+private fun PenaltyHistoryDetailContentPreview3() {
+    val penaltyHistoryUiState = PenaltyHistoryUiState(
+        id = "",
+        playerName = "Thomas Schneider",
+        penaltyName = "Geburtstag",
+        penaltyValue = "1",
+        penaltyIsBeer = true,
+        timeOfPenalty = LocalDate.now(),
+        penaltyPaid = true
+    )
+
+    PenaltyHistoryDetailContent(penaltyHistoryUiState)
 }

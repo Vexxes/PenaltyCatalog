@@ -14,7 +14,7 @@ import androidx.compose.material.Chip
 import androidx.compose.material.ChipColors
 import androidx.compose.material.ChipDefaults
 import androidx.compose.material.ExperimentalMaterialApi
-import androidx.compose.material.Scaffold
+import androidx.compose.material3.Scaffold
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.AttachMoney
@@ -22,6 +22,7 @@ import androidx.compose.material.icons.filled.MoneyOff
 import androidx.compose.material.pullrefresh.PullRefreshIndicator
 import androidx.compose.material.pullrefresh.pullRefresh
 import androidx.compose.material.pullrefresh.rememberPullRefreshState
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -43,7 +44,6 @@ import de.vexxes.penaltycatalog.R
 import de.vexxes.penaltycatalog.component.GeneralTopBar
 import de.vexxes.penaltycatalog.domain.model.ApiResponse
 import de.vexxes.penaltycatalog.domain.model.PenaltyHistory
-import de.vexxes.penaltycatalog.domain.model.Player
 import de.vexxes.penaltycatalog.domain.model.SortOrder
 import de.vexxes.penaltycatalog.domain.uievent.SearchUiEvent
 import de.vexxes.penaltycatalog.domain.uistate.SearchUiState
@@ -54,7 +54,6 @@ import de.vexxes.penaltycatalog.util.RequestState
 import de.vexxes.penaltycatalog.util.SearchAppBarState
 import de.vexxes.penaltycatalog.viewmodels.PenaltyHistoryViewModel
 import kotlinx.coroutines.delay
-import kotlinx.datetime.Clock
 
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
@@ -96,6 +95,7 @@ fun PenaltyHistoryListScreen(
     }
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun PenaltyHistoryListScaffold(
     searchUiState: SearchUiState,
@@ -287,54 +287,17 @@ fun PenaltyHistoryListSnackbar(
 @Composable
 @Preview(showBackground = true)
 private fun PenaltyHistoryListScreenPreview() {
-
-    val player1 = Player.generateFaker()
-    val player2 = Player.generateFaker()
-    val player3 = Player.generateFaker()
-
-    val penaltyHistory1 = PenaltyHistory(
-        _id = "",
-        penaltyName = "Getränke zur Besprechung",
-        playerName = "${player1.lastName}, ${player1.firstName}",
-        penaltyValue = 1,
-        penaltyIsBeer = true,
-        timeOfPenalty = Clock.System.now(),
-        penaltyPaid = false
-    )
-
-    val penaltyHistory2 = PenaltyHistory(
-        _id = "",
-        penaltyName = "Verspätete Zahlung des Monatsbeitrag",
-        playerName = "${player2.lastName}, ${player2.firstName}",
-        penaltyValue = 5,
-        penaltyIsBeer = false,
-        timeOfPenalty = Clock.System.now(),
-        penaltyPaid = false
-    )
-
-    val penaltyHistory3 = PenaltyHistory(
-        _id = "",
-        penaltyName = "Verspätete Zahlung des Monatsbeitrag",
-        playerName = "${player3.lastName}, ${player3.firstName}",
-        penaltyValue = 5,
-        penaltyIsBeer = false,
-        timeOfPenalty = Clock.System.now(),
-        penaltyPaid = true
-    )
-
-    val penaltyHistoryList = listOf(
-        penaltyHistory1,
-        penaltyHistory2,
-        penaltyHistory3
-    )
-
     PenaltyHistoryListScaffold(
         searchUiState = SearchUiState(),
         onSearchTextChanged = { },
         onDefaultSearchClicked = { },
         onSortClicked = { },
         onCloseClicked = { },
-        penaltyHistory = penaltyHistoryList,
+        penaltyHistory = listOf(
+            PenaltyHistory.exampleData1(),
+            PenaltyHistory.exampleData2(),
+            PenaltyHistory.exampleData3()
+        ),
         apiResponse = ApiResponse(),
         resetApiResponse = { },
         navigateToPenaltyHistoryDetailScreen = { },

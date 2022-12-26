@@ -29,7 +29,6 @@ fun PenaltyEditScreen(
         onBackClicked()
     }
 
-    /*TODO Replace with correct values*/
     PenaltyEditScaffold(
         penaltyUiState = penaltyUiState,
         categoryList = categoryList,
@@ -105,7 +104,7 @@ private fun PenaltyEditScreenPreview() {
         name = "Getränke zur Besprechung",
         description = "Mitzubringen in alphabetischer Reihenfolge nach dem Freitagstraining",
         isBeer = true,
-        value = "1"
+        value = "100"
     )
 
     PenaltyEditScaffold(

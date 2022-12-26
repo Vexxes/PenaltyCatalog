@@ -9,6 +9,8 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextFieldColors
+import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -18,6 +20,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.KeyboardCapitalization
+import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import de.vexxes.penaltycatalog.R
@@ -27,14 +30,18 @@ import de.vexxes.penaltycatalog.ui.theme.Typography
 @Composable
 fun InputOutlinedField(
     modifier: Modifier = Modifier,
+    enabled: Boolean = true,
     readOnly: Boolean = false,
     text: String,
     onTextChanged: (String) -> Unit,
+    leadingIcon: @Composable (() -> Unit)? = null,
     trailingIcon: @Composable (() -> Unit)? = null,
     isError: Boolean = false,
     label: String,
     required: Boolean = false,
-    keyboardOptions: KeyboardOptions = KeyboardOptions(capitalization = KeyboardCapitalization.Sentences)
+    keyboardOptions: KeyboardOptions = KeyboardOptions(capitalization = KeyboardCapitalization.Sentences),
+    colors: TextFieldColors = TextFieldDefaults.outlinedTextFieldColors(),
+    visualTransformation: VisualTransformation = VisualTransformation.None,
 ) {
     var focused by remember { mutableStateOf(false) }
 
@@ -55,6 +62,7 @@ fun InputOutlinedField(
             .onFocusChanged { focusState ->
                 focused = focusState.isFocused
             },
+        enabled = enabled,
         readOnly = readOnly,
         value = text,
         onValueChange = {
@@ -74,6 +82,7 @@ fun InputOutlinedField(
                 overflow = TextOverflow.Visible
             )
         },
+        leadingIcon = leadingIcon,
         trailingIcon = locTrailingIcon,
         supportingText = {
             if(required && !isError) {
@@ -90,7 +99,9 @@ fun InputOutlinedField(
             }
         },
         isError = isError,
-        keyboardOptions = keyboardOptions
+        keyboardOptions = keyboardOptions,
+        colors = colors,
+        visualTransformation = visualTransformation
     )
 }
 

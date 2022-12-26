@@ -1,10 +1,12 @@
 package de.vexxes.penaltycatalog.presentation.screen.penalty
 
+import android.icu.text.NumberFormat
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowDropDown
 import androidx.compose.material3.DropdownMenuItem
@@ -21,6 +23,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import de.vexxes.penaltycatalog.R
@@ -28,6 +31,7 @@ import de.vexxes.penaltycatalog.component.InputOutlinedField
 import de.vexxes.penaltycatalog.domain.model.PenaltyCategory
 import de.vexxes.penaltycatalog.domain.model.PenaltyType
 import de.vexxes.penaltycatalog.domain.uistate.PenaltyUiState
+import de.vexxes.penaltycatalog.domain.visualTransformation.CurrencyAmountInputVisualTransformation
 import de.vexxes.penaltycatalog.ui.theme.Typography
 
 @Composable
@@ -40,6 +44,9 @@ fun PenaltyEditContent(
     onPenaltyAmountChanged: (String) -> Unit,
     onPenaltyTypeChanged: (PenaltyType) -> Unit
 ) {
+    println("Test: ${penaltyUiState.value}")
+
+
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -234,12 +241,28 @@ private fun PenaltyAmount(
     text: String,
     onTextChanged: (String) -> Unit
 ) {
+    var tmpText: String
+
     InputOutlinedField(
         modifier = Modifier
             .padding(8.dp),
-        text = text,
-        onTextChanged = onTextChanged,
-        label = stringResource(id = R.string.Amount)
+        text = text.filter { it.isDigit() },
+        onTextChanged = {
+            tmpText = if (it.startsWith("0")) {
+                ""
+            } else {
+                it
+            }
+            onTextChanged(tmpText)
+        },
+        label = stringResource(id = R.string.Amount),
+        leadingIcon = {
+            Text(text = NumberFormat.getCurrencyInstance().currency.symbol)
+        },
+        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+        visualTransformation = CurrencyAmountInputVisualTransformation(
+            fixedCursorAtTheEnd = true
+        )
     )
 }
 
@@ -257,7 +280,7 @@ private fun PenaltyEditContentPreview() {
         name = "Getränke zur Besprechung",
         description = "Mitzubringen in alphabetischer Reihenfolge nach dem Freitagstraining",
         isBeer = true,
-        value = "1"
+        value = ""
     )
 
     PenaltyEditContent(

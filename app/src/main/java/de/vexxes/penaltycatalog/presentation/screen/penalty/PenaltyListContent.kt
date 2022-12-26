@@ -1,7 +1,10 @@
 package de.vexxes.penaltycatalog.presentation.screen.penalty
 
+import android.icu.text.NumberFormat
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
@@ -10,36 +13,38 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import de.vexxes.penaltycatalog.R
 import de.vexxes.penaltycatalog.component.EmptyContent
 import de.vexxes.penaltycatalog.domain.model.Penalty
+import de.vexxes.penaltycatalog.domain.visualTransformation.CurrencyAmountInputVisualTransformation
 import de.vexxes.penaltycatalog.ui.theme.Typography
-import java.text.NumberFormat
-import java.util.Currency
 
 @Composable
 fun PenaltyListContent(
     penalties: List<Penalty>,
     navigateToPenaltyDetailScreen: (playerId: String) -> Unit
 ) {
-    if(penalties.isNotEmpty()) {
-        DisplayPenalties(
-            penalties = penalties,
-            navigateToPenaltyDetailScreen = navigateToPenaltyDetailScreen
-        )
-    } else {
-        EmptyContent()
+    Box(modifier = Modifier.padding(8.dp)) {
+        if(penalties.isNotEmpty()) {
+            DisplayPenalties(
+                penalties = penalties,
+                navigateToPenaltyDetailScreen = navigateToPenaltyDetailScreen
+            )
+        } else {
+            EmptyContent()
+        }
     }
 }
 
@@ -82,8 +87,7 @@ private fun PenaltyItem(
         Column(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(start = 8.dp, end = 8.dp)
-                .weight(0.80f),
+                .weight(0.70f),
             verticalArrangement = Arrangement.Center,
         ) {
             PenaltyName(
@@ -97,10 +101,8 @@ private fun PenaltyItem(
 
         PenaltyAmount(
             modifier = Modifier
-                .padding(end = 8.dp)
-                .weight(0.20f),
-            value = penalty.value,
-            isBeer = penalty.isBeer
+                .weight(0.30f),
+            value = penalty.value
         )
     }
 }
@@ -114,7 +116,7 @@ private fun PlayerItemPreview() {
         categoryName = "Sonstiges",
         description = "Mitzubringen in alphabetischer Reihenfolge nach dem Freitagstraining",
         isBeer = true,
-        value = 1
+        value = "100"
     )
 
     PenaltyItem(
@@ -125,7 +127,7 @@ private fun PlayerItemPreview() {
 
 @Preview(showBackground = true)
 @Composable
-fun PenaltyListContentPreview() {
+private fun PenaltyListContentPreview() {
     val penalties = listOf(
         Penalty(
             _id = "",
@@ -133,7 +135,7 @@ fun PenaltyListContentPreview() {
             categoryName = "Monatsbeitrag",
             description = "",
             isBeer = false,
-            value = 500
+            value = "500"
         ),
         Penalty(
             _id = "",
@@ -141,7 +143,7 @@ fun PenaltyListContentPreview() {
             categoryName = "Monatsbeitrag",
             description = "zzgl. pro Monat",
             isBeer = false,
-            value = 500
+            value = "500"
         ),
         Penalty(
             _id = "",
@@ -149,7 +151,7 @@ fun PenaltyListContentPreview() {
             categoryName = "Sonstiges",
             description = "Mitzubringen in alphabetischer Reihenfolge nach dem Freitagstraining",
             isBeer = true,
-            value = 1
+            value = "100"
         )
     )
 
@@ -161,7 +163,7 @@ fun PenaltyListContentPreview() {
 
 @Preview(showBackground = true)
 @Composable
-fun EmptyContentPreview() {
+private fun EmptyContentPreview() {
     EmptyContent()
 }
 
@@ -171,8 +173,7 @@ private fun PenaltyName(
     text: String
 ) {
     Text(
-        modifier = modifier
-            .fillMaxWidth(),
+        modifier = modifier,
         text = text,
         style = Typography.titleMedium.copy(fontSize = 19.sp, fontWeight = FontWeight.Bold),
         textAlign = TextAlign.Left,
@@ -185,40 +186,43 @@ private fun PenaltyNameOfCategory(
     text: String
 ) {
     Text(
-        modifier = modifier
-            .fillMaxWidth(),
+        modifier = modifier,
         text = text,
         color = MaterialTheme.colorScheme.onSurfaceVariant,
         style = Typography.titleSmall.copy(fontWeight = FontWeight.Bold),
     )
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun PenaltyAmount(
     modifier: Modifier = Modifier,
-    value: Int,
-    isBeer: Boolean
+    value: String
 ) {
-    val text: String
-
-    if(isBeer) {
-        text = "$value " + stringResource(id = R.string.Box)
-    } else {
-        val format = NumberFormat.getCurrencyInstance()
-        format.maximumFractionDigits = 2
-        format.currency = Currency.getInstance("EUR")
-        text = format.format(value.toDouble() / 100) // value is stored as cents, divide by 100
-    }
-
     Row(
         modifier = modifier
             .fillMaxSize(),
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.End
     ) {
-        Text(
-            text = text,
-            style = Typography.titleLarge
+        OutlinedTextField(
+            value = value,
+            onValueChange = { },
+            modifier = Modifier
+                .fillMaxWidth()
+                .border(width = 1.dp, MaterialTheme.colorScheme.surface, TextFieldDefaults.outlinedShape),
+            enabled = true,
+            readOnly = true,
+            textStyle = Typography.titleLarge,
+            visualTransformation = CurrencyAmountInputVisualTransformation(
+                fixedCursorAtTheEnd = true
+            ),
+            leadingIcon = {
+                Text(
+                    text = NumberFormat.getCurrencyInstance().currency.symbol,
+                    style = Typography.titleLarge
+                )
+            }
         )
     }
 }

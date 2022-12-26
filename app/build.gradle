@@ -13,7 +13,7 @@ android {
 
     defaultConfig {
         applicationId "de.vexxes.penaltycatalog"
-        minSdk 21
+        minSdk 26
         targetSdk 33
         versionCode 1
         versionName "1.0"
@@ -52,6 +52,7 @@ android {
     tasks.withType(org.jetbrains.kotlin.gradle.tasks.KotlinCompile).configureEach {
         kotlinOptions {
             freeCompilerArgs += "-Xopt-in=kotlin.RequiresOptIn"
+            freeCompilerArgs += ["-Xjvm-default=all"]
         }
     }
 }
@@ -102,5 +103,5 @@ dependencies {
     implementation 'org.jetbrains.kotlinx:kotlinx-datetime:0.4.0'
 
     // Implementation of custom library for date picker /*TODO Remove, when Jetpack Compose has official support for date picker*/
-    implementation 'com.squaredem:composecalendar:1.0.0'
+    implementation 'com.github.mateusz800:Expandable-Compose-Calendar:1.0.0'
 }

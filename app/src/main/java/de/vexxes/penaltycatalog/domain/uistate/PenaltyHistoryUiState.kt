@@ -1,7 +1,6 @@
 package de.vexxes.penaltycatalog.domain.uistate
 
-import kotlinx.datetime.Clock
-import kotlinx.datetime.Instant
+import java.time.LocalDate
 
 data class PenaltyHistoryUiState(
     val id: String = "",
@@ -9,6 +8,6 @@ data class PenaltyHistoryUiState(
     val penaltyName: String = "",
     val penaltyValue: String = "",
     val penaltyIsBeer: Boolean = false,
-    val timeOfPenalty: Instant = Clock.System.now(),
+    val timeOfPenalty: LocalDate = LocalDate.now(),
     val penaltyPaid: Boolean = false
 )

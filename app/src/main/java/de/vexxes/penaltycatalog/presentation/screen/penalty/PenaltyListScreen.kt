@@ -180,7 +180,7 @@ private fun PenaltyListScreenPreview() {
             categoryName = "Monatsbeitrag",
             description = "",
             isBeer = false,
-            value = 500
+            value = "5"
         ),
         Penalty(
             _id = "",
@@ -188,7 +188,7 @@ private fun PenaltyListScreenPreview() {
             categoryName = "Monatsbeitrag",
             description = "zzgl. pro Monat",
             isBeer = false,
-            value = 500
+            value = "5"
         ),
         Penalty(
             _id = "",
@@ -196,7 +196,7 @@ private fun PenaltyListScreenPreview() {
             categoryName = "Sonstiges",
             description = "Mitzubringen in alphabetischer Reihenfolge nach dem Freitagstraining",
             isBeer = true,
-            value = 1
+            value = "1"
         )
     )
 

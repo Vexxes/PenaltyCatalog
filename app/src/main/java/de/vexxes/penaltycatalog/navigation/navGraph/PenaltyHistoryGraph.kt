@@ -7,6 +7,7 @@ import de.vexxes.penaltycatalog.navigation.Graph
 import de.vexxes.penaltycatalog.navigation.Screen
 import de.vexxes.penaltycatalog.navigation.ScreenNavigation
 import de.vexxes.penaltycatalog.navigation.composables.penaltyHistory.penaltyHistoryDetailComposable
+import de.vexxes.penaltycatalog.navigation.composables.penaltyHistory.penaltyHistoryEditComposable
 import de.vexxes.penaltycatalog.navigation.composables.penaltyHistory.penaltyHistoryListComposable
 import de.vexxes.penaltycatalog.viewmodels.PenaltyHistoryViewModel
 
@@ -36,6 +37,11 @@ fun NavGraphBuilder.penaltyHistoryGraph(
             onEditClicked = { penaltyHistoryId ->
                 navController.navigate(Screen.PenaltyHistoryEdit.route + "/$penaltyHistoryId")
             }
+        )
+
+        penaltyHistoryEditComposable(
+            penaltyHistoryViewModel = penaltyHistoryViewModel,
+            navigateBack = { navController.popBackStack() }
         )
     }
 }

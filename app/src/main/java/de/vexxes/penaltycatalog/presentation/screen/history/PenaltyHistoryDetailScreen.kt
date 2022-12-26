@@ -16,7 +16,7 @@ import de.vexxes.penaltycatalog.component.BackDeleteEditTopBar
 import de.vexxes.penaltycatalog.component.DeleteAlertDialog
 import de.vexxes.penaltycatalog.domain.uistate.PenaltyHistoryUiState
 import de.vexxes.penaltycatalog.viewmodels.PenaltyHistoryViewModel
-import kotlinx.datetime.Clock
+import java.time.LocalDate
 
 @Composable
 fun PenaltyHistoryDetailScreen(
@@ -87,7 +87,7 @@ private fun PenaltyHistoryDetailScreenPreview() {
         penaltyName = "Verspätete Zahlung des Monatsbeitrag",
         penaltyValue = "5",
         penaltyIsBeer = false,
-        timeOfPenalty = Clock.System.now(),
+        timeOfPenalty = LocalDate.now(),
         penaltyPaid = true
     )
 

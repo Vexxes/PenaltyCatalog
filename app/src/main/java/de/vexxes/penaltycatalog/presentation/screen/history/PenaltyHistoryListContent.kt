@@ -1,6 +1,8 @@
 package de.vexxes.penaltycatalog.presentation.screen.history
 
+import android.icu.text.NumberFormat
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -11,12 +13,15 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
@@ -24,15 +29,10 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import de.vexxes.penaltycatalog.component.EmptyContent
 import de.vexxes.penaltycatalog.domain.model.PenaltyHistory
-import de.vexxes.penaltycatalog.domain.model.Player
+import de.vexxes.penaltycatalog.domain.visualTransformation.CurrencyAmountInputVisualTransformation
 import de.vexxes.penaltycatalog.ui.theme.Typography
 import de.vexxes.penaltycatalog.ui.theme.colorSchemeSegButtons
 import de.vexxes.penaltycatalog.util.FilterPaidState
-import kotlinx.datetime.Clock
-import kotlinx.datetime.TimeZone
-import kotlinx.datetime.toLocalDateTime
-import java.text.NumberFormat
-import java.util.Currency
 
 @Composable
 fun PenaltyHistoryListContent(
@@ -117,7 +117,7 @@ private fun PenaltyHistoryItem(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(start = 8.dp, end = 8.dp)
-                .weight(0.8f),
+                .weight(0.65f),
             verticalArrangement = Arrangement.Center
         ) {
             PenaltyHistoryPlayerName(
@@ -129,17 +129,16 @@ private fun PenaltyHistoryItem(
             )
 
             PenaltyHistorySubText(
-                text = penaltyHistory.timeOfPenalty.toLocalDateTime(TimeZone.UTC).date.toString()
+                text = penaltyHistory.timeOfPenalty
             )
         }
 
         PenaltyHistoryPenaltyAmount(
             modifier = Modifier
                 .padding(end = 8.dp)
-                .weight(0.2f),
+                .weight(0.30f),
             value = penaltyHistory.penaltyValue,
-            isBeer = penaltyHistory.penaltyIsBeer
-        )
+            color = if (penaltyHistory.penaltyPaid) colorSchemeSegButtons().backgroundPaid else colorSchemeSegButtons().backgroundNotPaid)
     }
 }
 
@@ -170,32 +169,49 @@ private fun PenaltyHistorySubText(
     )
 }
 
+/*TODO: Correct visualization of the value, if isBeer is true*/
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun PenaltyHistoryPenaltyAmount(
     modifier: Modifier = Modifier,
-    value: Int,
-    isBeer: Boolean
+    value: String,
+    color: Color
 ) {
-    val text: String
-
-    if(isBeer) {
-        text = "$value " + stringResource(id = de.vexxes.penaltycatalog.R.string.Box)
-    } else {
-        val format = NumberFormat.getCurrencyInstance()
-        format.maximumFractionDigits = 2
-        format.currency = Currency.getInstance("EUR")
-        text = format.format(value)
-    }
-
     Row(
         modifier = modifier
             .fillMaxSize(),
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.End
     ) {
-        Text(
-            text = text,
-            style = Typography.titleLarge.copy(fontWeight = FontWeight.Bold)
+        OutlinedTextField(
+            value = value,
+            onValueChange = { },
+            modifier = Modifier
+                .fillMaxWidth()
+                .border(
+                    width = 1.dp,
+                    color,
+                    TextFieldDefaults.outlinedShape),
+            enabled = false,
+            readOnly = true,
+            textStyle = Typography.titleLarge,
+            visualTransformation = CurrencyAmountInputVisualTransformation(
+                fixedCursorAtTheEnd = true
+            ),
+            leadingIcon = {
+                Text(
+                    text = NumberFormat.getCurrencyInstance().currency.symbol,
+                    style = Typography.titleLarge
+                )
+            },
+            colors = TextFieldDefaults.outlinedTextFieldColors(
+                disabledTextColor = MaterialTheme.colorScheme.onSurface,
+                disabledBorderColor = MaterialTheme.colorScheme.outline,
+                disabledPlaceholderColor = MaterialTheme.colorScheme.onSurfaceVariant,
+                disabledLabelColor = MaterialTheme.colorScheme.onSurfaceVariant,
+                disabledLeadingIconColor = MaterialTheme.colorScheme.onSurfaceVariant,
+                disabledTrailingIconColor = MaterialTheme.colorScheme.onSurfaceVariant
+            )
         )
     }
 }
@@ -203,59 +219,9 @@ private fun PenaltyHistoryPenaltyAmount(
 @Composable
 @Preview(showBackground = true)
 private fun PenaltyHistoryItemPreview() {
-
-    val player = Player.generateFaker()
-
-    val penaltyHistory = PenaltyHistory(
-        _id = "",
-        penaltyName = "Getränke zur Besprechung",
-        playerName = "${player.lastName}, ${player.firstName}",
-        timeOfPenalty = Clock.System.now()
-    )
-
     PenaltyHistoryItem(
-        penaltyHistory = penaltyHistory,
+        penaltyHistory = PenaltyHistory.exampleData1(),
         navigateToPenaltyHistoryDetailScreen = { }
-    )
-}
-
-private fun prepPlayerList(): List<PenaltyHistory> {
-    val player1 = Player.generateFaker()
-    val player2 = Player.generateFaker()
-    val player3 = Player.generateFaker()
-
-    val penaltyHistory1 = PenaltyHistory(
-        _id = "",
-        penaltyName = "Getränke zur Besprechung",
-        playerName = "${player1.lastName}, ${player1.firstName}",
-        penaltyValue = 1,
-        penaltyIsBeer = true,
-        timeOfPenalty = Clock.System.now()
-    )
-
-    val penaltyHistory2 = PenaltyHistory(
-        _id = "",
-        penaltyName = "Verspätete Zahlung des Monatsbeitrag",
-        playerName = "${player2.lastName}, ${player2.firstName}",
-        penaltyValue = 5,
-        penaltyIsBeer = false,
-        timeOfPenalty = Clock.System.now()
-    )
-
-    val penaltyHistory3 = PenaltyHistory(
-        _id = "",
-        penaltyName = "Verspätete Zahlung des Monatsbeitrag",
-        playerName = "${player3.lastName}, ${player3.firstName}",
-        penaltyValue = 5,
-        penaltyIsBeer = false,
-        timeOfPenalty = Clock.System.now(),
-        penaltyPaid = true
-    )
-
-    return listOf(
-        penaltyHistory1,
-        penaltyHistory2,
-        penaltyHistory3
     )
 }
 
@@ -263,7 +229,11 @@ private fun prepPlayerList(): List<PenaltyHistory> {
 @Preview(showBackground = true)
 private fun PenaltyHistoryContentPreview1() {
     PenaltyHistoryListContent(
-        penaltyHistory = prepPlayerList(),
+        penaltyHistory = listOf(
+            PenaltyHistory.exampleData1(),
+            PenaltyHistory.exampleData2(),
+            PenaltyHistory.exampleData3()
+        ),
         filterPaidState = FilterPaidState.OFF,
         navigateToPenaltyHistoryDetailScreen = { }
     )
@@ -273,7 +243,11 @@ private fun PenaltyHistoryContentPreview1() {
 @Preview(showBackground = true)
 private fun PenaltyHistoryContentPreview2() {
     PenaltyHistoryListContent(
-        penaltyHistory = prepPlayerList(),
+        penaltyHistory = listOf(
+            PenaltyHistory.exampleData1(),
+            PenaltyHistory.exampleData2(),
+            PenaltyHistory.exampleData3()
+        ),
         filterPaidState = FilterPaidState.PAID,
         navigateToPenaltyHistoryDetailScreen = { }
     )
@@ -283,7 +257,11 @@ private fun PenaltyHistoryContentPreview2() {
 @Preview(showBackground = true)
 private fun PenaltyHistoryContentPreview3() {
     PenaltyHistoryListContent(
-        penaltyHistory = prepPlayerList(),
+        penaltyHistory = listOf(
+            PenaltyHistory.exampleData1(),
+            PenaltyHistory.exampleData2(),
+            PenaltyHistory.exampleData3()
+        ),
         filterPaidState = FilterPaidState.NOT_PAID,
         navigateToPenaltyHistoryDetailScreen = { }
     )

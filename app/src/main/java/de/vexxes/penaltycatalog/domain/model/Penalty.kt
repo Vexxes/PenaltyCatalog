@@ -9,6 +9,6 @@ data class Penalty(
     val categoryName: String = "",
     val description: String = "",
     val isBeer: Boolean = false,
-    val value: Int = 0,
+    val value: String = "",
     val index: Int = 0
 )

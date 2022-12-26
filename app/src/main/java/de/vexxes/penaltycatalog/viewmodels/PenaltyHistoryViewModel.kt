@@ -20,6 +20,7 @@ import de.vexxes.penaltycatalog.util.RequestState
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import java.time.LocalDate
 import javax.inject.Inject
 
 @HiltViewModel
@@ -28,8 +29,8 @@ class PenaltyHistoryViewModel @Inject constructor(
 ) : ViewModel() {
 
     val penaltyHistory: MutableState<List<PenaltyHistory>> = mutableStateOf(emptyList())
-    var penalties: List<Penalty> = emptyList()
-    var players: List<Player> = emptyList()
+    var penalties: MutableState<List<Penalty>> = mutableStateOf(emptyList())
+    var players: MutableState<List<Player>> = mutableStateOf(emptyList())
 
     var penaltyHistoryUiState: MutableState<PenaltyHistoryUiState> = mutableStateOf(PenaltyHistoryUiState())
         private set
@@ -42,8 +43,6 @@ class PenaltyHistoryViewModel @Inject constructor(
 
     init {
         getAllPenaltyHistory()
-        getAllPenalties()
-        getAllPlayers()
     }
 
     private fun convertResponseToPenaltyHistory(penaltyHistory: PenaltyHistory) {
@@ -51,9 +50,9 @@ class PenaltyHistoryViewModel @Inject constructor(
             id = penaltyHistory._id,
             penaltyName = penaltyHistory.penaltyName,
             playerName = penaltyHistory.playerName,
-            penaltyValue = penaltyHistory.penaltyValue.toString(),
+            penaltyValue = penaltyHistory.penaltyValue,
             penaltyIsBeer = penaltyHistory.penaltyIsBeer,
-            timeOfPenalty = penaltyHistory.timeOfPenalty,
+            timeOfPenalty = LocalDate.parse(penaltyHistory.timeOfPenalty),
             penaltyPaid = penaltyHistory.penaltyPaid
         )
     }
@@ -63,14 +62,14 @@ class PenaltyHistoryViewModel @Inject constructor(
             _id = penaltyHistoryUiState.value.id,
             penaltyName = penaltyHistoryUiState.value.penaltyName,
             playerName = penaltyHistoryUiState.value.playerName,
-            penaltyValue = penaltyHistoryUiState.value.penaltyValue.toInt(),
+            penaltyValue = penaltyHistoryUiState.value.penaltyValue,
             penaltyIsBeer = penaltyHistoryUiState.value.penaltyIsBeer,
-            timeOfPenalty = penaltyHistoryUiState.value.timeOfPenalty,
+            timeOfPenalty = penaltyHistoryUiState.value.timeOfPenalty.toString(),
             penaltyPaid = penaltyHistoryUiState.value.penaltyPaid
         )
     }
 
-    private fun getAllPenalties() {
+    fun getAllPenalties() {
         apiResponse.value = RequestState.Loading
 
         viewModelScope.launch {
@@ -82,7 +81,7 @@ class PenaltyHistoryViewModel @Inject constructor(
                 apiResponse.value = RequestState.Success(response)
 
                 if(response.penalty != null) {
-                    penalties = response.penalty
+                    penalties.value = response.penalty
                 }
                 Log.d("PenaltyViewModel", response.toString())
             }
@@ -93,7 +92,7 @@ class PenaltyHistoryViewModel @Inject constructor(
         }
     }
 
-    private fun getAllPlayers() {
+    fun getAllPlayers() {
         apiResponse.value = RequestState.Loading
 
         viewModelScope.launch {
@@ -105,7 +104,7 @@ class PenaltyHistoryViewModel @Inject constructor(
                 apiResponse.value = RequestState.Success(response)
 
                 if(response.player != null) {
-                    players = response.player
+                    players.value = response.player
                 }
                 Log.d("PlayerViewModel", response.toString())
             }
@@ -119,7 +118,7 @@ class PenaltyHistoryViewModel @Inject constructor(
     /*TODO Implement logic*/
     private fun verifyPenaltyHistory(): Boolean {
 
-        return false
+        return true
     }
 
     fun getAllPenaltyHistory() {
@@ -239,9 +238,16 @@ class PenaltyHistoryViewModel @Inject constructor(
     fun onPenaltyHistoryUiEvent(event: PenaltyHistoryUiEvent) {
         when (event) {
             is PenaltyHistoryUiEvent.PenaltyNameChanged -> {
-                penaltyHistoryUiState.value = penaltyHistoryUiState.value.copy(
-                    penaltyName = event.penaltyName
-                )
+                // Compare id from penalty list with id from event. Only if id's match copy values
+                penalties.value.forEach { penalty ->
+                    if (penalty._id == event.id) {
+                        penaltyHistoryUiState.value = penaltyHistoryUiState.value.copy(
+                            penaltyName = event.penaltyName,
+                            penaltyValue = penalty.value,
+                            penaltyIsBeer = penalty.isBeer
+                        )
+                    }
+                }
             }
 
             is PenaltyHistoryUiEvent.PlayerNameChanged -> {

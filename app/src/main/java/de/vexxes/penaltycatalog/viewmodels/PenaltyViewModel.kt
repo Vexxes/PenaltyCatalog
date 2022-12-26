@@ -50,7 +50,7 @@ class PenaltyViewModel @Inject constructor(
             id = penalty._id,
             name = penalty.name,
             categoryName = penalty.categoryName,
-            value = if(penalty.value > 0) penalty.value.toString() else "",
+            value = penalty.value,
             description = penalty.description,
             isBeer = penalty.isBeer
         )
@@ -63,7 +63,7 @@ class PenaltyViewModel @Inject constructor(
             categoryName = penaltyUiState.value.categoryName,
             description = penaltyUiState.value.description,
             isBeer = penaltyUiState.value.isBeer,
-            value = penaltyUiState.value.value.toInt()
+            value = penaltyUiState.value.value
         )
     }
 
@@ -76,7 +76,7 @@ class PenaltyViewModel @Inject constructor(
             valueError = valueResult
         )
 
-        return (!(nameResult || valueResult))
+        return !(nameResult || valueResult)
     }
 
     private fun getAllCategories() {
@@ -245,8 +245,26 @@ class PenaltyViewModel @Inject constructor(
 
             is PenaltyUiEvent.ValueChanged -> {
                 penaltyUiState.value = penaltyUiState.value.copy(
-                    value = event.value
+                    value = event.value //number.toFloat()
                 )
+/*
+                println("EventValue: ${event.value} \r\n")
+                val retVal = "%.2f".format(event.value.toFloat() / 100)
+                println("EventValue: ${event.value} \r\n")
+                println("EventValue Formatted: $retVal \r\n")
+*/
+
+/*                penaltyUiState.value = penaltyUiState.value.copy(
+                    value = retVal.toFloat() //number.toFloat()
+                )*/
+
+                /*                val number = event.value.filter { it.isDigit() }
+
+
+
+                                penaltyUiState.value = penaltyUiState.value.copy(
+                                    value = retVal //number.toFloat()
+                                )*/
             }
         }
     }
