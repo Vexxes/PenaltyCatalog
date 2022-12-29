@@ -22,7 +22,7 @@ import de.vexxes.penaltycatalog.R
 import de.vexxes.penaltycatalog.component.BackDeleteEditTopBar
 import de.vexxes.penaltycatalog.component.DeleteAlertDialog
 import de.vexxes.penaltycatalog.domain.model.ApiResponse
-import de.vexxes.penaltycatalog.domain.model.Player
+import de.vexxes.penaltycatalog.domain.model.PlayerExample
 import de.vexxes.penaltycatalog.domain.uistate.PlayerUiState
 import de.vexxes.penaltycatalog.viewmodels.PlayerViewModel
 import kotlinx.coroutines.delay
@@ -140,7 +140,7 @@ fun PlayerDetailSnackbar(
 @Preview(showBackground = true)
 @Composable
 private fun PlayerDetailScreenPreview() {
-    val player = Player.generateFaker()
+    val player = PlayerExample()
     val playerUiState = PlayerUiState(
         id = player._id,
         number = player.number.toString(),

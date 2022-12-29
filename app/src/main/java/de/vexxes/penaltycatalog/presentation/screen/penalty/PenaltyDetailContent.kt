@@ -3,9 +3,11 @@ package de.vexxes.penaltycatalog.presentation.screen.penalty
 import android.icu.text.NumberFormat
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
@@ -16,11 +18,14 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextDecoration
+import androidx.compose.ui.text.input.VisualTransformation
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import de.vexxes.penaltycatalog.R
 import de.vexxes.penaltycatalog.domain.uistate.PenaltyUiState
+import de.vexxes.penaltycatalog.domain.uistate.penaltyUiStateExample1
+import de.vexxes.penaltycatalog.domain.uistate.penaltyUiStateExample2
 import de.vexxes.penaltycatalog.domain.visualTransformation.CurrencyAmountInputVisualTransformation
 import de.vexxes.penaltycatalog.ui.theme.Typography
 
@@ -36,8 +41,8 @@ fun PenaltyDetailContent(
         PenaltyHeader(text = penaltyUiState.name)
         PenaltyCategoryHeader(text = penaltyUiState.categoryName)
         if(penaltyUiState.description.isNotEmpty()) { PenaltyDescription(text = penaltyUiState.description) }
-        PenaltyAmount(value = penaltyUiState.value)
-        DeclaredPenalties()
+        PenaltyAmount(value = penaltyUiState.value, isBeer = penaltyUiState.isBeer)
+        DeclaredPenalties(text = penaltyUiState.valueDeclaredPenalties)
     }
 }
 
@@ -67,12 +72,79 @@ private fun PenaltyCategoryHeader(
 private fun PenaltyDescription(
     text: String
 ) {
+    LabelHeader(text = stringResource(id = R.string.Description))
+
+    Text(
+        modifier = Modifier
+            .fillMaxWidth(),
+        text = text,
+        style = Typography.titleMedium
+    )
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+private fun PenaltyAmount(
+    value: String,
+    isBeer: Boolean
+) {
+    LabelHeader(text = stringResource(id = R.string.Amount))
+
+    Row(
+        modifier = Modifier
+            .fillMaxWidth(),
+        verticalAlignment = Alignment.CenterVertically,
+    ) {
+        val visualTransformation = if (isBeer) VisualTransformation.None else CurrencyAmountInputVisualTransformation(
+            fixedCursorAtTheEnd = true
+        )
+
+        Text(
+            text = if (isBeer) stringResource(id = R.string.Box) else NumberFormat.getCurrencyInstance().currency.symbol,
+            style = Typography.titleLarge.copy(textAlign = TextAlign.Right)
+        )
+
+        OutlinedTextField(
+            value = value,
+            onValueChange = { },
+            modifier = Modifier
+                .width(100.dp)
+                .border(1.dp, MaterialTheme.colorScheme.surface, TextFieldDefaults.outlinedShape),
+            enabled = false,
+            readOnly = true,
+            textStyle = Typography.titleLarge,
+            visualTransformation = visualTransformation,
+            colors = TextFieldDefaults.outlinedTextFieldColors(
+                disabledTextColor = MaterialTheme.colorScheme.onSurface,
+                disabledBorderColor = MaterialTheme.colorScheme.outline,
+                disabledPlaceholderColor = MaterialTheme.colorScheme.onSurfaceVariant,
+                disabledLabelColor = MaterialTheme.colorScheme.onSurfaceVariant,
+                disabledLeadingIconColor = MaterialTheme.colorScheme.onSurfaceVariant,
+                disabledTrailingIconColor = MaterialTheme.colorScheme.onSurfaceVariant
+            )
+        )
+    }
+}
+
+@Composable
+private fun LabelHeader(
+    text: String
+) {
     Text(
         modifier = Modifier
             .padding(top = 32.dp),
-        text = stringResource(id = R.string.Description),
-        style = Typography.labelLarge.copy(fontWeight = FontWeight.Bold)
+        text = text,
+        style = Typography.labelLarge.copy(fontWeight = FontWeight.Bold),
+        color = MaterialTheme.colorScheme.onSurfaceVariant
     )
+}
+
+/*TODO Read out the correct amount of declared penalties*/
+@Composable
+private fun DeclaredPenalties(
+    text: String
+) {
+    LabelHeader(text = stringResource(id = R.string.DeclaredPenalties))
 
     Text(
         modifier = Modifier
@@ -82,101 +154,14 @@ private fun PenaltyDescription(
     )
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
-@Composable
-private fun PenaltyAmount(
-    value: String
-) {
-    Text(
-        modifier = Modifier
-            .padding(top = 32.dp),
-        text = stringResource(id = R.string.Amount),
-        style = Typography.labelLarge.copy(fontWeight = FontWeight.Bold),
-        color = MaterialTheme.colorScheme.onSurfaceVariant
-    )
-
-    OutlinedTextField(
-        value = value,
-        onValueChange = { },
-        modifier = Modifier
-            .fillMaxWidth()
-            .border(width = 1.dp, MaterialTheme.colorScheme.surface, TextFieldDefaults.outlinedShape),
-        enabled = false,
-        readOnly = true,
-        textStyle = Typography.titleLarge,
-        visualTransformation = CurrencyAmountInputVisualTransformation(
-            fixedCursorAtTheEnd = true
-        ),
-        leadingIcon = {
-            Text(
-                text = NumberFormat.getCurrencyInstance().currency.symbol,
-                style = Typography.titleLarge
-            )
-        },
-        colors = TextFieldDefaults.outlinedTextFieldColors(
-            disabledTextColor = MaterialTheme.colorScheme.onSurface,
-            disabledBorderColor = MaterialTheme.colorScheme.outline,
-            disabledPlaceholderColor = MaterialTheme.colorScheme.onSurfaceVariant,
-            disabledLabelColor = MaterialTheme.colorScheme.onSurfaceVariant,
-            disabledLeadingIconColor = MaterialTheme.colorScheme.onSurfaceVariant,
-            disabledTrailingIconColor = MaterialTheme.colorScheme.onSurfaceVariant
-        )
-    )
-}
-
-/*TODO Read out the correct amount of declared penalties*/
-@Composable
-private fun DeclaredPenalties() {
-    Column(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(top = 32.dp),
-        horizontalAlignment = Alignment.CenterHorizontally
-    ) {
-        Text(
-            text = stringResource(id = R.string.DeclaredPenalties),
-            style = Typography.headlineSmall.copy(textDecoration = TextDecoration.Underline)
-        )
-
-        Text(
-            text = "10",
-            style = Typography.headlineMedium
-        )
-    }
-}
-
 @Preview(showBackground = true)
 @Composable
 private fun PenaltyDetailContentMoneyPreview() {
-
-    val penaltyUiState = PenaltyUiState(
-        id = "63717e8314ab74703f0ab5cb",
-        name = "Monatsbeitrag",
-        categoryName = "Monatsbeitrag",
-        description = "",
-        isBeer = false,
-        value = "500"
-    )
-
-    PenaltyDetailContent(
-        penaltyUiState = penaltyUiState
-    )
+    PenaltyDetailContent(penaltyUiState = penaltyUiStateExample1())
 }
 
 @Preview(showBackground = true)
 @Composable
 private fun PenaltyDetailContentBeerPreview() {
-
-    val penaltyUiState = PenaltyUiState(
-        id = "63717e8314ab74703f0ab5cb",
-        name = "Getränke zur Besprechung",
-        categoryName = "Sonstiges",
-        description = "",
-        isBeer = true,
-        value = "100"
-    )
-
-    PenaltyDetailContent(
-        penaltyUiState = penaltyUiState
-    )
+    PenaltyDetailContent(penaltyUiState = penaltyUiStateExample2())
 }

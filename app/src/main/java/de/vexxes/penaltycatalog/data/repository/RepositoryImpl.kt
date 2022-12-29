@@ -81,6 +81,14 @@ class RepositoryImpl @Inject constructor(
         }
     }
 
+    override suspend fun getDeclaredPenalties(penaltyName: String): ApiResponse {
+        return try {
+            ktorApi.getDeclaredPenalties(penaltyName = penaltyName)
+        } catch (e: Exception) {
+            ApiResponse(success = false, error = e)
+        }
+    }
+
     override suspend fun getPenaltiesBySearch(searchText: String): ApiResponse {
         return try {
             ktorApi.getPenaltiesBySearch(searchText = searchText)

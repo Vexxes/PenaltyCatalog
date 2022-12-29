@@ -1,8 +1,7 @@
 package de.vexxes.penaltycatalog.presentation.screen.history
 
-import androidx.compose.animation.core.LinearEasing
+import android.icu.text.NumberFormat
 import androidx.compose.animation.core.animateFloatAsState
-import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -14,6 +13,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ThumbDown
@@ -30,22 +30,28 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.VisualTransformation
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.DpSize
 import androidx.compose.ui.unit.dp
 import de.vexxes.penaltycatalog.R
 import de.vexxes.penaltycatalog.domain.uistate.PenaltyHistoryUiState
+import de.vexxes.penaltycatalog.domain.uistate.penaltyHistoryUiStateExample1
+import de.vexxes.penaltycatalog.domain.uistate.penaltyHistoryUiStateExample2
+import de.vexxes.penaltycatalog.domain.uistate.penaltyHistoryUiStateExample3
 import de.vexxes.penaltycatalog.domain.visualTransformation.CurrencyAmountInputVisualTransformation
 import de.vexxes.penaltycatalog.ui.theme.Typography
 import de.vexxes.penaltycatalog.ui.theme.colorSchemeSegButtons
-import java.time.LocalDate
 
 @Composable
 fun PenaltyHistoryDetailContent(
-    penaltyHistoryUiState: PenaltyHistoryUiState
+    penaltyHistoryUiState: PenaltyHistoryUiState,
+    onPaidState: (Boolean) -> Unit
 ) {
     Column(
         modifier = Modifier
@@ -55,8 +61,8 @@ fun PenaltyHistoryDetailContent(
         PenaltyHistoryHeader(text = penaltyHistoryUiState.penaltyName)
         PenaltyHistoryButtonsPaid(
             penaltyPaid = penaltyHistoryUiState.penaltyPaid,
-            onButtonPressed = { /*TODO Implement function*/}
-        ) /*TODO Change checkbox */
+            onPaidState = onPaidState
+        )
         PenaltyHistoryPlayerName(penaltyHistoryUiState.playerName)
         PenaltyHistoryDateOfPenalty(penaltyHistoryUiState.timeOfPenalty.toString())
         PenaltyAmount(
@@ -76,94 +82,84 @@ private fun PenaltyHistoryHeader(
     )
 }
 
-/*TODO: Outsource the boxes and summarize the functionality*/
 @Composable
 private fun PenaltyHistoryButtonsPaid(
     penaltyPaid: Boolean,
-    onButtonPressed: (Boolean) -> Unit
+    onPaidState: (Boolean) -> Unit
 ) {
-    val size = DpSize(150.dp, 50.dp)
-
-    val alpha: Float by animateFloatAsState(
-        targetValue = if (penaltyPaid) {
-            1f
-        } else {
-            0f
-        },
-        animationSpec = tween(
-            durationMillis = 3000,
-            easing = LinearEasing,
-        ),
-    )
-
     Row(
         modifier = Modifier
-            .padding(16.dp)
+            .padding(top = 8.dp)
             .fillMaxWidth(),
         horizontalArrangement = Arrangement.Center
     ) {
-        Box(
-            modifier = Modifier
-                .size(size)
-                .border(1.dp, MaterialTheme.colorScheme.outline, RoundedCornerShape(15.dp))
-                .clip(RoundedCornerShape(15.dp))
-                .background(if (penaltyPaid) colorSchemeSegButtons().backgroundPaid else MaterialTheme.colorScheme.surface)
-                .clickable { onButtonPressed(true) },
-            contentAlignment = Alignment.CenterStart
-        ) {
-            Row(modifier = Modifier
-                .fillMaxWidth(),
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Icon(
-                    modifier = Modifier
-                        .alpha(alpha),
-                    imageVector = Icons.Default.ThumbUp,
-                    contentDescription = "",
-                    tint = if (penaltyPaid) colorSchemeSegButtons().foregroundPaid else MaterialTheme.colorScheme.onSurface
-                )
-                Text(
-                    modifier = Modifier
-                        .padding(end = 16.dp)
-                        .fillMaxWidth(),
-                    text = stringResource(id = R.string.Paid),
-                    style = Typography.titleMedium,
-                    color = if (penaltyPaid) colorSchemeSegButtons().foregroundPaid else MaterialTheme.colorScheme.onSurface,
-                )
-            }
-        }
+        ChipBox(
+            text = stringResource(id = R.string.Paid),
+            paid = penaltyPaid,
+            foregroundColor = colorSchemeSegButtons().foregroundPaid,
+            backgroundColor = colorSchemeSegButtons().backgroundPaid,
+            imageVector = Icons.Default.ThumbUp,
+            onButtonPressed = { onPaidState(true) }
+        )
 
-        Box(
-            modifier = Modifier
-                .size(size)
-                .padding(start = 8.dp, end = 8.dp)
-                .border(1.dp, MaterialTheme.colorScheme.outline, RoundedCornerShape(15.dp))
-                .clip(RoundedCornerShape(15.dp))
-                .background(if (!penaltyPaid) colorSchemeSegButtons().backgroundNotPaid else MaterialTheme.colorScheme.surface)
-                .clickable { onButtonPressed(false) },
-            contentAlignment = Alignment.CenterStart
+        ChipBox(
+            text = stringResource(id = R.string.NotPaid),
+            paid = !penaltyPaid,
+            foregroundColor = colorSchemeSegButtons().foregroundNotPaid,
+            backgroundColor = colorSchemeSegButtons().backgroundNotPaid,
+            imageVector = Icons.Default.ThumbDown,
+            onButtonPressed = { onPaidState(false) }
+        )
+    }
+}
+
+@Composable
+private fun ChipBox(
+    text: String,
+    paid: Boolean,
+    foregroundColor: Color,
+    backgroundColor: Color,
+    imageVector: ImageVector,
+    onButtonPressed: () -> Unit
+) {
+    val alpha: Float by animateFloatAsState(
+        targetValue = if (paid) {
+            1f
+        } else {
+            0f
+        }
+    )
+
+    Box(
+        modifier = Modifier
+            .size(DpSize(150.dp, 50.dp))
+            .padding(start = 8.dp, end = 8.dp)
+            .border(1.dp, MaterialTheme.colorScheme.outline, RoundedCornerShape(15.dp))
+            .clip(RoundedCornerShape(15.dp))
+            .background(if (paid) backgroundColor else MaterialTheme.colorScheme.surface)
+            .clickable { onButtonPressed() },
+        contentAlignment = Alignment.CenterStart
+    ) {
+        Row(modifier = Modifier
+            .fillMaxWidth(),
+            verticalAlignment = Alignment.CenterVertically
         ) {
-            Row(modifier = Modifier
-                .fillMaxWidth(),
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Icon(
-                    modifier = Modifier
-                        .padding(8.dp)
-                        .alpha(1f - alpha),
-                    imageVector = Icons.Default.ThumbDown,
-                    contentDescription = "",
-                    tint = if (!penaltyPaid) colorSchemeSegButtons().foregroundNotPaid else MaterialTheme.colorScheme.onSurface
-                )
-                Text(
-                    modifier = Modifier
-                        .padding(end = 16.dp)
-                        .fillMaxWidth(),
-                    text = stringResource(id = R.string.NotPaid),
-                    style = Typography.titleMedium,
-                    color = if (!penaltyPaid) colorSchemeSegButtons().foregroundNotPaid else MaterialTheme.colorScheme.onSurface
-                )
-            }
+            Icon(
+                modifier = Modifier
+                    .padding(start = 8.dp)
+                    .alpha(alpha),
+                imageVector = imageVector,
+                contentDescription = "",
+                tint = if (paid) foregroundColor else MaterialTheme.colorScheme.onSurface
+            )
+            Text(
+                modifier = Modifier
+                    .padding(start = 8.dp, end = 8.dp)
+                    .fillMaxWidth(),
+                text = text,
+                style = Typography.titleMedium,
+                color = if (paid) foregroundColor else MaterialTheme.colorScheme.onSurface,
+            )
         }
     }
 }
@@ -172,40 +168,16 @@ private fun PenaltyHistoryButtonsPaid(
 private fun PenaltyHistoryPlayerName(
     text: String
 ) {
-    Text(
-        modifier = Modifier
-            .padding(top = 32.dp),
-        text = stringResource(id = R.string.Player),
-        style = Typography.labelLarge.copy(fontWeight = FontWeight.Bold),
-        color = MaterialTheme.colorScheme.onSurfaceVariant
-    )
-
-    Text(
-        modifier = Modifier
-            .fillMaxWidth(),
-        text = text,
-        style = Typography.titleLarge
-    )
+    LabelHeader(text = stringResource(id = R.string.Player))
+    ValueText(text = text)
 }
 
 @Composable
 private fun PenaltyHistoryDateOfPenalty(
     text: String
 ) {
-    Text(
-        modifier = Modifier
-            .padding(top = 32.dp),
-        text = stringResource(id = R.string.DateOfPenalty),
-        style = Typography.labelLarge.copy(fontWeight = FontWeight.Bold),
-        color = MaterialTheme.colorScheme.onSurfaceVariant
-    )
-
-    Text(
-        modifier = Modifier
-            .fillMaxWidth(),
-        text = text,
-        style = Typography.titleLarge
-    )
+    LabelHeader(text = stringResource(id = R.string.DateOfPenalty))
+    ValueText(text = text)
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -214,123 +186,83 @@ private fun PenaltyAmount(
     value: String,
     isBeer: Boolean
 ) {
-/*    val text: String
+    LabelHeader(text = stringResource(id = R.string.Amount))
 
-    Text(
+    Row(
         modifier = Modifier
-            .padding(top = 32.dp, start = 8.dp, end = 8.dp),
-        text = stringResource(id = R.string.Amount),
-        style = Typography.labelLarge.copy(fontWeight = FontWeight.Bold),
-        color = MaterialTheme.colorScheme.onSurfaceVariant
-    )
+            .fillMaxWidth(),
+        verticalAlignment = Alignment.CenterVertically,
+    ) {
+        val visualTransformation = if (isBeer) VisualTransformation.None else CurrencyAmountInputVisualTransformation(
+            fixedCursorAtTheEnd = true
+        )
 
-    if(isBeer) {
-        text = "$value " + stringResource(id = R.string.Box)
-    } else {
-        val format = NumberFormat.getCurrencyInstance()
-        format.maximumFractionDigits = 2
-        format.currency = Currency.getInstance("EUR")
-        text = format.format(value)
+        Text(
+            text = if (isBeer) stringResource(id = R.string.Box) else NumberFormat.getCurrencyInstance().currency.symbol,
+            style = Typography.titleLarge.copy(textAlign = TextAlign.Right)
+        )
+
+        OutlinedTextField(
+            value = value,
+            onValueChange = { },
+            modifier = Modifier
+                .width(100.dp)
+                .border(1.dp, MaterialTheme.colorScheme.surface, TextFieldDefaults.outlinedShape),
+            enabled = false,
+            readOnly = true,
+            textStyle = Typography.titleLarge,
+            visualTransformation = visualTransformation,
+            colors = TextFieldDefaults.outlinedTextFieldColors(
+                disabledTextColor = MaterialTheme.colorScheme.onSurface,
+                disabledBorderColor = MaterialTheme.colorScheme.outline,
+                disabledPlaceholderColor = MaterialTheme.colorScheme.onSurfaceVariant,
+                disabledLabelColor = MaterialTheme.colorScheme.onSurfaceVariant,
+                disabledLeadingIconColor = MaterialTheme.colorScheme.onSurfaceVariant,
+                disabledTrailingIconColor = MaterialTheme.colorScheme.onSurfaceVariant
+            )
+        )
     }
+}
 
-    Text(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(start = 8.dp),
-        text = text,
-        style = Typography.titleLarge
-    )*/
-
+@Composable
+private fun LabelHeader(
+    text: String
+) {
     Text(
         modifier = Modifier
             .padding(top = 32.dp),
-        text = stringResource(id = R.string.Amount),
+        text = text,
         style = Typography.labelLarge.copy(fontWeight = FontWeight.Bold),
         color = MaterialTheme.colorScheme.onSurfaceVariant
     )
+}
 
-    OutlinedTextField(
-        value = value,
-        onValueChange = { },
+@Composable
+private fun ValueText(
+    text: String
+) {
+    Text(
         modifier = Modifier
-            .fillMaxWidth()
-            .border(
-                width = 1.dp,
-                MaterialTheme.colorScheme.surface,
-                TextFieldDefaults.outlinedShape
-            ),
-        enabled = false,
-        readOnly = true,
-        textStyle = Typography.titleLarge,
-        visualTransformation = if (!isBeer) {
-            CurrencyAmountInputVisualTransformation(
-                fixedCursorAtTheEnd = true
-            )
-        } else {
-            VisualTransformation.None
-        },
-        leadingIcon = {
-            /*TODO: Currency symbol should only be shown, if isBeer is false*/
-            Text(
-                text = android.icu.text.NumberFormat.getCurrencyInstance().currency.symbol,
-                style = Typography.titleLarge
-            )
-        },
-        colors = TextFieldDefaults.outlinedTextFieldColors(
-            disabledTextColor = MaterialTheme.colorScheme.onSurface,
-            disabledBorderColor = MaterialTheme.colorScheme.outline,
-            disabledPlaceholderColor = MaterialTheme.colorScheme.onSurfaceVariant,
-            disabledLabelColor = MaterialTheme.colorScheme.onSurfaceVariant,
-            disabledLeadingIconColor = MaterialTheme.colorScheme.onSurfaceVariant,
-            disabledTrailingIconColor = MaterialTheme.colorScheme.onSurfaceVariant
-        )
+            .fillMaxWidth(),
+        text = text,
+        style = Typography.titleLarge
     )
 }
 
 @Preview(showBackground = true)
 @Composable
 private fun PenaltyHistoryDetailContentPreview1() {
-    val penaltyUiState = PenaltyHistoryUiState(
-        id = "",
-        playerName = "Thomas Schneider",
-        penaltyName = "Verspätete Zahlung des Monatsbeitrag",
-        penaltyValue = "5",
-        penaltyIsBeer = false,
-        timeOfPenalty = LocalDate.now(),
-        penaltyPaid = false
-    )
-
-    PenaltyHistoryDetailContent(penaltyUiState)
+    PenaltyHistoryDetailContent(penaltyHistoryUiStateExample1()) { }
 }
 
 @Preview(showBackground = true)
 @Composable
 private fun PenaltyHistoryDetailContentPreview2() {
-    val penaltyHistoryUiState = PenaltyHistoryUiState(
-        id = "",
-        playerName = "Thomas Schneider",
-        penaltyName = "Verspätete Zahlung des Monatsbeitrag",
-        penaltyValue = "5",
-        penaltyIsBeer = false,
-        timeOfPenalty = LocalDate.now(),
-        penaltyPaid = true
-    )
-
-    PenaltyHistoryDetailContent(penaltyHistoryUiState)
+    PenaltyHistoryDetailContent(penaltyHistoryUiStateExample2()) { }
 }
 
 @Preview(showBackground = true)
 @Composable
 private fun PenaltyHistoryDetailContentPreview3() {
-    val penaltyHistoryUiState = PenaltyHistoryUiState(
-        id = "",
-        playerName = "Thomas Schneider",
-        penaltyName = "Geburtstag",
-        penaltyValue = "1",
-        penaltyIsBeer = true,
-        timeOfPenalty = LocalDate.now(),
-        penaltyPaid = true
-    )
-
-    PenaltyHistoryDetailContent(penaltyHistoryUiState)
+    PenaltyHistoryDetailContent(penaltyHistoryUiStateExample3()) { }
 }

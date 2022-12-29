@@ -13,6 +13,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.material3.Divider
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
@@ -21,13 +22,18 @@ import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
+import de.vexxes.penaltycatalog.R
 import de.vexxes.penaltycatalog.component.EmptyContent
 import de.vexxes.penaltycatalog.domain.model.Penalty
+import de.vexxes.penaltycatalog.domain.model.penaltyExample1
+import de.vexxes.penaltycatalog.domain.model.penaltyExample2
+import de.vexxes.penaltycatalog.domain.model.penaltyExample3
 import de.vexxes.penaltycatalog.domain.visualTransformation.CurrencyAmountInputVisualTransformation
 import de.vexxes.penaltycatalog.ui.theme.Typography
 
@@ -87,7 +93,7 @@ private fun PenaltyItem(
         Column(
             modifier = Modifier
                 .fillMaxSize()
-                .weight(0.70f),
+                .weight(0.65f),
             verticalArrangement = Arrangement.Center,
         ) {
             PenaltyName(
@@ -101,26 +107,20 @@ private fun PenaltyItem(
 
         PenaltyAmount(
             modifier = Modifier
-                .weight(0.30f),
-            value = penalty.value
+                .weight(0.35f),
+            value = penalty.value,
+            isBeer = penalty.isBeer
         )
     }
+
+    Divider()
 }
 
 @Composable
 @Preview(showBackground = true)
 private fun PlayerItemPreview() {
-    val penalty = Penalty(
-        _id = "63717e8314ab74703f0ab5cb",
-        name = "Getränke zur Besprechung",
-        categoryName = "Sonstiges",
-        description = "Mitzubringen in alphabetischer Reihenfolge nach dem Freitagstraining",
-        isBeer = true,
-        value = "100"
-    )
-
     PenaltyItem(
-        penalty = penalty,
+        penalty = penaltyExample1(),
         navigateToPenaltyDetailScreen = { }
     )
 }
@@ -129,30 +129,9 @@ private fun PlayerItemPreview() {
 @Composable
 private fun PenaltyListContentPreview() {
     val penalties = listOf(
-        Penalty(
-            _id = "",
-            name = "Monatsbeitrag",
-            categoryName = "Monatsbeitrag",
-            description = "",
-            isBeer = false,
-            value = "500"
-        ),
-        Penalty(
-            _id = "",
-            name = "Verspätete Zahlung des Monatsbeitrag",
-            categoryName = "Monatsbeitrag",
-            description = "zzgl. pro Monat",
-            isBeer = false,
-            value = "500"
-        ),
-        Penalty(
-            _id = "",
-            name = "Getränke zur Besprechung",
-            categoryName = "Sonstiges",
-            description = "Mitzubringen in alphabetischer Reihenfolge nach dem Freitagstraining",
-            isBeer = true,
-            value = "100"
-        )
+        penaltyExample1(),
+        penaltyExample2(),
+        penaltyExample3()
     )
 
     PenaltyListContent(
@@ -175,7 +154,7 @@ private fun PenaltyName(
     Text(
         modifier = modifier,
         text = text,
-        style = Typography.titleMedium.copy(fontSize = 19.sp, fontWeight = FontWeight.Bold),
+        style = Typography.titleMedium.copy(fontWeight = FontWeight.Bold),
         textAlign = TextAlign.Left,
     )
 }
@@ -189,7 +168,7 @@ private fun PenaltyNameOfCategory(
         modifier = modifier,
         text = text,
         color = MaterialTheme.colorScheme.onSurfaceVariant,
-        style = Typography.titleSmall.copy(fontWeight = FontWeight.Bold),
+        style = Typography.bodySmall.copy(fontWeight = FontWeight.Bold),
     )
 }
 
@@ -197,7 +176,8 @@ private fun PenaltyNameOfCategory(
 @Composable
 private fun PenaltyAmount(
     modifier: Modifier = Modifier,
-    value: String
+    value: String,
+    isBeer: Boolean
 ) {
     Row(
         modifier = modifier
@@ -205,24 +185,39 @@ private fun PenaltyAmount(
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.End
     ) {
+        val visualTransformation = if (isBeer) VisualTransformation.None else CurrencyAmountInputVisualTransformation(
+            fixedCursorAtTheEnd = true
+        )
+
+        Text(
+            text = if (isBeer) stringResource(id = R.string.Box) else NumberFormat.getCurrencyInstance().currency.symbol,
+            modifier = Modifier
+                .weight(0.5f),
+            style = Typography.titleMedium.copy(textAlign = TextAlign.Right)
+        )
+
         OutlinedTextField(
             value = value,
             onValueChange = { },
             modifier = Modifier
-                .fillMaxWidth()
-                .border(width = 1.dp, MaterialTheme.colorScheme.surface, TextFieldDefaults.outlinedShape),
-            enabled = true,
+                .weight(0.8f)
+                .border(
+                    width = 1.dp,
+                    MaterialTheme.colorScheme.surface,
+                    TextFieldDefaults.outlinedShape
+                ),
+            enabled = false,
             readOnly = true,
-            textStyle = Typography.titleLarge,
-            visualTransformation = CurrencyAmountInputVisualTransformation(
-                fixedCursorAtTheEnd = true
-            ),
-            leadingIcon = {
-                Text(
-                    text = NumberFormat.getCurrencyInstance().currency.symbol,
-                    style = Typography.titleLarge
-                )
-            }
+            textStyle = Typography.titleMedium.copy(textAlign = TextAlign.Right),
+            visualTransformation = visualTransformation,
+            colors = TextFieldDefaults.outlinedTextFieldColors(
+                disabledTextColor = MaterialTheme.colorScheme.onSurface,
+                disabledBorderColor = MaterialTheme.colorScheme.outline,
+                disabledPlaceholderColor = MaterialTheme.colorScheme.onSurfaceVariant,
+                disabledLabelColor = MaterialTheme.colorScheme.onSurfaceVariant,
+                disabledLeadingIconColor = MaterialTheme.colorScheme.onSurfaceVariant,
+                disabledTrailingIconColor = MaterialTheme.colorScheme.onSurfaceVariant
+            )
         )
     }
 }

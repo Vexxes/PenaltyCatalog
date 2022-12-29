@@ -12,39 +12,38 @@ data class PenaltyHistory(
     val penaltyIsBeer: Boolean = false,
     val timeOfPenalty: String = "",
     val penaltyPaid: Boolean = false
-) {
-    companion object {
-        fun exampleData1(): PenaltyHistory {
-            return PenaltyHistory(
-                _id = "",
-                penaltyName = "Getränke zur Besprechung",
-                playerName = "Mustermann, Max",
-                timeOfPenalty = LocalDate.now().toString(),
-                penaltyValue = "500"
-            )
-        }
+)
 
-        fun exampleData2(): PenaltyHistory {
-            return PenaltyHistory(
-                _id = "",
-                penaltyName = "Verspätete Zahlung des Monatsbeitrag",
-                playerName = "Mustermann, Max",
-                penaltyValue = "500",
-                penaltyIsBeer = false,
-                timeOfPenalty = LocalDate.now().toString()
-            )
-        }
+fun penaltyHistoryExample1(): PenaltyHistory {
+    return PenaltyHistory(
+        _id = "",
+        penaltyName = "Getränke zur Besprechung",
+        playerName = "Mustermann, Max",
+        penaltyValue = "1",
+        penaltyIsBeer = true,
+        timeOfPenalty = LocalDate.now().toString()
+    )
+}
 
-        fun exampleData3(): PenaltyHistory {
-            return PenaltyHistory(
-                _id = "",
-                penaltyName = "Verspätete Zahlung des Monatsbeitrag",
-                playerName = "Mustermann, Max",
-                penaltyValue = "500",
-                penaltyIsBeer = false,
-                timeOfPenalty = LocalDate.now().toString(),
-                penaltyPaid = true
-            )
-        }
-    }
+fun penaltyHistoryExample2(): PenaltyHistory {
+    return PenaltyHistory(
+        _id = "",
+        penaltyName = "Verspätete Zahlung des Monatsbeitrag",
+        playerName = "Mustermann, Max",
+        penaltyValue = "500",
+        penaltyIsBeer = false,
+        timeOfPenalty = LocalDate.now().toString()
+    )
+}
+
+fun penaltyHistoryExample3(): PenaltyHistory {
+    return PenaltyHistory(
+        _id = "",
+        penaltyName = "Verspätete Zahlung des Monatsbeitrag",
+        playerName = "Mustermann, Max",
+        penaltyValue = "1500",
+        penaltyIsBeer = false,
+        timeOfPenalty = LocalDate.now().toString(),
+        penaltyPaid = true
+    )
 }

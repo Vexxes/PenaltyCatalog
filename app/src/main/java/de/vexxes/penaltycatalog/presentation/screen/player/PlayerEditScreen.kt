@@ -11,7 +11,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import de.vexxes.penaltycatalog.component.BackSaveTopBar
-import de.vexxes.penaltycatalog.domain.model.Player
+import de.vexxes.penaltycatalog.domain.model.PlayerExample
 import de.vexxes.penaltycatalog.domain.uievent.PlayerUiEvent
 import de.vexxes.penaltycatalog.domain.uistate.PlayerUiState
 import de.vexxes.penaltycatalog.viewmodels.PlayerViewModel
@@ -110,7 +110,7 @@ private fun PlayerEditScaffold(
 @Composable
 private fun PlayerEditScreenPreview() {
 
-    val player = Player.generateFaker()
+    val player = PlayerExample()
     val playerUiState = PlayerUiState(
         id = player._id,
         number = player.number.toString(),

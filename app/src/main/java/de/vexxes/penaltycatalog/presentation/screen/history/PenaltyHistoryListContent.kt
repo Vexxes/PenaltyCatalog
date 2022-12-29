@@ -22,13 +22,18 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
+import de.vexxes.penaltycatalog.R
 import de.vexxes.penaltycatalog.component.EmptyContent
 import de.vexxes.penaltycatalog.domain.model.PenaltyHistory
+import de.vexxes.penaltycatalog.domain.model.penaltyHistoryExample1
+import de.vexxes.penaltycatalog.domain.model.penaltyHistoryExample2
+import de.vexxes.penaltycatalog.domain.model.penaltyHistoryExample3
 import de.vexxes.penaltycatalog.domain.visualTransformation.CurrencyAmountInputVisualTransformation
 import de.vexxes.penaltycatalog.ui.theme.Typography
 import de.vexxes.penaltycatalog.ui.theme.colorSchemeSegButtons
@@ -59,7 +64,7 @@ private fun DisplayPenaltyHistory(
 ) {
     LazyColumn(
         modifier = Modifier.fillMaxSize(),
-        verticalArrangement = Arrangement.spacedBy(8.dp)
+        verticalArrangement = Arrangement.spacedBy(4.dp)
     ) {
         items(
             items = penaltyHistory,
@@ -85,14 +90,14 @@ private fun DisplayPenaltyHistory(
                 }
 
                 FilterPaidState.NOT_PAID -> {
-                    if (!penaltyHistoryItem.penaltyPaid)
+                    if (!penaltyHistoryItem.penaltyPaid) {
                         PenaltyHistoryItem(
                             penaltyHistory = penaltyHistoryItem,
                             navigateToPenaltyHistoryDetailScreen = navigateToPenaltyHistoryDetailScreen
                         )
+                    }
                 }
             }
-
         }
     }
 }
@@ -108,7 +113,7 @@ private fun PenaltyHistoryItem(
                 navigateToPenaltyHistoryDetailScreen(penaltyHistory._id)
             }
             .fillMaxWidth()
-            .height(88.dp)
+            .height(72.dp)
             .background(
                 if (penaltyHistory.penaltyPaid) colorSchemeSegButtons().backgroundPaid else colorSchemeSegButtons().backgroundNotPaid
             )
@@ -117,7 +122,7 @@ private fun PenaltyHistoryItem(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(start = 8.dp, end = 8.dp)
-                .weight(0.65f),
+                .weight(0.6f),
             verticalArrangement = Arrangement.Center
         ) {
             PenaltyHistoryPlayerName(
@@ -136,8 +141,9 @@ private fun PenaltyHistoryItem(
         PenaltyHistoryPenaltyAmount(
             modifier = Modifier
                 .padding(end = 8.dp)
-                .weight(0.30f),
+                .weight(0.4f),
             value = penaltyHistory.penaltyValue,
+            isBeer = penaltyHistory.penaltyIsBeer,
             color = if (penaltyHistory.penaltyPaid) colorSchemeSegButtons().backgroundPaid else colorSchemeSegButtons().backgroundNotPaid)
     }
 }
@@ -150,7 +156,7 @@ private fun PenaltyHistoryPlayerName(
         modifier = Modifier
             .fillMaxWidth(),
         text = text,
-        style = Typography.titleMedium.copy(fontSize = 19.sp, fontWeight = FontWeight.Bold),
+        style = Typography.titleMedium.copy(fontWeight = FontWeight.Bold),
         textAlign = TextAlign.Left
     )
 }
@@ -164,17 +170,17 @@ private fun PenaltyHistorySubText(
             .fillMaxWidth(),
         text = text,
         color = MaterialTheme.colorScheme.onSurfaceVariant,
-        style = Typography.titleSmall.copy(fontWeight = FontWeight.Bold),
+        style = Typography.bodySmall.copy(fontWeight = FontWeight.Bold),
         textAlign = TextAlign.Left
     )
 }
 
-/*TODO: Correct visualization of the value, if isBeer is true*/
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun PenaltyHistoryPenaltyAmount(
     modifier: Modifier = Modifier,
     value: String,
+    isBeer: Boolean,
     color: Color
 ) {
     Row(
@@ -183,27 +189,31 @@ private fun PenaltyHistoryPenaltyAmount(
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.End
     ) {
+        val visualTransformation = if (isBeer) VisualTransformation.None else CurrencyAmountInputVisualTransformation(
+            fixedCursorAtTheEnd = true
+        )
+
+        Text(
+            text = if (isBeer) stringResource(id = R.string.Box) else NumberFormat.getCurrencyInstance().currency.symbol,
+            modifier = Modifier
+                .weight(0.4f),
+            style = Typography.titleMedium.copy(textAlign = TextAlign.Right)
+        )
+
         OutlinedTextField(
             value = value,
             onValueChange = { },
             modifier = Modifier
-                .fillMaxWidth()
+                .weight(0.8f)
                 .border(
                     width = 1.dp,
                     color,
-                    TextFieldDefaults.outlinedShape),
+                    TextFieldDefaults.outlinedShape
+                ),
             enabled = false,
             readOnly = true,
-            textStyle = Typography.titleLarge,
-            visualTransformation = CurrencyAmountInputVisualTransformation(
-                fixedCursorAtTheEnd = true
-            ),
-            leadingIcon = {
-                Text(
-                    text = NumberFormat.getCurrencyInstance().currency.symbol,
-                    style = Typography.titleLarge
-                )
-            },
+            textStyle = Typography.titleMedium.copy(textAlign = TextAlign.Right),
+            visualTransformation = visualTransformation,
             colors = TextFieldDefaults.outlinedTextFieldColors(
                 disabledTextColor = MaterialTheme.colorScheme.onSurface,
                 disabledBorderColor = MaterialTheme.colorScheme.outline,
@@ -220,7 +230,7 @@ private fun PenaltyHistoryPenaltyAmount(
 @Preview(showBackground = true)
 private fun PenaltyHistoryItemPreview() {
     PenaltyHistoryItem(
-        penaltyHistory = PenaltyHistory.exampleData1(),
+        penaltyHistory = penaltyHistoryExample1(),
         navigateToPenaltyHistoryDetailScreen = { }
     )
 }
@@ -230,9 +240,9 @@ private fun PenaltyHistoryItemPreview() {
 private fun PenaltyHistoryContentPreview1() {
     PenaltyHistoryListContent(
         penaltyHistory = listOf(
-            PenaltyHistory.exampleData1(),
-            PenaltyHistory.exampleData2(),
-            PenaltyHistory.exampleData3()
+            penaltyHistoryExample1(),
+            penaltyHistoryExample2(),
+            penaltyHistoryExample3()
         ),
         filterPaidState = FilterPaidState.OFF,
         navigateToPenaltyHistoryDetailScreen = { }
@@ -244,9 +254,9 @@ private fun PenaltyHistoryContentPreview1() {
 private fun PenaltyHistoryContentPreview2() {
     PenaltyHistoryListContent(
         penaltyHistory = listOf(
-            PenaltyHistory.exampleData1(),
-            PenaltyHistory.exampleData2(),
-            PenaltyHistory.exampleData3()
+            penaltyHistoryExample1(),
+            penaltyHistoryExample2(),
+            penaltyHistoryExample3()
         ),
         filterPaidState = FilterPaidState.PAID,
         navigateToPenaltyHistoryDetailScreen = { }
@@ -258,9 +268,9 @@ private fun PenaltyHistoryContentPreview2() {
 private fun PenaltyHistoryContentPreview3() {
     PenaltyHistoryListContent(
         penaltyHistory = listOf(
-            PenaltyHistory.exampleData1(),
-            PenaltyHistory.exampleData2(),
-            PenaltyHistory.exampleData3()
+            penaltyHistoryExample1(),
+            penaltyHistoryExample2(),
+            penaltyHistoryExample3()
         ),
         filterPaidState = FilterPaidState.NOT_PAID,
         navigateToPenaltyHistoryDetailScreen = { }

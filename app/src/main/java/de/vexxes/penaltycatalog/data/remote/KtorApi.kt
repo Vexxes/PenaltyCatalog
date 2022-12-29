@@ -39,6 +39,9 @@ interface KtorApi {
     @GET("get_penalty/{penaltyId}")
     suspend fun getPenaltyById(@Path("penaltyId") penaltyId: String): ApiResponse
 
+    @GET("get_penalty_declared")
+    suspend fun getDeclaredPenalties(@Query("penaltyName") penaltyName: String): ApiResponse
+
     @GET("get_penalties_by_search")
     suspend fun getPenaltiesBySearch(@Query("searchText") searchText: String): ApiResponse
 

@@ -45,6 +45,9 @@ import de.vexxes.penaltycatalog.component.GeneralTopBar
 import de.vexxes.penaltycatalog.domain.model.ApiResponse
 import de.vexxes.penaltycatalog.domain.model.PenaltyHistory
 import de.vexxes.penaltycatalog.domain.model.SortOrder
+import de.vexxes.penaltycatalog.domain.model.penaltyHistoryExample1
+import de.vexxes.penaltycatalog.domain.model.penaltyHistoryExample2
+import de.vexxes.penaltycatalog.domain.model.penaltyHistoryExample3
 import de.vexxes.penaltycatalog.domain.uievent.SearchUiEvent
 import de.vexxes.penaltycatalog.domain.uistate.SearchUiState
 import de.vexxes.penaltycatalog.ui.theme.Typography
@@ -294,9 +297,9 @@ private fun PenaltyHistoryListScreenPreview() {
         onSortClicked = { },
         onCloseClicked = { },
         penaltyHistory = listOf(
-            PenaltyHistory.exampleData1(),
-            PenaltyHistory.exampleData2(),
-            PenaltyHistory.exampleData3()
+            penaltyHistoryExample1(),
+            penaltyHistoryExample2(),
+            penaltyHistoryExample3()
         ),
         apiResponse = ApiResponse(),
         resetApiResponse = { },

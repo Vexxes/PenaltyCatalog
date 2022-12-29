@@ -14,9 +14,10 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import de.vexxes.penaltycatalog.component.BackDeleteEditTopBar
 import de.vexxes.penaltycatalog.component.DeleteAlertDialog
+import de.vexxes.penaltycatalog.domain.uievent.PenaltyHistoryUiEvent
 import de.vexxes.penaltycatalog.domain.uistate.PenaltyHistoryUiState
+import de.vexxes.penaltycatalog.domain.uistate.penaltyHistoryUiStateExample1
 import de.vexxes.penaltycatalog.viewmodels.PenaltyHistoryViewModel
-import java.time.LocalDate
 
 @Composable
 fun PenaltyHistoryDetailScreen(
@@ -35,7 +36,7 @@ fun PenaltyHistoryDetailScreen(
     if (showAlertDialog) {
         DeleteAlertDialog(
             title = "Permanently delete?",
-            text = "Penalty History will be delete permanently and can't be restored",
+            text = "Penalty History will be deleted permanently and can't be restored",
             onDismissRequest = { showAlertDialog = false },
             onConfirmClicked = {
                 showAlertDialog = false
@@ -48,8 +49,9 @@ fun PenaltyHistoryDetailScreen(
     PenaltyHistoryDetailScreen(
         penaltyHistoryUiState = penaltyHistoryUiState,
         onBackClicked = onBackClicked,
-        onDeleteClicked = { showAlertDialog = false},
-        onEditClicked = { onEditClicked(penaltyHistoryUiState.id) }
+        onDeleteClicked = { showAlertDialog = true },
+        onEditClicked = { onEditClicked(penaltyHistoryUiState.id) },
+        onPaidState = { penaltyHistoryViewModel.onPenaltyHistoryUiEvent(PenaltyHistoryUiEvent.PenaltyPaidChanged(it)) }
     )
 }
 
@@ -59,7 +61,8 @@ private fun PenaltyHistoryDetailScreen(
     penaltyHistoryUiState: PenaltyHistoryUiState,
     onBackClicked: () -> Unit,
     onDeleteClicked: () -> Unit,
-    onEditClicked: () -> Unit
+    onEditClicked: () -> Unit,
+    onPaidState: (Boolean) -> Unit
 ) {
     Scaffold(
         topBar = {
@@ -72,7 +75,10 @@ private fun PenaltyHistoryDetailScreen(
 
         content = {
             Box(modifier = Modifier.padding(it)) {
-                PenaltyHistoryDetailContent(penaltyHistoryUiState = penaltyHistoryUiState)
+                PenaltyHistoryDetailContent(
+                    penaltyHistoryUiState = penaltyHistoryUiState,
+                    onPaidState = onPaidState
+                )
             }
         }
     )
@@ -81,20 +87,11 @@ private fun PenaltyHistoryDetailScreen(
 @Preview(showBackground = true)
 @Composable
 private fun PenaltyHistoryDetailScreenPreview() {
-    val penaltyUiState = PenaltyHistoryUiState(
-        id = "",
-        playerName = "Thomas Schneider",
-        penaltyName = "Verspätete Zahlung des Monatsbeitrag",
-        penaltyValue = "5",
-        penaltyIsBeer = false,
-        timeOfPenalty = LocalDate.now(),
-        penaltyPaid = true
-    )
-
     PenaltyHistoryDetailScreen(
-        penaltyHistoryUiState = penaltyUiState,
+        penaltyHistoryUiState = penaltyHistoryUiStateExample1(),
         onBackClicked = { },
         onDeleteClicked = { },
-        onEditClicked = { }
+        onEditClicked = { },
+        onPaidState = { }
     )
 }

@@ -67,6 +67,34 @@ class PenaltyViewModel @Inject constructor(
         )
     }
 
+    private fun getDeclaredPenalties() {
+        apiResponse.value = RequestState.Loading
+
+        viewModelScope.launch {
+            try {
+                val response = withContext(Dispatchers.IO) {
+                    repository.getDeclaredPenalties(penaltyName = penaltyUiState.value.name)
+                }
+                apiResponse.value = RequestState.Success(response)
+
+                if (response.message != null) {
+                    penaltyUiState.value = penaltyUiState.value.copy(
+                        valueDeclaredPenalties = response.message
+                    )
+                } else {
+                    penaltyUiState.value = penaltyUiState.value.copy(
+                        valueDeclaredPenalties = "0"
+                    )
+                }
+                Log.d("PenaltyViewModel", response.toString())
+            }
+            catch (e: Exception) {
+                apiResponse.value = RequestState.Error(e)
+                Log.d("PenaltyViewModel", e.toString())
+            }
+        }
+    }
+
     private fun verifyPenalty(): Boolean {
         val nameResult = penaltyUiState.value.name.isEmpty()
         val valueResult = penaltyUiState.value.value.isEmpty()
@@ -141,6 +169,8 @@ class PenaltyViewModel @Inject constructor(
                     penaltyUiState.value = PenaltyUiState()
                 }
                 Log.d("PenaltyViewModel", response.toString())
+
+                getDeclaredPenalties()
             }
             catch (e: Exception) {
                 apiResponse.value = RequestState.Error(e)
@@ -149,7 +179,7 @@ class PenaltyViewModel @Inject constructor(
         }
     }
 
-    fun getPenaltiesBySearch() {
+    private fun getPenaltiesBySearch() {
         apiResponse.value = RequestState.Loading
 
         viewModelScope.launch {

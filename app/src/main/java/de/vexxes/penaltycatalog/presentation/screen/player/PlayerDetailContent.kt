@@ -20,7 +20,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import de.vexxes.penaltycatalog.R
-import de.vexxes.penaltycatalog.domain.model.Player
+import de.vexxes.penaltycatalog.domain.model.PlayerExample
 import de.vexxes.penaltycatalog.domain.uistate.PlayerUiState
 import de.vexxes.penaltycatalog.ui.theme.Green40
 import de.vexxes.penaltycatalog.ui.theme.Red80
@@ -55,7 +55,7 @@ fun PlayerDetailContent(
 @Composable
 fun PlayerDetailContentPreview() {
 
-    val player = Player.generateFaker()
+    val player = PlayerExample()
     val playerUiState = PlayerUiState(
         id = player._id,
         number = player.number.toString(),

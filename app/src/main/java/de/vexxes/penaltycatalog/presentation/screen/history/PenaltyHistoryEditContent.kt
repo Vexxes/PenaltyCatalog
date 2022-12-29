@@ -1,11 +1,15 @@
 package de.vexxes.penaltycatalog.presentation.screen.history
 
 import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowDropDown
 import androidx.compose.material.icons.filled.DateRange
@@ -15,6 +19,7 @@ import androidx.compose.material3.ExposedDropdownMenuBox
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
@@ -27,6 +32,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.VisualTransformation
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
@@ -37,10 +44,12 @@ import de.vexxes.penaltycatalog.component.InputOutlinedField
 import de.vexxes.penaltycatalog.domain.model.Penalty
 import de.vexxes.penaltycatalog.domain.model.Player
 import de.vexxes.penaltycatalog.domain.uistate.PenaltyHistoryUiState
+import de.vexxes.penaltycatalog.domain.uistate.penaltyHistoryUiStateExample1
+import de.vexxes.penaltycatalog.domain.uistate.penaltyHistoryUiStateExample2
+import de.vexxes.penaltycatalog.domain.uistate.penaltyHistoryUiStateExample3
+import de.vexxes.penaltycatalog.domain.visualTransformation.CurrencyAmountInputVisualTransformation
 import de.vexxes.penaltycatalog.ui.theme.Typography
-import java.text.NumberFormat
 import java.time.LocalDate
-import java.util.Currency
 
 @Composable
 fun PenaltyHistoryEditContent(
@@ -75,7 +84,7 @@ fun PenaltyHistoryEditContent(
 
         if (penaltyHistoryUiState.penaltyName.isNotEmpty()) {
             PenaltyHistoryAmount(
-                value = penaltyHistoryUiState.penaltyValue.toInt(),
+                value = penaltyHistoryUiState.penaltyValue,
                 isBeer = penaltyHistoryUiState.penaltyIsBeer
             )
         }
@@ -265,26 +274,16 @@ private fun PenaltyHistoryPenaltyExposedMenu(
     }
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun PenaltyHistoryAmount(
-    value: Int,
+    value: String,
     isBeer: Boolean
 ) {
-    var text: String
-
     Column(
         modifier = Modifier.fillMaxWidth(),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        if(isBeer) {
-            text = "$value " + stringResource(id = R.string.Box)
-        } else {
-            val format = NumberFormat.getCurrencyInstance()
-            format.maximumFractionDigits = 2
-            format.currency = Currency.getInstance("EUR")
-            text = format.format(value.toDouble() / 100) // value is stored as cents, divide by 100
-        }
-
         Text(
             modifier = Modifier
                 .padding(top = 16.dp),
@@ -293,28 +292,73 @@ private fun PenaltyHistoryAmount(
             color = MaterialTheme.colorScheme.onSurfaceVariant
         )
 
-        Text(
-            text = text,
-            style = Typography.titleLarge
-        )
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.Center
+        ) {
+            val visualTransformation = if (isBeer) VisualTransformation.None else CurrencyAmountInputVisualTransformation(
+                fixedCursorAtTheEnd = true
+            )
+
+            Text(
+                text = if (isBeer) stringResource(id = R.string.Box) else android.icu.text.NumberFormat.getCurrencyInstance().currency.symbol,
+                style = Typography.titleLarge.copy(textAlign = TextAlign.Right)
+            )
+
+            OutlinedTextField(
+                value = value,
+                onValueChange = { },
+                modifier = Modifier
+                    .width(100.dp)
+                    .border(1.dp, MaterialTheme.colorScheme.surface, TextFieldDefaults.outlinedShape),
+                enabled = false,
+                readOnly = true,
+                textStyle = Typography.titleLarge,
+                visualTransformation = visualTransformation,
+                colors = TextFieldDefaults.outlinedTextFieldColors(
+                    disabledTextColor = MaterialTheme.colorScheme.onSurface,
+                    disabledBorderColor = MaterialTheme.colorScheme.outline,
+                    disabledPlaceholderColor = MaterialTheme.colorScheme.onSurfaceVariant,
+                    disabledLabelColor = MaterialTheme.colorScheme.onSurfaceVariant,
+                    disabledLeadingIconColor = MaterialTheme.colorScheme.onSurfaceVariant,
+                    disabledTrailingIconColor = MaterialTheme.colorScheme.onSurfaceVariant
+                )
+            )
+        }
     }
 }
 
 @Composable
 @Preview(showBackground = true)
-private fun PenaltyHistoryEditContentPreview() {
-    val penaltyHistoryUiState = PenaltyHistoryUiState(
-        id = "",
-        playerName = "Thomas Schneider",
-        penaltyName = "Verspätete Zahlung des Monatsbeitrag",
-        penaltyValue = "5",
-        penaltyIsBeer = false,
-        timeOfPenalty = LocalDate.now(),
-        penaltyPaid = true
-    )
-
+private fun PenaltyHistoryEditContentPreview1() {
     PenaltyHistoryEditContent(
-        penaltyHistoryUiState = penaltyHistoryUiState,
+        penaltyHistoryUiState = penaltyHistoryUiStateExample1(),
+        penaltyList = emptyList(),
+        playerList = emptyList(),
+        onPenaltyChanged = { _, _ -> },
+        onPlayerChanged = { },
+        onTimeOfPenaltyChanged = { }
+    )
+}
+
+@Composable
+@Preview(showBackground = true)
+private fun PenaltyHistoryEditContentPreview2() {
+    PenaltyHistoryEditContent(
+        penaltyHistoryUiState = penaltyHistoryUiStateExample2(),
+        penaltyList = emptyList(),
+        playerList = emptyList(),
+        onPenaltyChanged = { _, _ -> },
+        onPlayerChanged = { },
+        onTimeOfPenaltyChanged = { }
+    )
+}
+
+@Composable
+@Preview(showBackground = true)
+private fun PenaltyHistoryEditContentPreview3() {
+    PenaltyHistoryEditContent(
+        penaltyHistoryUiState = penaltyHistoryUiStateExample3(),
         penaltyList = emptyList(),
         playerList = emptyList(),
         onPenaltyChanged = { _, _ -> },

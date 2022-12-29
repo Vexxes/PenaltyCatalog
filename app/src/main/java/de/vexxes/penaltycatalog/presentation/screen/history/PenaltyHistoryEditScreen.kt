@@ -11,9 +11,14 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import de.vexxes.penaltycatalog.component.BackSaveTopBar
 import de.vexxes.penaltycatalog.domain.model.Penalty
+import de.vexxes.penaltycatalog.domain.model.penaltyExample1
+import de.vexxes.penaltycatalog.domain.model.penaltyExample2
+import de.vexxes.penaltycatalog.domain.model.penaltyExample3
 import de.vexxes.penaltycatalog.domain.model.Player
+import de.vexxes.penaltycatalog.domain.model.PlayerExample
 import de.vexxes.penaltycatalog.domain.uievent.PenaltyHistoryUiEvent
 import de.vexxes.penaltycatalog.domain.uistate.PenaltyHistoryUiState
+import de.vexxes.penaltycatalog.domain.uistate.penaltyHistoryUiStateExample1
 import de.vexxes.penaltycatalog.viewmodels.PenaltyHistoryViewModel
 import java.time.LocalDate
 
@@ -90,53 +95,20 @@ private fun PenaltyHistoryEditScaffold(
 @Composable
 @Preview(showBackground = true)
 private fun PenaltyHistoryEditScreenPreview() {
-
-    val penaltyUiState = PenaltyHistoryUiState(
-        id = "",
-        playerName = "Thomas Schneider",
-        penaltyName = "Verspätete Zahlung des Monatsbeitrag",
-        penaltyValue = "5",
-        penaltyIsBeer = false,
-        timeOfPenalty = LocalDate.now(),
-        penaltyPaid = true
-    )
-
     val penalties = listOf(
-        Penalty(
-            _id = "",
-            name = "Monatsbeitrag",
-            categoryName = "Monatsbeitrag",
-            description = "",
-            isBeer = false,
-            value = "5"
-        ),
-        Penalty(
-            _id = "",
-            name = "Verspätete Zahlung des Monatsbeitrag",
-            categoryName = "Monatsbeitrag",
-            description = "zzgl. pro Monat",
-            isBeer = false,
-            value = "5"
-        ),
-        Penalty(
-            _id = "",
-            name = "Getränke zur Besprechung",
-            categoryName = "Sonstiges",
-            description = "Mitzubringen in alphabetischer Reihenfolge nach dem Freitagstraining",
-            isBeer = true,
-            value = "1"
-        )
+        penaltyExample1(),
+        penaltyExample2(),
+        penaltyExample3()
     )
 
     val players = listOf(
-        Player.generateFaker(),
-        Player.generateFaker(),
-        Player.generateFaker()
+        PlayerExample(),
+        PlayerExample(),
+        PlayerExample()
     )
 
-
     PenaltyHistoryEditScaffold(
-        penaltyHistoryUiState = penaltyUiState,
+        penaltyHistoryUiState = penaltyHistoryUiStateExample1(),
         penalties = penalties,
         players = players,
         onPenaltyChanged = { _, _ -> },

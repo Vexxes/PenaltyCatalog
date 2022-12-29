@@ -167,7 +167,7 @@ class PenaltyHistoryViewModel @Inject constructor(
         }
     }
 
-    fun getPenaltyHistoryBySearch() {
+    private fun getPenaltyHistoryBySearch() {
         apiResponse.value = RequestState.Loading
 
         viewModelScope.launch {
@@ -278,6 +278,7 @@ class PenaltyHistoryViewModel @Inject constructor(
                 penaltyHistoryUiState.value = penaltyHistoryUiState.value.copy(
                     penaltyPaid = event.penaltyPaid
                 )
+                updatePenaltyHistory()
             }
         }
     }
@@ -301,7 +302,7 @@ class PenaltyHistoryViewModel @Inject constructor(
                 searchUiState.value = searchUiState.value.copy(
                     searchText = event.searchText
                 )
-                getAllPenaltyHistory()
+                getPenaltyHistoryBySearch()
             }
         }
     }
