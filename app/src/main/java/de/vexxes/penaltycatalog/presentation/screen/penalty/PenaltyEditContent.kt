@@ -44,21 +44,20 @@ fun PenaltyEditContent(
     onPenaltyAmountChanged: (String) -> Unit,
     onPenaltyTypeChanged: (PenaltyType) -> Unit
 ) {
-    println("Test: ${penaltyUiState.value}")
-
-
     Column(
         modifier = Modifier
             .fillMaxSize()
     ) {
         CategoryExposedMenu(
             text = penaltyUiState.categoryName,
+            error = penaltyUiState.categoryError,
             categoryList = categoryList,
             onCategoryChanged = onCategoryChanged
         )
 
         PenaltyName(
             text = penaltyUiState.name,
+            error = penaltyUiState.nameError,
             onTextChanged = onPenaltyNameChanged
         )
 
@@ -69,6 +68,7 @@ fun PenaltyEditContent(
 
         PenaltyAmount(
             text = penaltyUiState.value,
+            error = penaltyUiState.valueError,
             onTextChanged = onPenaltyAmountChanged
         )
 
@@ -83,6 +83,7 @@ fun PenaltyEditContent(
 @Composable
 private fun CategoryExposedMenu(
     text: String,
+    error: Boolean,
     categoryList: List<PenaltyCategory>,
     onCategoryChanged: (String) -> Unit
 ) {
@@ -105,6 +106,7 @@ private fun CategoryExposedMenu(
             text = text,
             onTextChanged = { },
             label = stringResource(id = R.string.Category),
+            required = true,
             trailingIcon = {
                 IconButton(
                     modifier = Modifier
@@ -115,7 +117,8 @@ private fun CategoryExposedMenu(
                         contentDescription = ""
                     )
                 }
-            }
+            },
+            isError = error
         )
 
         /*TODO Why does the width of dropdownmenu item not match to the parent container*/
@@ -147,6 +150,7 @@ private fun CategoryExposedMenu(
 @Composable
 private fun PenaltyName(
     text: String,
+    error: Boolean,
     onTextChanged: (String) -> Unit
 ) {
     InputOutlinedField(
@@ -154,7 +158,9 @@ private fun PenaltyName(
             .padding(8.dp),
         text = text,
         onTextChanged = onTextChanged,
-        label = stringResource(id = R.string.PenaltyName)
+        label = stringResource(id = R.string.PenaltyName),
+        required = true,
+        isError = error
     )
 }
 
@@ -239,6 +245,7 @@ private fun PenaltyDescription(
 @Composable
 private fun PenaltyAmount(
     text: String,
+    error: Boolean,
     onTextChanged: (String) -> Unit
 ) {
     var tmpText: String
@@ -255,7 +262,9 @@ private fun PenaltyAmount(
             }
             onTextChanged(tmpText)
         },
+        isError = error,
         label = stringResource(id = R.string.Amount),
+        required = true,
         leadingIcon = {
             Text(text = NumberFormat.getCurrencyInstance().currency.symbol)
         },

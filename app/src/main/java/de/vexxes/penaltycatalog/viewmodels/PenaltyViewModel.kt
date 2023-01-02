@@ -96,15 +96,17 @@ class PenaltyViewModel @Inject constructor(
     }
 
     private fun verifyPenalty(): Boolean {
+        val categoryResult = penaltyUiState.value.categoryName.isEmpty()
         val nameResult = penaltyUiState.value.name.isEmpty()
         val valueResult = penaltyUiState.value.value.isEmpty()
 
         penaltyUiState.value = penaltyUiState.value.copy(
+            categoryError = categoryResult,
             nameError = nameResult,
             valueError = valueResult
         )
 
-        return !(nameResult || valueResult)
+        return !(categoryResult || nameResult || valueResult)
     }
 
     private fun getAllCategories() {
@@ -222,8 +224,9 @@ class PenaltyViewModel @Inject constructor(
         return if(lastResponse.value.success) {
             getAllPenalties()
             true
-        } else
+        } else {
             false
+        }
     }
 
     fun deletePenalty(): Boolean {

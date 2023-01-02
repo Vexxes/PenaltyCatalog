@@ -56,8 +56,10 @@ fun NavGraphBuilder.playerEditComposable(
                     navigateBack()
                 },
                 onSaveClicked = {
-                    visible = false
-                    playerViewModel.updatePlayer()
+                    if (playerViewModel.updatePlayer()) {
+                        visible = false
+                        navigateBack()
+                    }
                 }
             )
         }

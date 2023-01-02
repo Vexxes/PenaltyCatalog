@@ -117,8 +117,15 @@ class PenaltyHistoryViewModel @Inject constructor(
 
     /*TODO Implement logic*/
     private fun verifyPenaltyHistory(): Boolean {
+        val playerNameResult = penaltyHistoryUiState.value.playerName.isEmpty()
+        val penaltyNameResult = penaltyHistoryUiState.value.penaltyName.isEmpty()
 
-        return true
+        penaltyHistoryUiState.value = penaltyHistoryUiState.value.copy(
+            playerNameError = playerNameResult,
+            penaltyNameError = penaltyNameResult
+        )
+
+        return !(playerNameResult || penaltyNameResult)
     }
 
     fun getAllPenaltyHistory() {

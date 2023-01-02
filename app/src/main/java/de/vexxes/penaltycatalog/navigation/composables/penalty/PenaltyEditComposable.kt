@@ -56,9 +56,10 @@ fun NavGraphBuilder.penaltyEditComposable(
                     navigateBack()
                 },
                 onSaveClicked = {
-                    visible = false
-                    penaltyViewModel.updatePenalty()
-                    navigateBack()
+                    if (penaltyViewModel.updatePenalty()) {
+                        visible = false
+                        navigateBack()
+                    }
                 }
             )
         }

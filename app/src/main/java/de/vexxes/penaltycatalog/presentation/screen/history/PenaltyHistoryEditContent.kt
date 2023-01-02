@@ -72,12 +72,14 @@ fun PenaltyHistoryEditContent(
 
         PenaltyHistoryPlayerExposedMenu(
             text = penaltyHistoryUiState.playerName,
+            error = penaltyHistoryUiState.playerNameError,
             playerList = playerList,
             onPlayerChanged = onPlayerChanged
         )
 
         PenaltyHistoryPenaltyExposedMenu(
             text = penaltyHistoryUiState.penaltyName,
+            error = penaltyHistoryUiState.penaltyNameError,
             penaltyList = penaltyList,
             onPenaltyChanged = onPenaltyChanged
         )
@@ -154,6 +156,7 @@ private fun PenaltyHistoryDatePicker(
 @Composable
 private fun PenaltyHistoryPlayerExposedMenu(
     text: String,
+    error: Boolean,
     playerList: List<Player>,
     onPlayerChanged: (String) -> Unit
 ) {
@@ -163,6 +166,7 @@ private fun PenaltyHistoryPlayerExposedMenu(
     )
 
     ExposedDropdownMenuBox(
+        modifier = Modifier.padding(top = 8.dp),
         expanded = expanded,
         onExpandedChange = { expanded = it }
     ) {
@@ -177,6 +181,7 @@ private fun PenaltyHistoryPlayerExposedMenu(
             text = text,
             onTextChanged = { },
             label = stringResource(id = R.string.Player),
+            required = true,
             trailingIcon = {
                 IconButton(
                     modifier = Modifier
@@ -187,7 +192,8 @@ private fun PenaltyHistoryPlayerExposedMenu(
                         contentDescription = ""
                     )
                 }
-            }
+            },
+            isError = error
         )
 
         ExposedDropdownMenu(
@@ -216,6 +222,7 @@ private fun PenaltyHistoryPlayerExposedMenu(
 @Composable
 private fun PenaltyHistoryPenaltyExposedMenu(
     text: String,
+    error: Boolean,
     penaltyList: List<Penalty>,
     onPenaltyChanged: (String, String) -> Unit
 ) {
@@ -225,6 +232,7 @@ private fun PenaltyHistoryPenaltyExposedMenu(
     )
 
     ExposedDropdownMenuBox(
+        modifier = Modifier.padding(top = 8.dp),
         expanded = expanded,
         onExpandedChange = { expanded = it }
     ) {
@@ -239,6 +247,7 @@ private fun PenaltyHistoryPenaltyExposedMenu(
             text = text,
             onTextChanged = { },
             label = stringResource(id = R.string.Penalty),
+            required = true,
             trailingIcon = {
                 IconButton(
                     modifier = Modifier
@@ -249,7 +258,8 @@ private fun PenaltyHistoryPenaltyExposedMenu(
                         contentDescription = ""
                     )
                 }
-            }
+            },
+            isError = error
         )
 
         ExposedDropdownMenu(

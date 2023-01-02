@@ -21,14 +21,14 @@ data class Player(
     val redCards: Int = 0
 )
 
-fun PlayerExample(): Player {
+fun playerExample(): Player {
     val faker = Faker(Locale("de"))
     return Player(
         _id = faker.idNumber().toString(),
         number = faker.number().numberBetween(1, 99),
         firstName = faker.name().firstName(),
         lastName = faker.name().lastName(),
-        birthday = faker.date().birthday().toString(),
+        birthday = faker.date().birthday("yyyy-mm-dd"),
         street = faker.address().streetName(),
         zipcode = faker.address().zipCode().toInt(),
         city = faker.address().city(),

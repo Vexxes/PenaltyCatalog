@@ -15,7 +15,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import de.vexxes.penaltycatalog.R
 import de.vexxes.penaltycatalog.component.InputOutlinedField
-import de.vexxes.penaltycatalog.domain.model.PlayerExample
+import de.vexxes.penaltycatalog.domain.model.playerExample
 import de.vexxes.penaltycatalog.domain.uistate.PlayerUiState
 
 @Composable
@@ -87,7 +87,7 @@ fun PlayerEditContent(
 @Composable
 fun PlayerEditContentPreview() {
 
-    val player = PlayerExample()
+    val player = playerExample()
     val playerUiState = PlayerUiState(
         id = player._id,
         number = player.number.toString(),

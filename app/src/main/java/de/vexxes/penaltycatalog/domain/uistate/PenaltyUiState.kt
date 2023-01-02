@@ -8,6 +8,7 @@ data class PenaltyUiState(
     val isBeer: Boolean = false,
     val value: String = "",
     val valueDeclaredPenalties: String = "0",
+    val categoryError: Boolean = false,
     val nameError: Boolean = false,
     val valueError: Boolean = false
 )

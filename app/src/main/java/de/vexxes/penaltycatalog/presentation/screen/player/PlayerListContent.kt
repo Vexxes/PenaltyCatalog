@@ -23,7 +23,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import de.vexxes.penaltycatalog.component.EmptyContent
 import de.vexxes.penaltycatalog.domain.model.Player
-import de.vexxes.penaltycatalog.domain.model.PlayerExample
+import de.vexxes.penaltycatalog.domain.model.playerExample
 import de.vexxes.penaltycatalog.ui.theme.Red80
 import de.vexxes.penaltycatalog.ui.theme.Typography
 import de.vexxes.penaltycatalog.ui.theme.Yellow100
@@ -123,7 +123,7 @@ private fun PlayerItem(
 @Preview(showBackground = true)
 private fun PlayerItemPreview() {
     PlayerItem(
-        player = PlayerExample(),
+        player = playerExample(),
         navigateToPlayerDetailScreen = { }
     )
 }
@@ -133,9 +133,9 @@ private fun PlayerItemPreview() {
 fun PlayerListContentPreview() {
 
     val players = listOf(
-        PlayerExample(),
-        PlayerExample(),
-        PlayerExample()
+        playerExample(),
+        playerExample(),
+        playerExample()
     )
 
     PlayerListContent(

@@ -15,7 +15,7 @@ import de.vexxes.penaltycatalog.domain.model.penaltyExample1
 import de.vexxes.penaltycatalog.domain.model.penaltyExample2
 import de.vexxes.penaltycatalog.domain.model.penaltyExample3
 import de.vexxes.penaltycatalog.domain.model.Player
-import de.vexxes.penaltycatalog.domain.model.PlayerExample
+import de.vexxes.penaltycatalog.domain.model.playerExample
 import de.vexxes.penaltycatalog.domain.uievent.PenaltyHistoryUiEvent
 import de.vexxes.penaltycatalog.domain.uistate.PenaltyHistoryUiState
 import de.vexxes.penaltycatalog.domain.uistate.penaltyHistoryUiStateExample1
@@ -102,9 +102,9 @@ private fun PenaltyHistoryEditScreenPreview() {
     )
 
     val players = listOf(
-        PlayerExample(),
-        PlayerExample(),
-        PlayerExample()
+        playerExample(),
+        playerExample(),
+        playerExample()
     )
 
     PenaltyHistoryEditScaffold(

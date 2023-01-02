@@ -56,12 +56,12 @@ fun NavGraphBuilder.penaltyHistoryEditComposable(
                     navigateBack()
                 },
                 onSaveClicked = {
-                    visible = false
-                    penaltyHistoryViewModel.updatePenaltyHistory()
-                    navigateBack()
+                    if (penaltyHistoryViewModel.updatePenaltyHistory()) {
+                        visible = false
+                        navigateBack()
+                    }
                 }
             )
         }
-
     }
 }

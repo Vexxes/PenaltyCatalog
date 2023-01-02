@@ -20,7 +20,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import de.vexxes.penaltycatalog.R
-import de.vexxes.penaltycatalog.domain.model.PlayerExample
+import de.vexxes.penaltycatalog.domain.model.playerExample
 import de.vexxes.penaltycatalog.domain.uistate.PlayerUiState
 import de.vexxes.penaltycatalog.ui.theme.Green40
 import de.vexxes.penaltycatalog.ui.theme.Red80
@@ -49,32 +49,6 @@ fun PlayerDetailContent(
             redCards = playerUiState.redCards
         )
     }
-}
-
-@Preview(showBackground = true)
-@Composable
-fun PlayerDetailContentPreview() {
-
-    val player = PlayerExample()
-    val playerUiState = PlayerUiState(
-        id = player._id,
-        number = player.number.toString(),
-        firstName = player.firstName,
-        lastName = player.lastName,
-        birthday = player.birthday,
-        street = player.street,
-        zipcode = player.zipcode.toString(),
-        city = player.city,
-        playedGames = player.playedGames.toString(),
-        goals = player.goals.toString(),
-        yellowCards = player.yellowCards.toString(),
-        twoMinutes = player.twoMinutes.toString(),
-        redCards = player.redCards.toString(),
-    )
-
-    PlayerDetailContent(
-        playerUiState = playerUiState
-    )
 }
 
 @Composable
@@ -276,35 +250,21 @@ private fun PlayerStats(
             modifier = Modifier
                 .weight(0.5f)
         ) {
-            TableColumn(
-                text = stringResource(id = R.string.PlayedGames),
-                paddingValues = PaddingValues(start = 8.dp, top = 8.dp),
-                showDivider = true
+            val listNames = listOf(
+                stringResource(id = R.string.PlayedGames),
+                stringResource(id = R.string.Goals),
+                stringResource(id = R.string.YellowCards),
+                stringResource(id = R.string.TwoMinutes),
+                stringResource(id = R.string.RedCards)
             )
 
-            TableColumn(
-                text = stringResource(id = R.string.Goals),
-                paddingValues = PaddingValues(start = 8.dp, top = 8.dp),
-                showDivider = true
-            )
-
-            TableColumn(
-                text = stringResource(id = R.string.YellowCards),
-                paddingValues = PaddingValues(start = 8.dp, top = 8.dp),
-                showDivider = true
-            )
-
-            TableColumn(
-                text = stringResource(id = R.string.TwoMinutes),
-                paddingValues = PaddingValues(start = 8.dp, top = 8.dp),
-                showDivider = true
-            )
-
-            TableColumn(
-                text = stringResource(id = R.string.RedCards),
-                paddingValues = PaddingValues(start = 8.dp, top = 8.dp),
-                showDivider = false
-            )
+            listNames.forEach { name ->
+                TableColumn(
+                    text = name,
+                    paddingValues = PaddingValues(start = 8.dp, top = 8.dp),
+                    showDivider = listNames.last() != name
+                )
+            }
         }
 
         // Vertical divider
@@ -318,41 +278,48 @@ private fun PlayerStats(
             modifier = Modifier
                 .weight(0.5f)
         ) {
-
-            TableColumn(
-                text = playedGames,
-                textAlign = TextAlign.Center,
-                paddingValues = PaddingValues(end = 8.dp, top = 8.dp),
-                showDivider = true
+            val listValues = listOf(
+                playedGames,
+                goals,
+                yellowCards,
+                twoMinutes,
+                redCards
             )
 
-            TableColumn(
-                text = goals,
-                textAlign = TextAlign.Center,
-                paddingValues = PaddingValues(end = 8.dp, top = 8.dp),
-                showDivider = true
-            )
-
-            TableColumn(
-                text = yellowCards,
-                textAlign = TextAlign.Center,
-                paddingValues = PaddingValues(end = 8.dp, top = 8.dp),
-                showDivider = true
-            )
-
-            TableColumn(
-                text = twoMinutes,
-                textAlign = TextAlign.Center,
-                paddingValues = PaddingValues(end = 8.dp, top = 8.dp),
-                showDivider = true
-            )
-
-            TableColumn(
-                text = redCards,
-                textAlign = TextAlign.Center,
-                paddingValues = PaddingValues(end = 8.dp, top = 8.dp),
-                showDivider = false
-            )
+            listValues.forEach { value ->
+                TableColumn(
+                    text = value,
+                    textAlign = TextAlign.Center,
+                    paddingValues = PaddingValues(end = 8.dp, top = 8.dp),
+                    showDivider = listValues.last() != value
+                )
+            }
         }
     }
+}
+
+@Preview(showBackground = true)
+@Composable
+fun PlayerDetailContentPreview() {
+
+    val player = playerExample()
+    val playerUiState = PlayerUiState(
+        id = player._id,
+        number = player.number.toString(),
+        firstName = player.firstName,
+        lastName = player.lastName,
+        birthday = player.birthday,
+        street = player.street,
+        zipcode = player.zipcode.toString(),
+        city = player.city,
+        playedGames = player.playedGames.toString(),
+        goals = player.goals.toString(),
+        yellowCards = player.yellowCards.toString(),
+        twoMinutes = player.twoMinutes.toString(),
+        redCards = player.redCards.toString(),
+    )
+
+    PlayerDetailContent(
+        playerUiState = playerUiState
+    )
 }

@@ -9,7 +9,9 @@ data class PenaltyHistoryUiState(
     val penaltyValue: String = "",
     val penaltyIsBeer: Boolean = false,
     val timeOfPenalty: LocalDate = LocalDate.now(),
-    val penaltyPaid: Boolean = false
+    val penaltyPaid: Boolean = false,
+    val playerNameError: Boolean = false,
+    val penaltyNameError: Boolean = false
 )
 
 fun penaltyHistoryUiStateExample1(): PenaltyHistoryUiState {
@@ -20,7 +22,9 @@ fun penaltyHistoryUiStateExample1(): PenaltyHistoryUiState {
         penaltyValue = "500",
         penaltyIsBeer = false,
         timeOfPenalty = LocalDate.now(),
-        penaltyPaid = false
+        penaltyPaid = false,
+        playerNameError = false,
+        penaltyNameError = false
     )
 }
 
@@ -32,7 +36,9 @@ fun penaltyHistoryUiStateExample2(): PenaltyHistoryUiState {
         penaltyValue = "500",
         penaltyIsBeer = false,
         timeOfPenalty = LocalDate.now(),
-        penaltyPaid = true
+        penaltyPaid = true,
+        playerNameError = false,
+        penaltyNameError = false
     )
 }
 
@@ -44,6 +50,8 @@ fun penaltyHistoryUiStateExample3(): PenaltyHistoryUiState {
         penaltyValue = "1",
         penaltyIsBeer = true,
         timeOfPenalty = LocalDate.now(),
-        penaltyPaid = true
+        penaltyPaid = true,
+        playerNameError = false,
+        penaltyNameError = false
     )
 }
