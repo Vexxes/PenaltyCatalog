@@ -8,7 +8,7 @@ import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
 import de.vexxes.penaltycatalog.domain.model.ApiResponse
 import de.vexxes.penaltycatalog.domain.model.Player
-import de.vexxes.penaltycatalog.domain.model.toValue
+import de.vexxes.penaltycatalog.domain.enums.toValue
 import de.vexxes.penaltycatalog.domain.repository.Repository
 import de.vexxes.penaltycatalog.domain.uievent.PlayerUiEvent
 import de.vexxes.penaltycatalog.domain.uievent.SearchUiEvent
@@ -138,7 +138,7 @@ class PlayerViewModel @Inject constructor(
         }
     }
 
-    fun getPlayersBySearch() {
+    private fun getPlayersBySearch() {
         apiResponse.value = RequestState.Loading
 
         viewModelScope.launch {

@@ -1,6 +1,6 @@
 package de.vexxes.penaltycatalog.domain.uievent
 
-import de.vexxes.penaltycatalog.domain.model.SortOrder
+import de.vexxes.penaltycatalog.domain.enums.SortOrder
 import de.vexxes.penaltycatalog.util.SearchAppBarState
 
 sealed class SearchUiEvent {

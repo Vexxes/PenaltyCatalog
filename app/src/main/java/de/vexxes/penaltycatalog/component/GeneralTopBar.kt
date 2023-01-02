@@ -27,7 +27,7 @@ import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import de.vexxes.penaltycatalog.R
-import de.vexxes.penaltycatalog.domain.model.SortOrder
+import de.vexxes.penaltycatalog.domain.enums.SortOrder
 import de.vexxes.penaltycatalog.util.SearchAppBarState
 import kotlinx.coroutines.delay
 

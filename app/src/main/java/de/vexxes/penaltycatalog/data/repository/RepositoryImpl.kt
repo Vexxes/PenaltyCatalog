@@ -4,7 +4,7 @@ import dagger.hilt.android.scopes.ViewModelScoped
 import de.vexxes.penaltycatalog.data.remote.KtorApi
 import de.vexxes.penaltycatalog.domain.model.ApiResponse
 import de.vexxes.penaltycatalog.domain.model.Penalty
-import de.vexxes.penaltycatalog.domain.model.PenaltyHistory
+import de.vexxes.penaltycatalog.domain.model.PenaltyReceived
 import de.vexxes.penaltycatalog.domain.model.Player
 import de.vexxes.penaltycatalog.domain.repository.Repository
 import javax.inject.Inject
@@ -137,9 +137,9 @@ class RepositoryImpl @Inject constructor(
         }
     }
 
-    override suspend fun updatePenaltyHistory(penaltyHistory: PenaltyHistory): ApiResponse {
+    override suspend fun updatePenaltyHistory(penaltyReceived: PenaltyReceived): ApiResponse {
         return try {
-            ktorApi.updatePenaltyHistory(penaltyHistory = penaltyHistory)
+            ktorApi.updatePenaltyHistory(penaltyReceived = penaltyReceived)
         } catch (e: Exception) {
             ApiResponse(success = false, error = e)
         }

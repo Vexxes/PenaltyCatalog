@@ -4,7 +4,7 @@ import kotlinx.serialization.Serializable
 import java.time.LocalDate
 
 @Serializable
-data class PenaltyHistory(
+data class PenaltyReceived(
     val _id: String = "",
     val penaltyName: String = "",
     val playerName: String = "",
@@ -14,8 +14,8 @@ data class PenaltyHistory(
     val penaltyPaid: Boolean = false
 )
 
-fun penaltyHistoryExample1(): PenaltyHistory {
-    return PenaltyHistory(
+fun penaltyReceivedExample1(): PenaltyReceived {
+    return PenaltyReceived(
         _id = "",
         penaltyName = "Getränke zur Besprechung",
         playerName = "Mustermann, Max",
@@ -25,8 +25,8 @@ fun penaltyHistoryExample1(): PenaltyHistory {
     )
 }
 
-fun penaltyHistoryExample2(): PenaltyHistory {
-    return PenaltyHistory(
+fun penaltyReceivedExample2(): PenaltyReceived {
+    return PenaltyReceived(
         _id = "",
         penaltyName = "Verspätete Zahlung des Monatsbeitrag",
         playerName = "Mustermann, Max",
@@ -36,8 +36,8 @@ fun penaltyHistoryExample2(): PenaltyHistory {
     )
 }
 
-fun penaltyHistoryExample3(): PenaltyHistory {
-    return PenaltyHistory(
+fun penaltyReceivedExample3(): PenaltyReceived {
+    return PenaltyReceived(
         _id = "",
         penaltyName = "Verspätete Zahlung des Monatsbeitrag",
         playerName = "Mustermann, Max",

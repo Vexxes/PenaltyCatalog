@@ -11,7 +11,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import de.vexxes.penaltycatalog.component.BackSaveTopBar
 import de.vexxes.penaltycatalog.domain.model.PenaltyCategory
-import de.vexxes.penaltycatalog.domain.model.PenaltyType
+import de.vexxes.penaltycatalog.domain.enums.BeerMoneyType
 import de.vexxes.penaltycatalog.domain.uievent.PenaltyUiEvent
 import de.vexxes.penaltycatalog.domain.uistate.PenaltyUiState
 import de.vexxes.penaltycatalog.viewmodels.PenaltyViewModel
@@ -40,9 +40,9 @@ fun PenaltyEditScreen(
         },
         onPenaltyTypeChanged = { penaltyType ->
             when(penaltyType) {
-                PenaltyType.BEER ->
+                BeerMoneyType.BEER ->
                     penaltyViewModel.onPenaltyUiEvent(PenaltyUiEvent.IsBeerChanged(true))
-                PenaltyType.MONEY ->
+                BeerMoneyType.MONEY ->
                     penaltyViewModel.onPenaltyUiEvent(PenaltyUiEvent.IsBeerChanged(false))
             }
         },
@@ -60,7 +60,7 @@ private fun PenaltyEditScaffold(
     onPenaltyNameChanged: (String) -> Unit,
     onPenaltyDescriptionChanged: (String) -> Unit,
     onPenaltyAmountChanged: (String) -> Unit,
-    onPenaltyTypeChanged: (PenaltyType) -> Unit,
+    onPenaltyTypeChanged: (BeerMoneyType) -> Unit,
     onBackClicked: () -> Unit,
     onSaveClicked: (String?) -> Unit
 ) {

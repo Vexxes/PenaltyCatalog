@@ -10,7 +10,7 @@ data class ApiResponse(
     val penalty: List<Penalty>? = null,
     val penaltyCategory: List<PenaltyCategory>? = null,
     val player: List<Player>? = null,
-    val penaltyHistory: List<PenaltyHistory>? = null,
+    val penaltyReceived: List<PenaltyReceived>? = null,
     val cancellation: List<Cancellation>? = null,
     val event: List<Event>? = null,
     val message: String? = null,

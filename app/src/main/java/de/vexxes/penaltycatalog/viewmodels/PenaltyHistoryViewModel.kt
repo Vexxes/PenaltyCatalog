@@ -8,9 +8,9 @@ import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
 import de.vexxes.penaltycatalog.domain.model.ApiResponse
 import de.vexxes.penaltycatalog.domain.model.Penalty
-import de.vexxes.penaltycatalog.domain.model.PenaltyHistory
+import de.vexxes.penaltycatalog.domain.model.PenaltyReceived
 import de.vexxes.penaltycatalog.domain.model.Player
-import de.vexxes.penaltycatalog.domain.model.toValue
+import de.vexxes.penaltycatalog.domain.enums.toValue
 import de.vexxes.penaltycatalog.domain.repository.Repository
 import de.vexxes.penaltycatalog.domain.uievent.PenaltyHistoryUiEvent
 import de.vexxes.penaltycatalog.domain.uievent.SearchUiEvent
@@ -28,7 +28,7 @@ class PenaltyHistoryViewModel @Inject constructor(
     private val repository: Repository
 ) : ViewModel() {
 
-    val penaltyHistory: MutableState<List<PenaltyHistory>> = mutableStateOf(emptyList())
+    val penaltyReceived: MutableState<List<PenaltyReceived>> = mutableStateOf(emptyList())
     var penalties: MutableState<List<Penalty>> = mutableStateOf(emptyList())
     var players: MutableState<List<Player>> = mutableStateOf(emptyList())
 
@@ -45,20 +45,20 @@ class PenaltyHistoryViewModel @Inject constructor(
         getAllPenaltyHistory()
     }
 
-    private fun convertResponseToPenaltyHistory(penaltyHistory: PenaltyHistory) {
+    private fun convertResponseToPenaltyHistory(penaltyReceived: PenaltyReceived) {
         penaltyHistoryUiState.value = penaltyHistoryUiState.value.copy(
-            id = penaltyHistory._id,
-            penaltyName = penaltyHistory.penaltyName,
-            playerName = penaltyHistory.playerName,
-            penaltyValue = penaltyHistory.penaltyValue,
-            penaltyIsBeer = penaltyHistory.penaltyIsBeer,
-            timeOfPenalty = LocalDate.parse(penaltyHistory.timeOfPenalty),
-            penaltyPaid = penaltyHistory.penaltyPaid
+            id = penaltyReceived._id,
+            penaltyName = penaltyReceived.penaltyName,
+            playerName = penaltyReceived.playerName,
+            penaltyValue = penaltyReceived.penaltyValue,
+            penaltyIsBeer = penaltyReceived.penaltyIsBeer,
+            timeOfPenalty = LocalDate.parse(penaltyReceived.timeOfPenalty),
+            penaltyPaid = penaltyReceived.penaltyPaid
         )
     }
 
-    private fun createPenaltyHistory(): PenaltyHistory {
-        return PenaltyHistory(
+    private fun createPenaltyHistory(): PenaltyReceived {
+        return PenaltyReceived(
             _id = penaltyHistoryUiState.value.id,
             penaltyName = penaltyHistoryUiState.value.penaltyName,
             playerName = penaltyHistoryUiState.value.playerName,
@@ -139,8 +139,8 @@ class PenaltyHistoryViewModel @Inject constructor(
 
                 apiResponse.value = RequestState.Success(response)
 
-                if (response.penaltyHistory != null) {
-                    penaltyHistory.value = response.penaltyHistory
+                if (response.penaltyReceived != null) {
+                    penaltyReceived.value = response.penaltyReceived
                 }
                 Log.d("PenaltyHistoryViewModel", response.toString())
             } catch (e: Exception) {
@@ -160,8 +160,8 @@ class PenaltyHistoryViewModel @Inject constructor(
                 }
                 apiResponse.value = RequestState.Success(response)
 
-                if (response.penaltyHistory != null) {
-                    convertResponseToPenaltyHistory(penaltyHistory = response.penaltyHistory.first())
+                if (response.penaltyReceived != null) {
+                    convertResponseToPenaltyHistory(penaltyReceived = response.penaltyReceived.first())
                 } else {
                     penaltyHistoryUiState.value = PenaltyHistoryUiState()
                 }
@@ -184,8 +184,8 @@ class PenaltyHistoryViewModel @Inject constructor(
                 }
                 apiResponse.value = RequestState.Success(response)
 
-                if(response.penaltyHistory != null) {
-                    penaltyHistory.value = response.penaltyHistory
+                if(response.penaltyReceived != null) {
+                    penaltyReceived.value = response.penaltyReceived
                 }
                 Log.d("PenaltyHistoryViewModel", response.toString())
             }
@@ -203,7 +203,7 @@ class PenaltyHistoryViewModel @Inject constructor(
                 if (verifyPenaltyHistory()) {
 
                     lastResponse.value = repository.updatePenaltyHistory(
-                        penaltyHistory = createPenaltyHistory()
+                        penaltyReceived = createPenaltyHistory()
                     )
                     apiResponse.value = RequestState.Success(lastResponse.value)
                     Log.d("PenaltyHistoryViewModel", lastResponse.toString())

@@ -43,11 +43,11 @@ import androidx.compose.ui.unit.dp
 import de.vexxes.penaltycatalog.R
 import de.vexxes.penaltycatalog.component.GeneralTopBar
 import de.vexxes.penaltycatalog.domain.model.ApiResponse
-import de.vexxes.penaltycatalog.domain.model.PenaltyHistory
-import de.vexxes.penaltycatalog.domain.model.SortOrder
-import de.vexxes.penaltycatalog.domain.model.penaltyHistoryExample1
-import de.vexxes.penaltycatalog.domain.model.penaltyHistoryExample2
-import de.vexxes.penaltycatalog.domain.model.penaltyHistoryExample3
+import de.vexxes.penaltycatalog.domain.model.PenaltyReceived
+import de.vexxes.penaltycatalog.domain.enums.SortOrder
+import de.vexxes.penaltycatalog.domain.model.penaltyReceivedExample1
+import de.vexxes.penaltycatalog.domain.model.penaltyReceivedExample2
+import de.vexxes.penaltycatalog.domain.model.penaltyReceivedExample3
 import de.vexxes.penaltycatalog.domain.uievent.SearchUiEvent
 import de.vexxes.penaltycatalog.domain.uistate.SearchUiState
 import de.vexxes.penaltycatalog.ui.theme.Typography
@@ -65,7 +65,7 @@ fun PenaltyHistoryListScreen(
     navigateToPenaltyHistoryDetailScreen: (penaltyHistoryId: String) -> Unit,
     navigateToPenaltyHistoryEditScreen: (penaltyHistoryId: String) -> Unit
 ) {
-    val penaltyHistory by penaltyHistoryViewModel.penaltyHistory
+    val penaltyHistory by penaltyHistoryViewModel.penaltyReceived
     val apiResponse by penaltyHistoryViewModel.lastResponse
     val searchUiState by penaltyHistoryViewModel.searchUiState
     
@@ -87,7 +87,7 @@ fun PenaltyHistoryListScreen(
                 penaltyHistoryViewModel.onSearchUiEvent(SearchUiEvent.SearchAppBarStateChanged(SearchAppBarState.CLOSED))
                 penaltyHistoryViewModel.onSearchUiEvent(SearchUiEvent.SearchTextChanged(""))
             },
-            penaltyHistory = penaltyHistory,
+            penaltyReceived = penaltyHistory,
             apiResponse = apiResponse,
             resetApiResponse = { penaltyHistoryViewModel.resetLastResponse() },
             navigateToPenaltyHistoryDetailScreen = navigateToPenaltyHistoryDetailScreen,
@@ -106,7 +106,7 @@ fun PenaltyHistoryListScaffold(
     onDefaultSearchClicked: () -> Unit,
     onSortClicked: (SortOrder) -> Unit,
     onCloseClicked: () -> Unit,
-    penaltyHistory: List<PenaltyHistory>,
+    penaltyReceived: List<PenaltyReceived>,
     apiResponse: ApiResponse,
     resetApiResponse: () -> Unit,
     navigateToPenaltyHistoryDetailScreen: (String) -> Unit,
@@ -138,7 +138,7 @@ fun PenaltyHistoryListScaffold(
                         }
                     )
                     PenaltyHistoryListContent(
-                        penaltyHistory = penaltyHistory,
+                        penaltyReceived = penaltyReceived,
                         filterPaidState = filterPaidState,
                         navigateToPenaltyHistoryDetailScreen = navigateToPenaltyHistoryDetailScreen
                     )
@@ -296,10 +296,10 @@ private fun PenaltyHistoryListScreenPreview() {
         onDefaultSearchClicked = { },
         onSortClicked = { },
         onCloseClicked = { },
-        penaltyHistory = listOf(
-            penaltyHistoryExample1(),
-            penaltyHistoryExample2(),
-            penaltyHistoryExample3()
+        penaltyReceived = listOf(
+            penaltyReceivedExample1(),
+            penaltyReceivedExample2(),
+            penaltyReceivedExample3()
         ),
         apiResponse = ApiResponse(),
         resetApiResponse = { },

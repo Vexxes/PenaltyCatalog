@@ -2,7 +2,7 @@ package de.vexxes.penaltycatalog.data.remote
 
 import de.vexxes.penaltycatalog.domain.model.ApiResponse
 import de.vexxes.penaltycatalog.domain.model.Penalty
-import de.vexxes.penaltycatalog.domain.model.PenaltyHistory
+import de.vexxes.penaltycatalog.domain.model.PenaltyReceived
 import de.vexxes.penaltycatalog.domain.model.Player
 import retrofit2.http.Body
 import retrofit2.http.GET
@@ -63,7 +63,7 @@ interface KtorApi {
     suspend fun getPenaltyHistoryBySearch(@Query("searchText") searchText: String): ApiResponse
 
     @PUT("/update_penaltyHistory")
-    suspend fun updatePenaltyHistory(@Body penaltyHistory: PenaltyHistory): ApiResponse
+    suspend fun updatePenaltyHistory(@Body penaltyReceived: PenaltyReceived): ApiResponse
 
     @PUT("delete_penalty_history/{penaltyHistoryId}")
     suspend fun deletePenaltyHistory(@Path("penaltyHistoryId") penaltyHistoryId: String): ApiResponse

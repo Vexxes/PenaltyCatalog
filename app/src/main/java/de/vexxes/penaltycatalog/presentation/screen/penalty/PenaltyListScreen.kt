@@ -27,7 +27,7 @@ import de.vexxes.penaltycatalog.R
 import de.vexxes.penaltycatalog.component.GeneralTopBar
 import de.vexxes.penaltycatalog.domain.model.ApiResponse
 import de.vexxes.penaltycatalog.domain.model.Penalty
-import de.vexxes.penaltycatalog.domain.model.SortOrder
+import de.vexxes.penaltycatalog.domain.enums.SortOrder
 import de.vexxes.penaltycatalog.domain.uievent.SearchUiEvent
 import de.vexxes.penaltycatalog.util.RequestState
 import de.vexxes.penaltycatalog.util.SearchAppBarState

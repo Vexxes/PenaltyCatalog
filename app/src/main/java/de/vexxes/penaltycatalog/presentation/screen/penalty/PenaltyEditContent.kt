@@ -29,7 +29,7 @@ import androidx.compose.ui.unit.dp
 import de.vexxes.penaltycatalog.R
 import de.vexxes.penaltycatalog.component.InputOutlinedField
 import de.vexxes.penaltycatalog.domain.model.PenaltyCategory
-import de.vexxes.penaltycatalog.domain.model.PenaltyType
+import de.vexxes.penaltycatalog.domain.enums.BeerMoneyType
 import de.vexxes.penaltycatalog.domain.uistate.PenaltyUiState
 import de.vexxes.penaltycatalog.domain.visualTransformation.CurrencyAmountInputVisualTransformation
 import de.vexxes.penaltycatalog.ui.theme.Typography
@@ -42,7 +42,7 @@ fun PenaltyEditContent(
     onPenaltyNameChanged: (String) -> Unit,
     onPenaltyDescriptionChanged: (String) -> Unit,
     onPenaltyAmountChanged: (String) -> Unit,
-    onPenaltyTypeChanged: (PenaltyType) -> Unit
+    onPenaltyTypeChanged: (BeerMoneyType) -> Unit
 ) {
     Column(
         modifier = Modifier
@@ -168,7 +168,7 @@ private fun PenaltyName(
 @Composable
 private fun PenaltyType(
     isBeer: Boolean,
-    onPenaltyTypeChanged: (PenaltyType) -> Unit
+    onPenaltyTypeChanged: (BeerMoneyType) -> Unit
 ) {
     var expanded by remember { mutableStateOf(false) }
     val angle: Float by animateFloatAsState(
@@ -209,7 +209,7 @@ private fun PenaltyType(
             expanded = expanded,
             onDismissRequest = { expanded = false }
         ) {
-            PenaltyType.values().forEach { penaltyType ->
+            BeerMoneyType.values().forEach { penaltyType ->
                 DropdownMenuItem(
                     modifier = Modifier.fillMaxWidth(),
                     onClick = {
