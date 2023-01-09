@@ -2,14 +2,11 @@ package de.vexxes.penaltycatalog.presentation.screen.player
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.IntrinsicSize
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.width
 import androidx.compose.material3.Divider
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -54,9 +51,7 @@ fun PlayerDetailContent(
 @Composable
 private fun TableColumn(
     text: String,
-    textAlign: TextAlign? = null,
-    paddingValues: PaddingValues,
-    showDivider: Boolean = false
+    textAlign: TextAlign? = null
 ) {
     Text(
         modifier = Modifier
@@ -66,12 +61,6 @@ private fun TableColumn(
         textAlign = textAlign,
         style = Typography.bodyLarge
     )
-
-    if (showDivider) {
-        Divider(
-            modifier = Modifier.padding(paddingValues)
-        )
-    }
 }
 
 @Composable
@@ -105,11 +94,11 @@ private fun RowHeader(
         )
     }
 
-            Divider(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(start = 8.dp, end = 8.dp, top = 8.dp)
-        )
+    Divider(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(start = 8.dp, end = 8.dp, top = 8.dp)
+    )
 }
 
 @Composable
@@ -261,18 +250,9 @@ private fun PlayerStats(
             listNames.forEach { name ->
                 TableColumn(
                     text = name,
-                    paddingValues = PaddingValues(start = 8.dp, top = 8.dp),
-                    showDivider = listNames.last() != name
                 )
             }
         }
-
-        // Vertical divider
-        Divider(
-            modifier = Modifier
-                .fillMaxHeight()
-                .width(1.dp)
-        )
 
         Column(
             modifier = Modifier
@@ -288,10 +268,8 @@ private fun PlayerStats(
 
             listValues.forEach { value ->
                 TableColumn(
-                    text = value,
-                    textAlign = TextAlign.Center,
-                    paddingValues = PaddingValues(end = 8.dp, top = 8.dp),
-                    showDivider = listValues.last() != value
+                    text = value.ifEmpty { "0" },
+                    textAlign = TextAlign.Center
                 )
             }
         }
@@ -304,7 +282,7 @@ fun PlayerDetailContentPreview() {
 
     val player = playerExample()
     val playerUiState = PlayerUiState(
-        id = player._id,
+        id = player.id,
         number = player.number.toString(),
         firstName = player.firstName,
         lastName = player.lastName,

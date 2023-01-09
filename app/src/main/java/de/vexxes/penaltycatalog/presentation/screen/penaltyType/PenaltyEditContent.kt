@@ -1,4 +1,4 @@
-package de.vexxes.penaltycatalog.presentation.screen.penalty
+package de.vexxes.penaltycatalog.presentation.screen.penaltyType
 
 import android.icu.text.NumberFormat
 import androidx.compose.animation.core.animateFloatAsState
@@ -28,17 +28,15 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import de.vexxes.penaltycatalog.R
 import de.vexxes.penaltycatalog.component.InputOutlinedField
-import de.vexxes.penaltycatalog.domain.model.PenaltyCategory
 import de.vexxes.penaltycatalog.domain.enums.BeerMoneyType
-import de.vexxes.penaltycatalog.domain.uistate.PenaltyUiState
+import de.vexxes.penaltycatalog.domain.uistate.PenaltyTypeUiState
+import de.vexxes.penaltycatalog.domain.uistate.penaltyTypeUiStateExample1
 import de.vexxes.penaltycatalog.domain.visualTransformation.CurrencyAmountInputVisualTransformation
 import de.vexxes.penaltycatalog.ui.theme.Typography
 
 @Composable
 fun PenaltyEditContent(
-    penaltyUiState: PenaltyUiState,
-    categoryList: List<PenaltyCategory>,
-    onCategoryChanged: (String) -> Unit,
+    penaltyTypeUiState: PenaltyTypeUiState,
     onPenaltyNameChanged: (String) -> Unit,
     onPenaltyDescriptionChanged: (String) -> Unit,
     onPenaltyAmountChanged: (String) -> Unit,
@@ -48,102 +46,27 @@ fun PenaltyEditContent(
         modifier = Modifier
             .fillMaxSize()
     ) {
-        CategoryExposedMenu(
-            text = penaltyUiState.categoryName,
-            error = penaltyUiState.categoryError,
-            categoryList = categoryList,
-            onCategoryChanged = onCategoryChanged
-        )
-
         PenaltyName(
-            text = penaltyUiState.name,
-            error = penaltyUiState.nameError,
+            text = penaltyTypeUiState.name,
+            error = penaltyTypeUiState.nameError,
             onTextChanged = onPenaltyNameChanged
         )
 
         PenaltyType(
-            isBeer = penaltyUiState.isBeer,
+            isBeer = penaltyTypeUiState.isBeer,
             onPenaltyTypeChanged = onPenaltyTypeChanged
         )
 
         PenaltyAmount(
-            text = penaltyUiState.value,
-            error = penaltyUiState.valueError,
+            text = penaltyTypeUiState.value,
+            error = penaltyTypeUiState.valueError,
             onTextChanged = onPenaltyAmountChanged
         )
 
         PenaltyDescription(
-            text = penaltyUiState.description,
+            text = penaltyTypeUiState.description,
             onTextChanged = onPenaltyDescriptionChanged
         )
-    }
-}
-
-@OptIn(ExperimentalMaterial3Api::class)
-@Composable
-private fun CategoryExposedMenu(
-    text: String,
-    error: Boolean,
-    categoryList: List<PenaltyCategory>,
-    onCategoryChanged: (String) -> Unit
-) {
-    var expanded by remember { mutableStateOf(false) }
-    val angle: Float by animateFloatAsState(
-        targetValue = if (expanded) 180f else 0f
-    )
-
-    ExposedDropdownMenuBox(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(8.dp),
-        expanded = expanded,
-        onExpandedChange = { expanded = !expanded }
-    ) {
-        InputOutlinedField(
-            modifier = Modifier
-                .menuAnchor(),
-            readOnly = true,
-            text = text,
-            onTextChanged = { },
-            label = stringResource(id = R.string.Category),
-            required = true,
-            trailingIcon = {
-                IconButton(
-                    modifier = Modifier
-                        .rotate(angle),
-                    onClick = { }) {
-                    Icon(
-                        imageVector = Icons.Default.ArrowDropDown,
-                        contentDescription = ""
-                    )
-                }
-            },
-            isError = error
-        )
-
-        /*TODO Why does the width of dropdownmenu item not match to the parent container*/
-        ExposedDropdownMenu(
-            modifier = Modifier
-                .padding(8.dp),
-            expanded = expanded,
-            onDismissRequest = { expanded = false }
-        ) {
-            categoryList.forEach { penaltyCategory ->
-                DropdownMenuItem(
-                    modifier = Modifier.fillMaxWidth(),
-                    onClick = {
-                        expanded = !expanded
-                        onCategoryChanged(penaltyCategory.name)
-                    },
-                    text = {
-                        Text(
-                            text = penaltyCategory.name,
-                            style = Typography.bodyLarge
-                        )
-                    }
-                )
-            }
-        }
     }
 }
 
@@ -278,24 +201,8 @@ private fun PenaltyAmount(
 @Preview(showBackground = true)
 @Composable
 private fun PenaltyEditContentPreview() {
-    val categoryList = listOf(
-        PenaltyCategory(name = "Monatsbeitrag"),
-        PenaltyCategory(name = "Verspätungen / Abwesenheiten"),
-        PenaltyCategory(name = "Grob mannschaftsschädigendes Verhalten"),
-        PenaltyCategory(name = "Sonstiges")
-    )
-
-    val penaltyUiState = PenaltyUiState(
-        name = "Getränke zur Besprechung",
-        description = "Mitzubringen in alphabetischer Reihenfolge nach dem Freitagstraining",
-        isBeer = true,
-        value = ""
-    )
-
     PenaltyEditContent(
-        penaltyUiState = penaltyUiState,
-        categoryList = categoryList,
-        onCategoryChanged = { },
+        penaltyTypeUiState = penaltyTypeUiStateExample1(),
         onPenaltyNameChanged = { },
         onPenaltyDescriptionChanged = { },
         onPenaltyAmountChanged = { },

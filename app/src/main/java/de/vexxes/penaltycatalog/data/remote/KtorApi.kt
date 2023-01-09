@@ -5,30 +5,15 @@ import de.vexxes.penaltycatalog.domain.model.Penalty
 import de.vexxes.penaltycatalog.domain.model.PenaltyReceived
 import de.vexxes.penaltycatalog.domain.model.Player
 import retrofit2.http.Body
+import retrofit2.http.DELETE
 import retrofit2.http.GET
+import retrofit2.http.POST
 import retrofit2.http.PUT
 import retrofit2.http.Path
 import retrofit2.http.Query
 
 // TODO Add functions from ktor server
 interface KtorApi {
-
-    @GET("get_players")
-    suspend fun getAllPlayers(@Query("sortAscDesc") sortOrder: Int): ApiResponse
-
-    @GET("get_player/{playerId}")
-    suspend fun getPlayerById(@Path("playerId") playerId: String): ApiResponse
-
-    @PUT("update_player")
-    suspend fun updatePlayer(@Body player: Player): ApiResponse
-
-    @PUT("delete_player/{playerId}")
-    suspend fun deletePlayer(@Path("playerId") playerId: String): ApiResponse
-
-    @GET("get_players_by_search")
-    suspend fun getPlayersBySearch(@Query("searchText") searchText: String): ApiResponse
-
-
 
     @GET("get_categories")
     suspend fun getAllCategories(): ApiResponse

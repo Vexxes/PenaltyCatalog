@@ -1,4 +1,4 @@
-package de.vexxes.penaltycatalog.navigation.composables.penalty
+package de.vexxes.penaltycatalog.navigation.composables.penaltyType
 
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.tween
@@ -14,11 +14,11 @@ import androidx.navigation.NavType
 import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
 import de.vexxes.penaltycatalog.navigation.Screen
-import de.vexxes.penaltycatalog.presentation.screen.penalty.PenaltyDetailScreen
-import de.vexxes.penaltycatalog.viewmodels.PenaltyViewModel
+import de.vexxes.penaltycatalog.presentation.screen.penaltyType.PenaltyDetailScreen
+import de.vexxes.penaltycatalog.viewmodels.PenaltyTypeViewModel
 
 fun NavGraphBuilder.penaltyDetailComposable(
-    penaltyViewModel: PenaltyViewModel,
+    penaltyTypeViewModel: PenaltyTypeViewModel,
     navigateToPenaltyList: () -> Unit,
     onEditClicked: (String) -> Unit
 ) {
@@ -33,7 +33,7 @@ fun NavGraphBuilder.penaltyDetailComposable(
         val penaltyId = navBackStackEntry.arguments?.getString("penaltyId")
         LaunchedEffect(key1 = penaltyId) {
             if (!penaltyId.isNullOrEmpty() && penaltyId != "-1") {
-                penaltyViewModel.getPenaltyById(penaltyId = penaltyId)
+                penaltyTypeViewModel.getPenaltyById(penaltyId = penaltyId)
             }
         }
 
@@ -48,12 +48,12 @@ fun NavGraphBuilder.penaltyDetailComposable(
             exit = fadeOut(animationSpec = tween(durationMillis = 500))
         ) {
             PenaltyDetailScreen(
-                penaltyViewModel = penaltyViewModel,
+                penaltyTypeViewModel = penaltyTypeViewModel,
                 onBackClicked = {
                     navigateToPenaltyList()
                 },
                 onDeleteClicked = {
-                    penaltyViewModel.deletePenalty()
+                    penaltyTypeViewModel.deletePenalty()
                     navigateToPenaltyList()
                 },
                 onEditClicked = { onEditClicked(it) }

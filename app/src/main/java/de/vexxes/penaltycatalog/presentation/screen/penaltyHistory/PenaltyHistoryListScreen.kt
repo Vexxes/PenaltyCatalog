@@ -1,4 +1,4 @@
-package de.vexxes.penaltycatalog.presentation.screen.history
+package de.vexxes.penaltycatalog.presentation.screen.penaltyHistory
 
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background

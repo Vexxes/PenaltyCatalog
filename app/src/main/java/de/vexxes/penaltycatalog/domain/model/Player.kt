@@ -6,7 +6,7 @@ import java.util.Locale
 
 @Serializable
 data class Player(
-    val _id: String = "",
+    val id: String = "",
     val number: Int = 0,
     val firstName: String = "",
     val lastName: String = "",
@@ -24,7 +24,7 @@ data class Player(
 fun playerExample(): Player {
     val faker = Faker(Locale("de"))
     return Player(
-        _id = faker.idNumber().toString(),
+        id = faker.idNumber().toString(),
         number = faker.number().numberBetween(1, 99),
         firstName = faker.name().firstName(),
         lastName = faker.name().lastName(),

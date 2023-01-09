@@ -8,7 +8,6 @@ import java.lang.Exception
 data class ApiResponse(
     val success: Boolean = false,
     val penalty: List<Penalty>? = null,
-    val penaltyCategory: List<PenaltyCategory>? = null,
     val player: List<Player>? = null,
     val penaltyReceived: List<PenaltyReceived>? = null,
     val cancellation: List<Cancellation>? = null,

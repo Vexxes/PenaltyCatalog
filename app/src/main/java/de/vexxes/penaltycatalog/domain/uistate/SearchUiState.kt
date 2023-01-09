@@ -4,7 +4,6 @@ import de.vexxes.penaltycatalog.domain.enums.SortOrder
 import de.vexxes.penaltycatalog.util.SearchAppBarState
 
 data class SearchUiState(
-    val sortOrder: SortOrder = SortOrder.ASCENDING,
     val searchAppBarState: SearchAppBarState = SearchAppBarState.CLOSED,
     var searchText: String = ""
 )

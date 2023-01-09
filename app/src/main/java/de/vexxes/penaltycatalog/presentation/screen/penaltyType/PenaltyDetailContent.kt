@@ -1,4 +1,4 @@
-package de.vexxes.penaltycatalog.presentation.screen.penalty
+package de.vexxes.penaltycatalog.presentation.screen.penaltyType
 
 import android.icu.text.NumberFormat
 import androidx.compose.foundation.border
@@ -23,26 +23,25 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import de.vexxes.penaltycatalog.R
-import de.vexxes.penaltycatalog.domain.uistate.PenaltyUiState
-import de.vexxes.penaltycatalog.domain.uistate.penaltyUiStateExample1
-import de.vexxes.penaltycatalog.domain.uistate.penaltyUiStateExample2
+import de.vexxes.penaltycatalog.domain.uistate.PenaltyTypeUiState
+import de.vexxes.penaltycatalog.domain.uistate.penaltyTypeUiStateExample1
+import de.vexxes.penaltycatalog.domain.uistate.penaltyTypeUiStateExample2
 import de.vexxes.penaltycatalog.domain.visualTransformation.CurrencyAmountInputVisualTransformation
 import de.vexxes.penaltycatalog.ui.theme.Typography
 
 @Composable
 fun PenaltyDetailContent(
-    penaltyUiState: PenaltyUiState
+    penaltyTypeUiState: PenaltyTypeUiState
 ) {
     Column(
         modifier = Modifier
             .fillMaxSize()
             .padding(8.dp)
     ) {
-        PenaltyHeader(text = penaltyUiState.name)
-        PenaltyCategoryHeader(text = penaltyUiState.categoryName)
-        if(penaltyUiState.description.isNotEmpty()) { PenaltyDescription(text = penaltyUiState.description) }
-        PenaltyAmount(value = penaltyUiState.value, isBeer = penaltyUiState.isBeer)
-        DeclaredPenalties(text = penaltyUiState.valueDeclaredPenalties)
+        PenaltyHeader(text = penaltyTypeUiState.name)
+        if(penaltyTypeUiState.description.isNotEmpty()) { PenaltyDescription(text = penaltyTypeUiState.description) }
+        PenaltyAmount(value = penaltyTypeUiState.value, isBeer = penaltyTypeUiState.isBeer)
+        DeclaredPenalties(text = penaltyTypeUiState.valueDeclaredPenalties)
     }
 }
 
@@ -53,18 +52,6 @@ private fun PenaltyHeader(
     Text(
         text = text,
         style = Typography.headlineMedium
-    )
-}
-
-@Composable
-private fun PenaltyCategoryHeader(
-    text: String
-) {
-    Text(
-        modifier = Modifier
-            .padding(top = 8.dp),
-        text = text,
-        style = Typography.titleLarge
     )
 }
 
@@ -157,11 +144,11 @@ private fun DeclaredPenalties(
 @Preview(showBackground = true)
 @Composable
 private fun PenaltyDetailContentMoneyPreview() {
-    PenaltyDetailContent(penaltyUiState = penaltyUiStateExample1())
+    PenaltyDetailContent(penaltyTypeUiState = penaltyTypeUiStateExample1())
 }
 
 @Preview(showBackground = true)
 @Composable
 private fun PenaltyDetailContentBeerPreview() {
-    PenaltyDetailContent(penaltyUiState = penaltyUiStateExample2())
+    PenaltyDetailContent(penaltyTypeUiState = penaltyTypeUiStateExample2())
 }

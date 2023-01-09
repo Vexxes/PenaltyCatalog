@@ -14,49 +14,6 @@ class RepositoryImpl @Inject constructor(
     private val ktorApi: KtorApi
 ): Repository {
 
-    // TODO Implement functions from KtorApi
-    override suspend fun getAllPlayers(sortOrder: Int): ApiResponse {
-        return try {
-            ktorApi.getAllPlayers(sortOrder = sortOrder)
-        } catch (e: Exception) {
-            ApiResponse(success = false, error = e)
-        }
-    }
-
-    override suspend fun getPlayerById(playerId: String): ApiResponse {
-        return try {
-            ktorApi.getPlayerById(playerId = playerId)
-        } catch (e: Exception) {
-            ApiResponse(success = false, error = e)
-        }
-    }
-
-    override suspend fun updatePlayer(player: Player): ApiResponse {
-        return try {
-            ktorApi.updatePlayer(player = player)
-        } catch (e: Exception) {
-            ApiResponse(success = false, error = e)
-        }
-    }
-
-    override suspend fun deletePlayer(playerId: String): ApiResponse {
-        return try {
-            ktorApi.deletePlayer(playerId = playerId)
-        } catch (e: Exception) {
-            ApiResponse(success = false, error = e)
-        }
-    }
-
-    override suspend fun getPlayersBySearch(searchText: String): ApiResponse {
-        return try {
-            ktorApi.getPlayersBySearch(searchText = searchText)
-        } catch (e: Exception) {
-            ApiResponse(success = false, error = e)
-        }
-    }
-
-
-
     override suspend fun getAllCategories(): ApiResponse {
         return try {
             ktorApi.getAllCategories()

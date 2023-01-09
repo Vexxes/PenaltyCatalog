@@ -1,4 +1,4 @@
-package de.vexxes.penaltycatalog.presentation.screen.penalty
+package de.vexxes.penaltycatalog.presentation.screen.penaltyType
 
 import android.icu.text.NumberFormat
 import androidx.compose.foundation.border
@@ -85,10 +85,10 @@ private fun PenaltyItem(
     Row(
         modifier = Modifier
             .clickable {
-                navigateToPenaltyDetailScreen(penalty._id)
+                navigateToPenaltyDetailScreen(penalty.id)
             }
             .fillMaxWidth()
-            .height(72.dp)
+            .height(56.dp)
     ) {
         Column(
             modifier = Modifier
@@ -98,10 +98,6 @@ private fun PenaltyItem(
         ) {
             PenaltyName(
                 text = penalty.name
-            )
-
-            PenaltyNameOfCategory(
-                text = penalty.categoryName
             )
         }
 
@@ -156,19 +152,6 @@ private fun PenaltyName(
         text = text,
         style = Typography.titleMedium.copy(fontWeight = FontWeight.Bold),
         textAlign = TextAlign.Left,
-    )
-}
-
-@Composable
-private fun PenaltyNameOfCategory(
-    modifier: Modifier = Modifier,
-    text: String
-) {
-    Text(
-        modifier = modifier,
-        text = text,
-        color = MaterialTheme.colorScheme.onSurfaceVariant,
-        style = Typography.bodySmall.copy(fontWeight = FontWeight.Bold),
     )
 }
 

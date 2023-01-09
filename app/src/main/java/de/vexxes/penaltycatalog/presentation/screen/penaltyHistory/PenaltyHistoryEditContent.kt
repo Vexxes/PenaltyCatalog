@@ -1,4 +1,4 @@
-package de.vexxes.penaltycatalog.presentation.screen.history
+package de.vexxes.penaltycatalog.presentation.screen.penaltyHistory
 
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.foundation.border
@@ -28,6 +28,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.res.stringResource
@@ -36,9 +37,11 @@ import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.window.Dialog
-import com.mabn.calendarlibrary.ExpandableCalendar
-import com.mabn.calendarlibrary.core.CalendarTheme
+import com.maxkeppeker.sheets.core.models.base.rememberSheetState
+import com.maxkeppeler.sheets.calendar.CalendarDialog
+import com.maxkeppeler.sheets.calendar.models.CalendarConfig
+import com.maxkeppeler.sheets.calendar.models.CalendarSelection
+import com.maxkeppeler.sheets.calendar.models.CalendarStyle
 import de.vexxes.penaltycatalog.R
 import de.vexxes.penaltycatalog.component.InputOutlinedField
 import de.vexxes.penaltycatalog.domain.model.Penalty
@@ -56,7 +59,7 @@ fun PenaltyHistoryEditContent(
     penaltyHistoryUiState: PenaltyHistoryUiState,
     penaltyList: List<Penalty>,
     playerList: List<Player>,
-    onPenaltyChanged: (String, String) -> Unit,
+    onPenaltyChanged: (String) -> Unit,
     onPlayerChanged: (String) -> Unit,
     onTimeOfPenaltyChanged: (LocalDate) -> Unit
 ) {
@@ -69,7 +72,7 @@ fun PenaltyHistoryEditContent(
             timeOfPenalty = penaltyHistoryUiState.timeOfPenalty,
             onTimeOfPenaltyChanged = onTimeOfPenaltyChanged
         )
-
+/*
         PenaltyHistoryPlayerExposedMenu(
             text = penaltyHistoryUiState.playerName,
             error = penaltyHistoryUiState.playerNameError,
@@ -90,6 +93,7 @@ fun PenaltyHistoryEditContent(
                 isBeer = penaltyHistoryUiState.penaltyIsBeer
             )
         }
+ */
     }
 }
 
@@ -99,34 +103,22 @@ private fun PenaltyHistoryDatePicker(
     timeOfPenalty: LocalDate,
     onTimeOfPenaltyChanged: (LocalDate) -> Unit
 ) {
-    var showDialog by remember { mutableStateOf(false) }
+    val calendarSheetState = rememberSheetState()
 
-    if (showDialog) {
-        Dialog(
-            onDismissRequest = { showDialog = false }
-        ) {
-            ExpandableCalendar(
-                theme = CalendarTheme(
-                    backgroundColor = MaterialTheme.colorScheme.surface,
-                    headerBackgroundColor = MaterialTheme.colorScheme.surface,
-                    dayBackgroundColor = MaterialTheme.colorScheme.surface,
-                    selectedDayBackgroundColor = MaterialTheme.colorScheme.primary,
-                    dayValueTextColor = MaterialTheme.colorScheme.onSurface,
-                    selectedDayValueTextColor = MaterialTheme.colorScheme.onPrimary,
-                    headerTextColor = MaterialTheme.colorScheme.onSurfaceVariant,
-                    weekDaysTextColor = MaterialTheme.colorScheme.onSurface,
-                    dayShape = MaterialTheme.shapes.extraLarge
-                ),
-                onDayClick = {
-                    onTimeOfPenaltyChanged(it)
-                    showDialog = false
-                }
-            )
+    CalendarDialog(
+        state = calendarSheetState,
+        config = CalendarConfig(
+            yearSelection = true,
+            monthSelection = true,
+            style = CalendarStyle.MONTH
+        ),
+        selection = CalendarSelection.Date { selectedDate ->
+            onTimeOfPenaltyChanged(selectedDate)
         }
-    }
+    )
 
     InputOutlinedField(
-        modifier = Modifier.clickable { showDialog = true },
+        modifier = Modifier.clickable { calendarSheetState.show() },
         enabled = false,
         readOnly = true,
         text = timeOfPenalty.toString(),
@@ -134,7 +126,7 @@ private fun PenaltyHistoryDatePicker(
         label = stringResource(id = R.string.DateOfPenalty),
         trailingIcon = {
             IconButton(
-                onClick = { }) {
+                onClick = { calendarSheetState.show() }) {
                 Icon(
                     imageVector = Icons.Default.DateRange,
                     contentDescription = ""
@@ -270,7 +262,7 @@ private fun PenaltyHistoryPenaltyExposedMenu(
                 DropdownMenuItem(
                     onClick = {
                         expanded = false
-                        onPenaltyChanged(penalty._id, penalty.name)
+                        onPenaltyChanged(penalty.id, penalty.name)
                     },
                     text = {
                         Text(
@@ -320,7 +312,11 @@ private fun PenaltyHistoryAmount(
                 onValueChange = { },
                 modifier = Modifier
                     .width(100.dp)
-                    .border(1.dp, MaterialTheme.colorScheme.surface, TextFieldDefaults.outlinedShape),
+                    .border(
+                        1.dp,
+                        MaterialTheme.colorScheme.surface,
+                        TextFieldDefaults.outlinedShape
+                    ),
                 enabled = false,
                 readOnly = true,
                 textStyle = Typography.titleLarge,
@@ -345,7 +341,7 @@ private fun PenaltyHistoryEditContentPreview1() {
         penaltyHistoryUiState = penaltyHistoryUiStateExample1(),
         penaltyList = emptyList(),
         playerList = emptyList(),
-        onPenaltyChanged = { _, _ -> },
+        onPenaltyChanged = { },
         onPlayerChanged = { },
         onTimeOfPenaltyChanged = { }
     )
@@ -358,7 +354,7 @@ private fun PenaltyHistoryEditContentPreview2() {
         penaltyHistoryUiState = penaltyHistoryUiStateExample2(),
         penaltyList = emptyList(),
         playerList = emptyList(),
-        onPenaltyChanged = { _, _ -> },
+        onPenaltyChanged = { },
         onPlayerChanged = { },
         onTimeOfPenaltyChanged = { }
     )
@@ -371,8 +367,26 @@ private fun PenaltyHistoryEditContentPreview3() {
         penaltyHistoryUiState = penaltyHistoryUiStateExample3(),
         penaltyList = emptyList(),
         playerList = emptyList(),
-        onPenaltyChanged = { _, _ -> },
+        onPenaltyChanged = { },
         onPlayerChanged = { },
         onTimeOfPenaltyChanged = { }
+    )
+}
+
+@OptIn(ExperimentalMaterial3Api::class, ExperimentalComposeUiApi::class)
+@Composable
+@Preview(showBackground = true)
+private fun CalendarPreview() {
+    val calendarSheetState = rememberSheetState()
+    calendarSheetState.show()
+
+    CalendarDialog(
+        state = calendarSheetState,
+        config = CalendarConfig(
+            yearSelection = true,
+            monthSelection = true,
+            style = CalendarStyle.MONTH
+        ),
+        selection = CalendarSelection.Date { },
     )
 }

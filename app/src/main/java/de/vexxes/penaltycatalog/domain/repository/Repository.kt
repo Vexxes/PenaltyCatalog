@@ -7,13 +7,13 @@ import de.vexxes.penaltycatalog.domain.model.Player
 
 // TODO Create needed functions as suspend
 interface Repository {
-
-    suspend fun getAllPlayers(sortOrder: Int = 1): ApiResponse
-    suspend fun getPlayerById(playerId: String): ApiResponse
+/*
+    suspend fun getAllPlayers(sortOrder: Int = 1): List<Player>
+    suspend fun getPlayerById(playerId: String): Player?
     suspend fun updatePlayer(player: Player): ApiResponse
     suspend fun deletePlayer(playerId: String): ApiResponse
-    suspend fun getPlayersBySearch(searchText: String): ApiResponse
-
+    suspend fun getPlayersBySearch(searchText: String): List<Player>?
+*/
 
 
     suspend fun getAllCategories(): ApiResponse

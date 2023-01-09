@@ -1,7 +1,6 @@
-package de.vexxes.penaltycatalog.presentation.screen.history
+package de.vexxes.penaltycatalog.presentation.screen.penaltyHistory
 
 import android.icu.text.NumberFormat
-import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -36,8 +35,8 @@ import de.vexxes.penaltycatalog.domain.model.penaltyReceivedExample2
 import de.vexxes.penaltycatalog.domain.model.penaltyReceivedExample3
 import de.vexxes.penaltycatalog.domain.visualTransformation.CurrencyAmountInputVisualTransformation
 import de.vexxes.penaltycatalog.ui.theme.Typography
-import de.vexxes.penaltycatalog.ui.theme.colorSchemeSegButtons
 import de.vexxes.penaltycatalog.util.FilterPaidState
+import java.time.LocalDate
 
 @Composable
 fun PenaltyHistoryListContent(
@@ -81,8 +80,9 @@ private fun DisplayPenaltyHistory(
                     )
                 }
 
+                // TODO: Redo when clear is how to handle penaltyPaid
                 FilterPaidState.PAID -> {
-                    if (penaltyHistoryItem.penaltyPaid)
+                    if (LocalDate.now() > penaltyHistoryItem.penaltyPaid)
                         PenaltyHistoryItem(
                             penaltyReceived = penaltyHistoryItem,
                             navigateToPenaltyHistoryDetailScreen = navigateToPenaltyHistoryDetailScreen
@@ -90,7 +90,7 @@ private fun DisplayPenaltyHistory(
                 }
 
                 FilterPaidState.NOT_PAID -> {
-                    if (!penaltyHistoryItem.penaltyPaid) {
+                    if (LocalDate.now() < penaltyHistoryItem.penaltyPaid) {
                         PenaltyHistoryItem(
                             penaltyReceived = penaltyHistoryItem,
                             navigateToPenaltyHistoryDetailScreen = navigateToPenaltyHistoryDetailScreen
@@ -110,13 +110,16 @@ private fun PenaltyHistoryItem(
     Row(
         modifier = Modifier
             .clickable {
-                navigateToPenaltyHistoryDetailScreen(penaltyReceived._id)
+                navigateToPenaltyHistoryDetailScreen(penaltyReceived.id)
             }
             .fillMaxWidth()
             .height(72.dp)
+            //TODO: Find a way to get background color
+            /*
             .background(
                 if (penaltyReceived.penaltyPaid) colorSchemeSegButtons().backgroundPaid else colorSchemeSegButtons().backgroundNotPaid
             )
+             */
     ) {
         Column(
             modifier = Modifier
@@ -126,18 +129,21 @@ private fun PenaltyHistoryItem(
             verticalArrangement = Arrangement.Center
         ) {
             PenaltyHistoryPlayerName(
-                text = penaltyReceived.playerName
+                // TODO: Get playerName with playerId
+                text = penaltyReceived.playerId
             )
 
             PenaltyHistorySubText(
-                text = penaltyReceived.penaltyName
+                // TODO: Get penaltyName with penaltyId
+                text = penaltyReceived.penaltyId
             )
 
             PenaltyHistorySubText(
-                text = penaltyReceived.timeOfPenalty
+                text = penaltyReceived.timeOfPenalty.toString()
             )
         }
 
+        /* TODO: Read penaltyAmount from with penaltyId
         PenaltyHistoryPenaltyAmount(
             modifier = Modifier
                 .padding(end = 8.dp)
@@ -145,6 +151,7 @@ private fun PenaltyHistoryItem(
             value = penaltyReceived.penaltyValue,
             isBeer = penaltyReceived.penaltyIsBeer,
             color = if (penaltyReceived.penaltyPaid) colorSchemeSegButtons().backgroundPaid else colorSchemeSegButtons().backgroundNotPaid)
+         */
     }
 }
 

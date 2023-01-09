@@ -1,4 +1,4 @@
-package de.vexxes.penaltycatalog.presentation.screen.history
+package de.vexxes.penaltycatalog.presentation.screen.penaltyHistory
 
 import android.icu.text.NumberFormat
 import androidx.compose.animation.core.animateFloatAsState
@@ -58,6 +58,7 @@ fun PenaltyHistoryDetailContent(
             .fillMaxSize()
             .padding(8.dp)
     ) {
+        /* TODO: Read penaltyName and playerName
         PenaltyHistoryHeader(text = penaltyHistoryUiState.penaltyName)
         PenaltyHistoryButtonsPaid(
             penaltyPaid = penaltyHistoryUiState.penaltyPaid,
@@ -69,6 +70,7 @@ fun PenaltyHistoryDetailContent(
             value = penaltyHistoryUiState.penaltyValue,
             isBeer = penaltyHistoryUiState.penaltyIsBeer
         )
+         */
     }
 }
 

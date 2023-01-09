@@ -1,4 +1,4 @@
-package de.vexxes.penaltycatalog.navigation.composables.penalty
+package de.vexxes.penaltycatalog.navigation.composables.penaltyType
 
 import androidx.compose.runtime.LaunchedEffect
 import de.vexxes.penaltycatalog.navigation.ScreenNavigation
@@ -6,11 +6,11 @@ import de.vexxes.penaltycatalog.util.SearchAppBarState
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.compose.composable
 import de.vexxes.penaltycatalog.domain.uievent.SearchUiEvent
-import de.vexxes.penaltycatalog.presentation.screen.penalty.PenaltyListScreen
-import de.vexxes.penaltycatalog.viewmodels.PenaltyViewModel
+import de.vexxes.penaltycatalog.presentation.screen.penaltyType.PenaltyListScreen
+import de.vexxes.penaltycatalog.viewmodels.PenaltyTypeViewModel
 
 fun NavGraphBuilder.penaltyListComposable(
-    penaltyViewModel: PenaltyViewModel,
+    penaltyTypeViewModel: PenaltyTypeViewModel,
     navigateToPenaltyDetailScreen: (String) -> Unit,
     navigateToPenaltyEditScreen: (String) -> Unit
 ) {
@@ -18,11 +18,11 @@ fun NavGraphBuilder.penaltyListComposable(
         route = ScreenNavigation.Penalties.route
     ) {
         LaunchedEffect(true) {
-            penaltyViewModel.onSearchUiEvent(SearchUiEvent.SearchAppBarStateChanged(SearchAppBarState.CLOSED))
+            penaltyTypeViewModel.onSearchUiEvent(SearchUiEvent.SearchAppBarStateChanged(SearchAppBarState.CLOSED))
         }
 
         PenaltyListScreen(
-            penaltyViewModel = penaltyViewModel,
+            penaltyTypeViewModel = penaltyTypeViewModel,
             navigateToPenaltyDetailScreen = { penaltyId ->
                 navigateToPenaltyDetailScreen(penaltyId)
             },

@@ -1,49 +1,44 @@
 package de.vexxes.penaltycatalog.domain.model
 
+import kotlinx.serialization.Contextual
 import kotlinx.serialization.Serializable
 import java.time.LocalDate
 
 @Serializable
 data class PenaltyReceived(
-    val _id: String = "",
-    val penaltyName: String = "",
-    val playerName: String = "",
-    val penaltyValue: String = "",
-    val penaltyIsBeer: Boolean = false,
-    val timeOfPenalty: String = "",
-    val penaltyPaid: Boolean = false
+    val id: String = "",
+    val penaltyId: String = "",
+    val playerId: String = "",
+    @Contextual val timeOfPenalty: LocalDate = LocalDate.now(),
+    @Contextual val penaltyPaid: LocalDate = LocalDate.now()
 )
 
 fun penaltyReceivedExample1(): PenaltyReceived {
     return PenaltyReceived(
-        _id = "",
-        penaltyName = "Getränke zur Besprechung",
-        playerName = "Mustermann, Max",
-        penaltyValue = "1",
-        penaltyIsBeer = true,
-        timeOfPenalty = LocalDate.now().toString()
+        id = "",
+        penaltyId = "",
+        playerId = "",
+        timeOfPenalty = LocalDate.now(),
+        penaltyPaid = LocalDate.now()
     )
 }
 
 fun penaltyReceivedExample2(): PenaltyReceived {
     return PenaltyReceived(
-        _id = "",
-        penaltyName = "Verspätete Zahlung des Monatsbeitrag",
-        playerName = "Mustermann, Max",
-        penaltyValue = "500",
-        penaltyIsBeer = false,
-        timeOfPenalty = LocalDate.now().toString()
+        id = "",
+        penaltyId = "",
+        playerId = "",
+        timeOfPenalty = LocalDate.now(),
+        penaltyPaid = LocalDate.now()
     )
 }
 
 fun penaltyReceivedExample3(): PenaltyReceived {
     return PenaltyReceived(
-        _id = "",
-        penaltyName = "Verspätete Zahlung des Monatsbeitrag",
-        playerName = "Mustermann, Max",
-        penaltyValue = "1500",
-        penaltyIsBeer = false,
-        timeOfPenalty = LocalDate.now().toString(),
-        penaltyPaid = true
+        id = "",
+        penaltyId = "",
+        playerId = "",
+        timeOfPenalty = LocalDate.now(),
+        penaltyPaid = LocalDate.now()
     )
 }

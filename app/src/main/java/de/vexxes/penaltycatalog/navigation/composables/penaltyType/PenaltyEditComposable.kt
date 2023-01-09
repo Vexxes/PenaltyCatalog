@@ -1,4 +1,4 @@
-package de.vexxes.penaltycatalog.navigation.composables.penalty
+package de.vexxes.penaltycatalog.navigation.composables.penaltyType
 
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.tween
@@ -15,11 +15,11 @@ import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
 import de.vexxes.penaltycatalog.domain.model.ApiResponse
 import de.vexxes.penaltycatalog.navigation.Screen
-import de.vexxes.penaltycatalog.presentation.screen.penalty.PenaltyEditScreen
-import de.vexxes.penaltycatalog.viewmodels.PenaltyViewModel
+import de.vexxes.penaltycatalog.presentation.screen.penaltyType.PenaltyEditScreen
+import de.vexxes.penaltycatalog.viewmodels.PenaltyTypeViewModel
 
 fun NavGraphBuilder.penaltyEditComposable(
-    penaltyViewModel: PenaltyViewModel,
+    penaltyTypeViewModel: PenaltyTypeViewModel,
     navigateBack: () -> Unit
 ) {
     composable(
@@ -33,7 +33,7 @@ fun NavGraphBuilder.penaltyEditComposable(
         val penaltyId = navBackStackEntry.arguments?.getString("penaltyId")
         LaunchedEffect(key1 = penaltyId) {
             if (penaltyId == "-1")
-                penaltyViewModel.resetPenalty()
+                penaltyTypeViewModel.resetPenalty()
         }
 
         var visible by remember {
@@ -41,7 +41,7 @@ fun NavGraphBuilder.penaltyEditComposable(
         }
         LaunchedEffect(key1 = true) {
             visible = true
-            penaltyViewModel.lastResponse.value = ApiResponse()
+            penaltyTypeViewModel.lastResponse.value = ApiResponse()
         }
 
         AnimatedVisibility(
@@ -50,13 +50,13 @@ fun NavGraphBuilder.penaltyEditComposable(
             exit = slideOutHorizontally(animationSpec = tween(durationMillis = 300)) { fullWidth -> fullWidth }
         ) {
             PenaltyEditScreen(
-                penaltyViewModel = penaltyViewModel,
+                penaltyTypeViewModel = penaltyTypeViewModel,
                 onBackClicked = {
                     visible = false
                     navigateBack()
                 },
                 onSaveClicked = {
-                    if (penaltyViewModel.updatePenalty()) {
+                    if (penaltyTypeViewModel.updatePenalty()) {
                         visible = false
                         navigateBack()
                     }

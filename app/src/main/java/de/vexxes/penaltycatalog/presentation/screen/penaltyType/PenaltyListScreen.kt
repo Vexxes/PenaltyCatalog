@@ -1,4 +1,4 @@
-package de.vexxes.penaltycatalog.presentation.screen.penalty
+package de.vexxes.penaltycatalog.presentation.screen.penaltyType
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
@@ -28,25 +28,28 @@ import de.vexxes.penaltycatalog.component.GeneralTopBar
 import de.vexxes.penaltycatalog.domain.model.ApiResponse
 import de.vexxes.penaltycatalog.domain.model.Penalty
 import de.vexxes.penaltycatalog.domain.enums.SortOrder
+import de.vexxes.penaltycatalog.domain.model.penaltyExample1
+import de.vexxes.penaltycatalog.domain.model.penaltyExample2
+import de.vexxes.penaltycatalog.domain.model.penaltyExample3
 import de.vexxes.penaltycatalog.domain.uievent.SearchUiEvent
 import de.vexxes.penaltycatalog.util.RequestState
 import de.vexxes.penaltycatalog.util.SearchAppBarState
-import de.vexxes.penaltycatalog.viewmodels.PenaltyViewModel
+import de.vexxes.penaltycatalog.viewmodels.PenaltyTypeViewModel
 import kotlinx.coroutines.delay
 
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
 fun PenaltyListScreen(
-    penaltyViewModel: PenaltyViewModel,
+    penaltyTypeViewModel: PenaltyTypeViewModel,
     navigateToPenaltyDetailScreen: (penaltyId: String) -> Unit,
     navigateToPenaltyEditScreen: (penaltyId: String) -> Unit
 ) {
-    val penalties by penaltyViewModel.penalties
-    val apiResponse by penaltyViewModel.lastResponse
-    val searchUiState by penaltyViewModel.searchUiState
+    val penalties by penaltyTypeViewModel.penalties
+    val apiResponse by penaltyTypeViewModel.lastResponse
+    val searchUiState by penaltyTypeViewModel.searchUiState
 
-    val refreshPenalties = { penaltyViewModel.getAllPenalties() }
-    val refreshing = penaltyViewModel.apiResponse.value is RequestState.Loading
+    val refreshPenalties = { penaltyTypeViewModel.getAllPenalties() }
+    val refreshing = penaltyTypeViewModel.apiResponse.value is RequestState.Loading
     val pullRefreshState = rememberPullRefreshState(refreshing = refreshing, onRefresh = { refreshPenalties() })
 
     LaunchedEffect(key1 = true) {
@@ -57,16 +60,16 @@ fun PenaltyListScreen(
         PenaltyListScaffold(
             searchAppBarState = searchUiState.searchAppBarState,
             searchText = searchUiState.searchText,
-            onSearchTextChanged = { penaltyViewModel.onSearchUiEvent(SearchUiEvent.SearchTextChanged(it)) },
-            onDefaultSearchClicked = { penaltyViewModel.onSearchUiEvent(SearchUiEvent.SearchAppBarStateChanged(SearchAppBarState.OPENED)) },
+            onSearchTextChanged = { penaltyTypeViewModel.onSearchUiEvent(SearchUiEvent.SearchTextChanged(it)) },
+            onDefaultSearchClicked = { penaltyTypeViewModel.onSearchUiEvent(SearchUiEvent.SearchAppBarStateChanged(SearchAppBarState.OPENED)) },
             onSortClicked = { },
             onCloseClicked = {
-                penaltyViewModel.onSearchUiEvent(SearchUiEvent.SearchAppBarStateChanged(SearchAppBarState.CLOSED))
-                penaltyViewModel.onSearchUiEvent(SearchUiEvent.SearchTextChanged(""))
+                penaltyTypeViewModel.onSearchUiEvent(SearchUiEvent.SearchAppBarStateChanged(SearchAppBarState.CLOSED))
+                penaltyTypeViewModel.onSearchUiEvent(SearchUiEvent.SearchTextChanged(""))
             },
             penalties = penalties,
             apiResponse = apiResponse,
-            resetApiResponse = { penaltyViewModel.resetLastResponse() },
+            resetApiResponse = { penaltyTypeViewModel.resetLastResponse() },
             navigateToPenaltyDetailScreen = navigateToPenaltyDetailScreen,
             navigateToPenaltyEditScreen = navigateToPenaltyEditScreen
         )
@@ -173,31 +176,11 @@ fun PenaltyListSnackbar(
 @Preview(showBackground = true)
 @Composable
 private fun PenaltyListScreenPreview() {
+
     val penalties = listOf(
-        Penalty(
-            _id = "",
-            name = "Monatsbeitrag",
-            categoryName = "Monatsbeitrag",
-            description = "",
-            isBeer = false,
-            value = "5"
-        ),
-        Penalty(
-            _id = "",
-            name = "Verspätete Zahlung des Monatsbeitrag",
-            categoryName = "Monatsbeitrag",
-            description = "zzgl. pro Monat",
-            isBeer = false,
-            value = "5"
-        ),
-        Penalty(
-            _id = "",
-            name = "Getränke zur Besprechung",
-            categoryName = "Sonstiges",
-            description = "Mitzubringen in alphabetischer Reihenfolge nach dem Freitagstraining",
-            isBeer = true,
-            value = "1"
-        )
+        penaltyExample1(),
+        penaltyExample2(),
+        penaltyExample3()
     )
 
     PenaltyListScaffold(

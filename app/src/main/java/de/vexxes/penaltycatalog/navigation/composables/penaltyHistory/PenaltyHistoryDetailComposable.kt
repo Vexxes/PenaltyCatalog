@@ -14,7 +14,7 @@ import androidx.navigation.NavType
 import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
 import de.vexxes.penaltycatalog.navigation.Screen
-import de.vexxes.penaltycatalog.presentation.screen.history.PenaltyHistoryDetailScreen
+import de.vexxes.penaltycatalog.presentation.screen.penaltyHistory.PenaltyHistoryDetailScreen
 import de.vexxes.penaltycatalog.viewmodels.PenaltyHistoryViewModel
 
 fun NavGraphBuilder.penaltyHistoryDetailComposable(

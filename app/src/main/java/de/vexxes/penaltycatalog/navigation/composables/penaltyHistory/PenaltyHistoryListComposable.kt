@@ -5,7 +5,7 @@ import androidx.navigation.NavGraphBuilder
 import androidx.navigation.compose.composable
 import de.vexxes.penaltycatalog.domain.uievent.SearchUiEvent
 import de.vexxes.penaltycatalog.navigation.ScreenNavigation
-import de.vexxes.penaltycatalog.presentation.screen.history.PenaltyHistoryListScreen
+import de.vexxes.penaltycatalog.presentation.screen.penaltyHistory.PenaltyHistoryListScreen
 import de.vexxes.penaltycatalog.util.SearchAppBarState
 import de.vexxes.penaltycatalog.viewmodels.PenaltyHistoryViewModel
 

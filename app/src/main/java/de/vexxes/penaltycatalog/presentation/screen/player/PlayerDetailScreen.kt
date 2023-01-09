@@ -1,31 +1,22 @@
 package de.vexxes.penaltycatalog.presentation.screen.player
 
 import androidx.activity.compose.BackHandler
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Snackbar
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.dp
-import de.vexxes.penaltycatalog.R
 import de.vexxes.penaltycatalog.component.BackDeleteEditTopBar
 import de.vexxes.penaltycatalog.component.DeleteAlertDialog
-import de.vexxes.penaltycatalog.domain.model.ApiResponse
 import de.vexxes.penaltycatalog.domain.model.playerExample
 import de.vexxes.penaltycatalog.domain.uistate.PlayerUiState
 import de.vexxes.penaltycatalog.viewmodels.PlayerViewModel
-import kotlinx.coroutines.delay
 
 @Composable
 fun PlayerDetailScreen(
@@ -35,7 +26,6 @@ fun PlayerDetailScreen(
     onEditClicked: (String) -> Unit,
 ) {
     val playerUiState by playerViewModel.playerUiState
-    val apiResponse by playerViewModel.lastResponse
     var showAlertDialog by remember { mutableStateOf(false) }
 
     BackHandler {
@@ -63,9 +53,7 @@ fun PlayerDetailScreen(
         playerUiState = playerUiState,
         onBackClicked = onBackClicked,
         onDeleteClicked = { showAlertDialog = true },
-        onEditClicked = { onEditClicked(playerUiState.id) },
-        apiResponse = apiResponse,
-        resetApiResponse = { playerViewModel.resetLastResponse() },
+        onEditClicked = { onEditClicked(playerUiState.id) }
     )
 }
 
@@ -75,9 +63,7 @@ private fun PlayerDetailScreen(
     playerUiState: PlayerUiState,
     onBackClicked: () -> Unit,
     onDeleteClicked: () -> Unit,
-    onEditClicked: () -> Unit,
-    apiResponse: ApiResponse,
-    resetApiResponse: () -> Unit,
+    onEditClicked: () -> Unit
 ) {
     Scaffold(
         topBar = {
@@ -97,44 +83,7 @@ private fun PlayerDetailScreen(
                 )
             }
         },
-
-        snackbarHost = {
-            PlayerDetailSnackbar(
-                apiResponse = apiResponse,
-                resetApiResponse = resetApiResponse
-            )
-        }
     )
-}
-
-@Composable
-fun PlayerDetailSnackbar(
-    apiResponse: ApiResponse,
-    resetApiResponse: () -> Unit
-) {
-    /*TODO Other approach possible?*/
-    // Reset snackbar after 3 seconds
-    LaunchedEffect(key1 = true) {
-        delay(3000)
-        resetApiResponse()
-    }
-
-    if(apiResponse.hashCode() != ApiResponse().hashCode()) {
-        Snackbar(
-            modifier = Modifier
-                .padding(8.dp),
-            action = {
-                Text(
-                    modifier = Modifier
-                        .clickable { resetApiResponse() },
-                    text = stringResource(id = R.string.Ok))
-            }
-        ) {
-            Text(
-                text = if(!apiResponse.message.isNullOrEmpty()) apiResponse.message else ""
-            )
-        }
-    }
 }
 
 @Preview(showBackground = true)
@@ -142,7 +91,7 @@ fun PlayerDetailSnackbar(
 private fun PlayerDetailScreenPreview() {
     val player = playerExample()
     val playerUiState = PlayerUiState(
-        id = player._id,
+        id = player.id,
         number = player.number.toString(),
         firstName = player.firstName,
         lastName = player.lastName,
@@ -161,8 +110,6 @@ private fun PlayerDetailScreenPreview() {
         playerUiState = playerUiState,
         onBackClicked = { },
         onDeleteClicked = { },
-        onEditClicked = { },
-        apiResponse = ApiResponse(),
-        resetApiResponse = { }
+        onEditClicked = { }
     )
 }

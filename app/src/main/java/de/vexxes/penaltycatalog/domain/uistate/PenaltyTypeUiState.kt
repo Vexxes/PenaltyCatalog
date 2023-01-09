@@ -1,23 +1,20 @@
 package de.vexxes.penaltycatalog.domain.uistate
 
-data class PenaltyUiState(
+data class PenaltyTypeUiState(
     val id: String = "",
     val name: String = "",
-    val categoryName: String = "",
     val description: String = "",
     val isBeer: Boolean = false,
     val value: String = "",
     val valueDeclaredPenalties: String = "0",
-    val categoryError: Boolean = false,
     val nameError: Boolean = false,
     val valueError: Boolean = false
 )
 
-fun penaltyUiStateExample1(): PenaltyUiState {
-    return PenaltyUiState(
+fun penaltyTypeUiStateExample1(): PenaltyTypeUiState {
+    return PenaltyTypeUiState(
         id = "63717e8314ab74703f0ab5cb",
         name = "Monatsbeitrag",
-        categoryName = "Monatsbeitrag",
         description = "",
         isBeer = false,
         value = "500",
@@ -25,11 +22,10 @@ fun penaltyUiStateExample1(): PenaltyUiState {
     )
 }
 
-fun penaltyUiStateExample2(): PenaltyUiState {
-    return PenaltyUiState(
+fun penaltyTypeUiStateExample2(): PenaltyTypeUiState {
+    return PenaltyTypeUiState(
         id = "63717e8314ab74703f0ab5cb",
         name = "Getränke zur Besprechung",
-        categoryName = "Sonstiges",
         description = "",
         isBeer = true,
         value = "1",
