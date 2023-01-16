@@ -23,7 +23,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -33,7 +32,6 @@ import de.vexxes.penaltycatalog.domain.model.PenaltyReceived
 import de.vexxes.penaltycatalog.domain.model.penaltyReceivedExample1
 import de.vexxes.penaltycatalog.domain.model.penaltyReceivedExample2
 import de.vexxes.penaltycatalog.domain.model.penaltyReceivedExample3
-import de.vexxes.penaltycatalog.domain.visualTransformation.CurrencyAmountInputVisualTransformation
 import de.vexxes.penaltycatalog.ui.theme.Typography
 import de.vexxes.penaltycatalog.util.FilterPaidState
 import java.time.LocalDate
@@ -196,9 +194,9 @@ private fun PenaltyHistoryPenaltyAmount(
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.End
     ) {
-        val visualTransformation = if (isBeer) VisualTransformation.None else CurrencyAmountInputVisualTransformation(
+/*        val visualTransformation = if (isBeer) VisualTransformation.None else CurrencyAmountInputVisualTransformation(
             fixedCursorAtTheEnd = true
-        )
+        )*/
 
         Text(
             text = if (isBeer) stringResource(id = R.string.Box) else NumberFormat.getCurrencyInstance().currency.symbol,
@@ -220,7 +218,7 @@ private fun PenaltyHistoryPenaltyAmount(
             enabled = false,
             readOnly = true,
             textStyle = Typography.titleMedium.copy(textAlign = TextAlign.Right),
-            visualTransformation = visualTransformation,
+//            visualTransformation = visualTransformation,
             colors = TextFieldDefaults.outlinedTextFieldColors(
                 disabledTextColor = MaterialTheme.colorScheme.onSurface,
                 disabledBorderColor = MaterialTheme.colorScheme.outline,

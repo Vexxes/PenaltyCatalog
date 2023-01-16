@@ -17,7 +17,7 @@ import de.vexxes.penaltycatalog.domain.uistate.penaltyTypeUiStateExample1
 import de.vexxes.penaltycatalog.viewmodels.PenaltyTypeViewModel
 
 @Composable
-fun PenaltyEditScreen(
+fun PenaltyTypeEditScreen(
     penaltyTypeViewModel: PenaltyTypeViewModel,
     onBackClicked: () -> Unit,
     onSaveClicked: (String?) -> Unit
@@ -28,12 +28,12 @@ fun PenaltyEditScreen(
         onBackClicked()
     }
 
-    PenaltyEditScaffold(
+    PenaltyTypeEditScaffold(
         penaltyTypeUiState = penaltyUiState,
         onPenaltyNameChanged = { penaltyTypeViewModel.onPenaltyUiEvent(PenaltyTypeUiEvent.NameChanged(it)) },
         onPenaltyDescriptionChanged = { penaltyTypeViewModel.onPenaltyUiEvent(PenaltyTypeUiEvent.DescriptionChanged(it)) },
         onPenaltyAmountChanged = {
-                penaltyTypeViewModel.onPenaltyUiEvent(PenaltyTypeUiEvent.ValueChanged(it))
+            penaltyTypeViewModel.onPenaltyUiEvent(PenaltyTypeUiEvent.ValueChanged(it))
         },
         onPenaltyTypeChanged = { penaltyType ->
             when(penaltyType) {
@@ -50,7 +50,7 @@ fun PenaltyEditScreen(
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-private fun PenaltyEditScaffold(
+private fun PenaltyTypeEditScaffold(
     penaltyTypeUiState: PenaltyTypeUiState,
     onPenaltyNameChanged: (String) -> Unit,
     onPenaltyDescriptionChanged: (String) -> Unit,
@@ -71,7 +71,7 @@ private fun PenaltyEditScaffold(
             Box(
                 modifier = Modifier.padding(paddingValues)
             ) {
-                PenaltyEditContent(
+                PenaltyTypeEditContent(
                     penaltyTypeUiState = penaltyTypeUiState,
                     onPenaltyNameChanged = onPenaltyNameChanged,
                     onPenaltyDescriptionChanged = onPenaltyDescriptionChanged,
@@ -85,8 +85,8 @@ private fun PenaltyEditScaffold(
 
 @Preview(showBackground = true)
 @Composable
-private fun PenaltyEditScreenPreview() {
-    PenaltyEditScaffold(
+private fun PenaltyTypeEditScreenPreview() {
+    PenaltyTypeEditScaffold(
         penaltyTypeUiState = penaltyTypeUiStateExample1(),
         onPenaltyNameChanged = { },
         onPenaltyDescriptionChanged = { },

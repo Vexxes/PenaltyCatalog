@@ -1,36 +1,32 @@
 package de.vexxes.penaltycatalog.presentation.screen.penaltyType
 
 import android.icu.text.NumberFormat
-import androidx.compose.foundation.border
+import android.icu.util.Currency
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.width
-import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.foundation.text.BasicTextField
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.input.VisualTransformation
-import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import de.vexxes.penaltycatalog.R
 import de.vexxes.penaltycatalog.domain.uistate.PenaltyTypeUiState
 import de.vexxes.penaltycatalog.domain.uistate.penaltyTypeUiStateExample1
 import de.vexxes.penaltycatalog.domain.uistate.penaltyTypeUiStateExample2
-import de.vexxes.penaltycatalog.domain.visualTransformation.CurrencyAmountInputVisualTransformation
+import de.vexxes.penaltycatalog.domain.visualTransformation.NumberCommaTransformation
 import de.vexxes.penaltycatalog.ui.theme.Typography
 
 @Composable
-fun PenaltyDetailContent(
+fun PenaltyTypeDetailContent(
     penaltyTypeUiState: PenaltyTypeUiState
 ) {
     Column(
@@ -38,15 +34,15 @@ fun PenaltyDetailContent(
             .fillMaxSize()
             .padding(8.dp)
     ) {
-        PenaltyHeader(text = penaltyTypeUiState.name)
-        if(penaltyTypeUiState.description.isNotEmpty()) { PenaltyDescription(text = penaltyTypeUiState.description) }
-        PenaltyAmount(value = penaltyTypeUiState.value, isBeer = penaltyTypeUiState.isBeer)
+        PenaltyTypeHeader(text = penaltyTypeUiState.name)
+        if(penaltyTypeUiState.description.isNotEmpty()) { PenaltyTypeDescription(text = penaltyTypeUiState.description) }
+        PenaltyTypeAmount(value = penaltyTypeUiState.value, isBeer = penaltyTypeUiState.isBeer)
         DeclaredPenalties(text = penaltyTypeUiState.valueDeclaredPenalties)
     }
 }
 
 @Composable
-private fun PenaltyHeader(
+private fun PenaltyTypeHeader(
     text: String
 ) {
     Text(
@@ -56,7 +52,7 @@ private fun PenaltyHeader(
 }
 
 @Composable
-private fun PenaltyDescription(
+private fun PenaltyTypeDescription(
     text: String
 ) {
     LabelHeader(text = stringResource(id = R.string.Description))
@@ -69,46 +65,36 @@ private fun PenaltyDescription(
     )
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
-private fun PenaltyAmount(
+private fun PenaltyTypeAmount(
     value: String,
     isBeer: Boolean
 ) {
+    val format = NumberFormat.getCurrencyInstance()
+    format.currency = Currency.getInstance("EUR")
+    format.maximumFractionDigits = 2
+
+    var leadingText = if (isBeer) stringResource(id = R.string.Box) else format.currency.symbol
+    leadingText = "$leadingText "
+
     LabelHeader(text = stringResource(id = R.string.Amount))
 
     Row(
         modifier = Modifier
-            .fillMaxWidth(),
-        verticalAlignment = Alignment.CenterVertically,
+            .fillMaxWidth()
     ) {
-        val visualTransformation = if (isBeer) VisualTransformation.None else CurrencyAmountInputVisualTransformation(
-            fixedCursorAtTheEnd = true
-        )
-
         Text(
-            text = if (isBeer) stringResource(id = R.string.Box) else NumberFormat.getCurrencyInstance().currency.symbol,
-            style = Typography.titleLarge.copy(textAlign = TextAlign.Right)
+            text = leadingText,
+            style = Typography.titleLarge
         )
 
-        OutlinedTextField(
+        BasicTextField (
             value = value,
             onValueChange = { },
-            modifier = Modifier
-                .width(100.dp)
-                .border(1.dp, MaterialTheme.colorScheme.surface, TextFieldDefaults.outlinedShape),
             enabled = false,
-            readOnly = true,
-            textStyle = Typography.titleLarge,
-            visualTransformation = visualTransformation,
-            colors = TextFieldDefaults.outlinedTextFieldColors(
-                disabledTextColor = MaterialTheme.colorScheme.onSurface,
-                disabledBorderColor = MaterialTheme.colorScheme.outline,
-                disabledPlaceholderColor = MaterialTheme.colorScheme.onSurfaceVariant,
-                disabledLabelColor = MaterialTheme.colorScheme.onSurfaceVariant,
-                disabledLeadingIconColor = MaterialTheme.colorScheme.onSurfaceVariant,
-                disabledTrailingIconColor = MaterialTheme.colorScheme.onSurfaceVariant
-            )
+            textStyle = Typography.titleLarge.copy(color = MaterialTheme.colorScheme.onSurface),
+            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+            visualTransformation = NumberCommaTransformation()
         )
     }
 }
@@ -143,12 +129,12 @@ private fun DeclaredPenalties(
 
 @Preview(showBackground = true)
 @Composable
-private fun PenaltyDetailContentMoneyPreview() {
-    PenaltyDetailContent(penaltyTypeUiState = penaltyTypeUiStateExample1())
+private fun PenaltyTypeDetailContentMoneyPreview() {
+    PenaltyTypeDetailContent(penaltyTypeUiState = penaltyTypeUiStateExample1())
 }
 
 @Preview(showBackground = true)
 @Composable
-private fun PenaltyDetailContentBeerPreview() {
-    PenaltyDetailContent(penaltyTypeUiState = penaltyTypeUiStateExample2())
+private fun PenaltyTypeDetailContentBeerPreview() {
+    PenaltyTypeDetailContent(penaltyTypeUiState = penaltyTypeUiStateExample2())
 }

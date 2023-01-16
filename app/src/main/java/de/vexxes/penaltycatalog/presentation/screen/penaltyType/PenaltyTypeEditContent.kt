@@ -1,6 +1,5 @@
 package de.vexxes.penaltycatalog.presentation.screen.penaltyType
 
-import android.icu.text.NumberFormat
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
@@ -26,16 +25,18 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.core.text.isDigitsOnly
 import de.vexxes.penaltycatalog.R
 import de.vexxes.penaltycatalog.component.InputOutlinedField
 import de.vexxes.penaltycatalog.domain.enums.BeerMoneyType
 import de.vexxes.penaltycatalog.domain.uistate.PenaltyTypeUiState
 import de.vexxes.penaltycatalog.domain.uistate.penaltyTypeUiStateExample1
-import de.vexxes.penaltycatalog.domain.visualTransformation.CurrencyAmountInputVisualTransformation
+import de.vexxes.penaltycatalog.domain.uistate.penaltyTypeUiStateExample2
+import de.vexxes.penaltycatalog.domain.visualTransformation.NumberCommaTransformation
 import de.vexxes.penaltycatalog.ui.theme.Typography
 
 @Composable
-fun PenaltyEditContent(
+fun PenaltyTypeEditContent(
     penaltyTypeUiState: PenaltyTypeUiState,
     onPenaltyNameChanged: (String) -> Unit,
     onPenaltyDescriptionChanged: (String) -> Unit,
@@ -46,10 +47,16 @@ fun PenaltyEditContent(
         modifier = Modifier
             .fillMaxSize()
     ) {
-        PenaltyName(
+        PenaltyTypeName(
             text = penaltyTypeUiState.name,
             error = penaltyTypeUiState.nameError,
             onTextChanged = onPenaltyNameChanged
+        )
+
+        PenaltyTypeAmount(
+            value = penaltyTypeUiState.value,
+            error = penaltyTypeUiState.valueError,
+            onTextChanged = onPenaltyAmountChanged
         )
 
         PenaltyType(
@@ -57,13 +64,7 @@ fun PenaltyEditContent(
             onPenaltyTypeChanged = onPenaltyTypeChanged
         )
 
-        PenaltyAmount(
-            text = penaltyTypeUiState.value,
-            error = penaltyTypeUiState.valueError,
-            onTextChanged = onPenaltyAmountChanged
-        )
-
-        PenaltyDescription(
+        PenaltyTypeDescription(
             text = penaltyTypeUiState.description,
             onTextChanged = onPenaltyDescriptionChanged
         )
@@ -71,7 +72,7 @@ fun PenaltyEditContent(
 }
 
 @Composable
-private fun PenaltyName(
+private fun PenaltyTypeName(
     text: String,
     error: Boolean,
     onTextChanged: (String) -> Unit
@@ -151,7 +152,7 @@ private fun PenaltyType(
 }
 
 @Composable
-private fun PenaltyDescription(
+private fun PenaltyTypeDescription(
     text: String,
     onTextChanged: (String) -> Unit
 ) {
@@ -166,43 +167,49 @@ private fun PenaltyDescription(
 }
 
 @Composable
-private fun PenaltyAmount(
-    text: String,
+private fun PenaltyTypeAmount(
+    value: String,
     error: Boolean,
     onTextChanged: (String) -> Unit
 ) {
-    var tmpText: String
+    var text by remember { mutableStateOf(value) }
 
     InputOutlinedField(
         modifier = Modifier
             .padding(8.dp),
-        text = text.filter { it.isDigit() },
-        onTextChanged = {
-            tmpText = if (it.startsWith("0")) {
-                ""
-            } else {
-                it
+        text = text,
+        onTextChanged = { newText: String ->
+            if (newText.length <= Long.MAX_VALUE.toString().length && newText.isDigitsOnly()) {
+                text = newText
+                println(newText)
+                onTextChanged(newText)
             }
-            onTextChanged(tmpText)
         },
         isError = error,
         label = stringResource(id = R.string.Amount),
         required = true,
-        leadingIcon = {
-            Text(text = NumberFormat.getCurrencyInstance().currency.symbol)
-        },
         keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
-        visualTransformation = CurrencyAmountInputVisualTransformation(
-            fixedCursorAtTheEnd = true
-        )
+        visualTransformation = NumberCommaTransformation()
     )
 }
 
 @Preview(showBackground = true)
 @Composable
-private fun PenaltyEditContentPreview() {
-    PenaltyEditContent(
+private fun PenaltyTypeEditContentPreview1() {
+    PenaltyTypeEditContent(
         penaltyTypeUiState = penaltyTypeUiStateExample1(),
+        onPenaltyNameChanged = { },
+        onPenaltyDescriptionChanged = { },
+        onPenaltyAmountChanged = { },
+        onPenaltyTypeChanged = { }
+    )
+}
+
+@Preview(showBackground = true)
+@Composable
+private fun PenaltyTypeEditContentPreview2() {
+    PenaltyTypeEditContent(
+        penaltyTypeUiState = penaltyTypeUiStateExample2(),
         onPenaltyNameChanged = { },
         onPenaltyDescriptionChanged = { },
         onPenaltyAmountChanged = { },

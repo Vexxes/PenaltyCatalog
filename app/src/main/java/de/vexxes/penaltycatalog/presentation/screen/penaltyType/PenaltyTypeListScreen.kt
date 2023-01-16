@@ -26,7 +26,7 @@ import androidx.compose.ui.unit.dp
 import de.vexxes.penaltycatalog.R
 import de.vexxes.penaltycatalog.component.GeneralTopBar
 import de.vexxes.penaltycatalog.domain.model.ApiResponse
-import de.vexxes.penaltycatalog.domain.model.Penalty
+import de.vexxes.penaltycatalog.domain.model.PenaltyType
 import de.vexxes.penaltycatalog.domain.enums.SortOrder
 import de.vexxes.penaltycatalog.domain.model.penaltyExample1
 import de.vexxes.penaltycatalog.domain.model.penaltyExample2
@@ -39,17 +39,17 @@ import kotlinx.coroutines.delay
 
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
-fun PenaltyListScreen(
+fun PenaltyTypeListScreen(
     penaltyTypeViewModel: PenaltyTypeViewModel,
-    navigateToPenaltyDetailScreen: (penaltyId: String) -> Unit,
-    navigateToPenaltyEditScreen: (penaltyId: String) -> Unit
+    navigateToPenaltyDetailScreen: (penaltyTypeId: String) -> Unit,
+    navigateToPenaltyEditScreen: (penaltyTypeId: String) -> Unit
 ) {
     val penalties by penaltyTypeViewModel.penalties
-    val apiResponse by penaltyTypeViewModel.lastResponse
+    val requestState by penaltyTypeViewModel.requestState
     val searchUiState by penaltyTypeViewModel.searchUiState
 
     val refreshPenalties = { penaltyTypeViewModel.getAllPenalties() }
-    val refreshing = penaltyTypeViewModel.apiResponse.value is RequestState.Loading
+    val refreshing = penaltyTypeViewModel.requestState.value is RequestState.Loading
     val pullRefreshState = rememberPullRefreshState(refreshing = refreshing, onRefresh = { refreshPenalties() })
 
     LaunchedEffect(key1 = true) {
@@ -57,7 +57,7 @@ fun PenaltyListScreen(
     }
 
     Box(modifier = Modifier.pullRefresh(pullRefreshState)) {
-        PenaltyListScaffold(
+        PenaltyTypeListScaffold(
             searchAppBarState = searchUiState.searchAppBarState,
             searchText = searchUiState.searchText,
             onSearchTextChanged = { penaltyTypeViewModel.onSearchUiEvent(SearchUiEvent.SearchTextChanged(it)) },
@@ -68,8 +68,7 @@ fun PenaltyListScreen(
                 penaltyTypeViewModel.onSearchUiEvent(SearchUiEvent.SearchTextChanged(""))
             },
             penalties = penalties,
-            apiResponse = apiResponse,
-            resetApiResponse = { penaltyTypeViewModel.resetLastResponse() },
+            requestState = requestState,
             navigateToPenaltyDetailScreen = navigateToPenaltyDetailScreen,
             navigateToPenaltyEditScreen = navigateToPenaltyEditScreen
         )
@@ -80,16 +79,15 @@ fun PenaltyListScreen(
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun PenaltyListScaffold(
+fun PenaltyTypeListScaffold(
     searchAppBarState: SearchAppBarState,
     searchText: String,
     onSearchTextChanged: (String) -> Unit,
     onDefaultSearchClicked: () -> Unit,
     onSortClicked: (SortOrder) -> Unit,
     onCloseClicked: () -> Unit,
-    penalties: List<Penalty>,
-    apiResponse: ApiResponse,
-    resetApiResponse: () -> Unit,
+    penalties: List<PenaltyType>,
+    requestState: RequestState,
     navigateToPenaltyDetailScreen: (String) -> Unit,
     navigateToPenaltyEditScreen: (String) -> Unit
 ) {
@@ -101,13 +99,14 @@ fun PenaltyListScaffold(
                 onDefaultSearchClicked = onDefaultSearchClicked,
                 onSortClicked = onSortClicked,
                 onSearchTextChanged = onSearchTextChanged,
-                onCloseClicked = onCloseClicked
+                onCloseClicked = onCloseClicked,
+                showSortIcon = false
             )
         },
 
         content = {
             Box(modifier = Modifier.padding(it)) {
-                PenaltyListContent(
+                PenaltyTypeListContent(
                     penalties = penalties,
                     navigateToPenaltyDetailScreen = navigateToPenaltyDetailScreen
                 )
@@ -115,20 +114,20 @@ fun PenaltyListScaffold(
         },
 
         floatingActionButton = {
-            PenaltyFab(navigateToPenaltyEditScreen = navigateToPenaltyEditScreen)
+            PenaltyTypeFab(navigateToPenaltyEditScreen = navigateToPenaltyEditScreen)
         },
-
+/*
         snackbarHost = {
             PenaltyListSnackbar(
                 apiResponse = apiResponse,
                 resetApiResponse = resetApiResponse
             )
-        }
+        }*/
     )
 }
 
 @Composable
-fun PenaltyFab(
+fun PenaltyTypeFab(
     navigateToPenaltyEditScreen: (String) -> Unit
 ) {
     FloatingActionButton(
@@ -143,7 +142,7 @@ fun PenaltyFab(
 }
 
 @Composable
-fun PenaltyListSnackbar(
+fun PenaltyTypeListSnackbar(
     apiResponse: ApiResponse,
     resetApiResponse: () -> Unit
 ) {
@@ -175,7 +174,7 @@ fun PenaltyListSnackbar(
 
 @Preview(showBackground = true)
 @Composable
-private fun PenaltyListScreenPreview() {
+private fun PenaltyTypeListScreenPreview() {
 
     val penalties = listOf(
         penaltyExample1(),
@@ -183,7 +182,7 @@ private fun PenaltyListScreenPreview() {
         penaltyExample3()
     )
 
-    PenaltyListScaffold(
+    PenaltyTypeListScaffold(
         searchAppBarState = SearchAppBarState.CLOSED,
         searchText = "",
         onSearchTextChanged = { },
@@ -191,8 +190,7 @@ private fun PenaltyListScreenPreview() {
         onSortClicked = { },
         onCloseClicked = { },
         penalties = penalties,
-        apiResponse = ApiResponse(),
-        resetApiResponse = { },
+        requestState = RequestState.Success,
         navigateToPenaltyDetailScreen = { },
         navigateToPenaltyEditScreen = { }
     )
@@ -200,8 +198,8 @@ private fun PenaltyListScreenPreview() {
 
 @Preview
 @Composable
-fun PenaltyFabPreview() {
-    PenaltyFab(
+fun PenaltyTypeFabPreview() {
+    PenaltyTypeFab(
         navigateToPenaltyEditScreen = { }
     )
 }

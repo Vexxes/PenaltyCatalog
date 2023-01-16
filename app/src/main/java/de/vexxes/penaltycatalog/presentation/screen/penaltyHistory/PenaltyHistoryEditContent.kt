@@ -28,12 +28,10 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
-import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -44,20 +42,19 @@ import com.maxkeppeler.sheets.calendar.models.CalendarSelection
 import com.maxkeppeler.sheets.calendar.models.CalendarStyle
 import de.vexxes.penaltycatalog.R
 import de.vexxes.penaltycatalog.component.InputOutlinedField
-import de.vexxes.penaltycatalog.domain.model.Penalty
+import de.vexxes.penaltycatalog.domain.model.PenaltyType
 import de.vexxes.penaltycatalog.domain.model.Player
 import de.vexxes.penaltycatalog.domain.uistate.PenaltyHistoryUiState
 import de.vexxes.penaltycatalog.domain.uistate.penaltyHistoryUiStateExample1
 import de.vexxes.penaltycatalog.domain.uistate.penaltyHistoryUiStateExample2
 import de.vexxes.penaltycatalog.domain.uistate.penaltyHistoryUiStateExample3
-import de.vexxes.penaltycatalog.domain.visualTransformation.CurrencyAmountInputVisualTransformation
 import de.vexxes.penaltycatalog.ui.theme.Typography
 import java.time.LocalDate
 
 @Composable
 fun PenaltyHistoryEditContent(
     penaltyHistoryUiState: PenaltyHistoryUiState,
-    penaltyList: List<Penalty>,
+    penaltyList: List<PenaltyType>,
     playerList: List<Player>,
     onPenaltyChanged: (String) -> Unit,
     onPlayerChanged: (String) -> Unit,
@@ -215,7 +212,7 @@ private fun PenaltyHistoryPlayerExposedMenu(
 private fun PenaltyHistoryPenaltyExposedMenu(
     text: String,
     error: Boolean,
-    penaltyList: List<Penalty>,
+    penaltyList: List<PenaltyType>,
     onPenaltyChanged: (String, String) -> Unit
 ) {
     var expanded by remember { mutableStateOf(false) }
@@ -298,9 +295,9 @@ private fun PenaltyHistoryAmount(
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.Center
         ) {
-            val visualTransformation = if (isBeer) VisualTransformation.None else CurrencyAmountInputVisualTransformation(
+/*            val visualTransformation = if (isBeer) VisualTransformation.None else CurrencyAmountInputVisualTransformation(
                 fixedCursorAtTheEnd = true
-            )
+            )*/
 
             Text(
                 text = if (isBeer) stringResource(id = R.string.Box) else android.icu.text.NumberFormat.getCurrencyInstance().currency.symbol,
@@ -320,7 +317,7 @@ private fun PenaltyHistoryAmount(
                 enabled = false,
                 readOnly = true,
                 textStyle = Typography.titleLarge,
-                visualTransformation = visualTransformation,
+//                visualTransformation = visualTransformation,
                 colors = TextFieldDefaults.outlinedTextFieldColors(
                     disabledTextColor = MaterialTheme.colorScheme.onSurface,
                     disabledBorderColor = MaterialTheme.colorScheme.outline,
@@ -373,7 +370,7 @@ private fun PenaltyHistoryEditContentPreview3() {
     )
 }
 
-@OptIn(ExperimentalMaterial3Api::class, ExperimentalComposeUiApi::class)
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 @Preview(showBackground = true)
 private fun CalendarPreview() {

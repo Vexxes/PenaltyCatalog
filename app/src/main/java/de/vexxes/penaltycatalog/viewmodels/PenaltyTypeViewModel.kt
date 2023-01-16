@@ -6,9 +6,9 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
-import de.vexxes.penaltycatalog.domain.model.ApiResponse
-import de.vexxes.penaltycatalog.domain.model.Penalty
-import de.vexxes.penaltycatalog.domain.repository.Repository
+import de.vexxes.penaltycatalog.domain.model.PenaltyType
+import de.vexxes.penaltycatalog.domain.model.convertToPenaltyTypeUiState
+import de.vexxes.penaltycatalog.domain.repository.PenaltyTypeRepository
 import de.vexxes.penaltycatalog.domain.uievent.PenaltyTypeUiEvent
 import de.vexxes.penaltycatalog.domain.uievent.SearchUiEvent
 import de.vexxes.penaltycatalog.domain.uistate.PenaltyTypeUiState
@@ -21,9 +21,9 @@ import javax.inject.Inject
 
 @HiltViewModel
 class PenaltyTypeViewModel @Inject constructor(
-    private val repository: Repository
+    private val penaltyTypeRepository: PenaltyTypeRepository
 ): ViewModel() {
-    var penalties: MutableState<List<Penalty>> = mutableStateOf(emptyList())
+    var penalties: MutableState<List<PenaltyType>> = mutableStateOf(emptyList())
         private set
 
     var penaltyTypeUiState: MutableState<PenaltyTypeUiState> = mutableStateOf(PenaltyTypeUiState())
@@ -32,62 +32,30 @@ class PenaltyTypeViewModel @Inject constructor(
     var searchUiState: MutableState<SearchUiState> = mutableStateOf(SearchUiState())
         private set
 
-    var apiResponse: MutableState<RequestState> = mutableStateOf(RequestState.Idle)
-    var lastResponse: MutableState<ApiResponse> = mutableStateOf(ApiResponse())
+    var requestState: MutableState<RequestState> = mutableStateOf(RequestState.Idle)
+
+    var postPenaltyType: MutableState<Boolean> = mutableStateOf(false)
+    var updatePenaltyType: MutableState<Boolean> = mutableStateOf(false)
 
     init {
         getAllPenalties()
     }
 
-    private fun convertResponseToPenalty(penalty: Penalty) {
-        penaltyTypeUiState.value = penaltyTypeUiState.value.copy(
-            id = penalty.id,
-            name = penalty.name,
-            value = penalty.value,
-            description = penalty.description,
-            isBeer = penalty.isBeer
-        )
+    private fun convertResponseToPenaltyType(penaltyType: PenaltyType) {
+        penaltyTypeUiState.value = penaltyType.convertToPenaltyTypeUiState()
     }
 
-    private fun createPenalty(): Penalty {
-        return Penalty(
+    private fun createPenaltyType(): PenaltyType {
+        return PenaltyType(
             id = penaltyTypeUiState.value.id,
             name = penaltyTypeUiState.value.name,
             description = penaltyTypeUiState.value.description,
             isBeer = penaltyTypeUiState.value.isBeer,
-            value = penaltyTypeUiState.value.value
+            value = penaltyTypeUiState.value.value.toDouble()
         )
     }
 
-    private fun getDeclaredPenalties() {
-        apiResponse.value = RequestState.Loading
-
-        viewModelScope.launch {
-            try {
-                val response = withContext(Dispatchers.IO) {
-                    repository.getDeclaredPenalties(penaltyName = penaltyTypeUiState.value.name)
-                }
-                apiResponse.value = RequestState.Success
-
-                if (response.message != null) {
-                    penaltyTypeUiState.value = penaltyTypeUiState.value.copy(
-                        valueDeclaredPenalties = response.message
-                    )
-                } else {
-                    penaltyTypeUiState.value = penaltyTypeUiState.value.copy(
-                        valueDeclaredPenalties = "0"
-                    )
-                }
-                Log.d("PenaltyViewModel", response.toString())
-            }
-            catch (e: Exception) {
-                apiResponse.value = RequestState.Error
-                Log.d("PenaltyViewModel", e.toString())
-            }
-        }
-    }
-
-    private fun verifyPenalty(): Boolean {
+    private fun verifyPenaltyType(): Boolean {
         val nameResult = penaltyTypeUiState.value.name.isEmpty()
         val valueResult = penaltyTypeUiState.value.value.isEmpty()
 
@@ -100,121 +68,156 @@ class PenaltyTypeViewModel @Inject constructor(
     }
 
     fun getAllPenalties() {
-        apiResponse.value = RequestState.Loading
+        requestState.value = RequestState.Loading
 
         viewModelScope.launch {
             try {
                 val response = withContext(Dispatchers.IO) {
-                    repository.getAllPenalties()
+                    penaltyTypeRepository.getAllPenaltyTypes()
                 }
 
-                apiResponse.value = RequestState.Success
-
-                if(response.penalty != null) {
-                    penalties.value = response.penalty
+                if (response.isNotEmpty()) {
+                    requestState.value = RequestState.Success
+                    penalties.value = response
+                } else {
+                    requestState.value = RequestState.Idle
                 }
-                Log.d("PenaltyViewModel", response.toString())
+                Log.d("PenaltyTypeViewModel", response.toString())
             }
             catch (e: Exception) {
-                apiResponse.value = RequestState.Error
-                Log.d("PenaltyViewModel", e.toString())
+                requestState.value = RequestState.Error
+                Log.d("PenaltyTypeViewModel", e.toString())
             }
         }
     }
 
-    fun getPenaltyById(penaltyId: String) {
-        apiResponse.value = RequestState.Loading
+    fun getPenaltyTypeById(penaltyTypeId: String) {
+        requestState.value = RequestState.Loading
 
         viewModelScope.launch {
             try {
                 val response = withContext(Dispatchers.IO) {
-                    repository.getPenaltyById(penaltyId = penaltyId)
+                    penaltyTypeRepository.getPenaltyTypeById(penaltyTypeId = penaltyTypeId)
                 }
-                apiResponse.value = RequestState.Success
 
-                if (response.penalty != null) {
-                    convertResponseToPenalty(penalty = response.penalty.first())
+                if (response != null) {
+                    requestState.value = RequestState.Success
+                    convertResponseToPenaltyType(penaltyType = response)
                 } else {
                     penaltyTypeUiState.value = PenaltyTypeUiState()
                 }
-                Log.d("PenaltyViewModel", response.toString())
 
-                getDeclaredPenalties()
+                Log.d("PenaltyTypeViewModel", response.toString())
             }
             catch (e: Exception) {
-                apiResponse.value = RequestState.Error
-                Log.d("PenaltyViewModel", e.toString())
+                requestState.value = RequestState.Error
+                Log.d("PenaltyTypeViewModel", e.toString())
             }
         }
     }
 
     private fun getPenaltiesBySearch() {
-        apiResponse.value = RequestState.Loading
+        requestState.value = RequestState.Loading
 
         viewModelScope.launch {
             try {
                 val response = withContext(Dispatchers.IO) {
-                    repository.getPenaltiesBySearch(searchText = searchUiState.value.searchText)
+                    penaltyTypeRepository.getPenaltyTypesBySearch(name = searchUiState.value.searchText)
                 }
-                apiResponse.value = RequestState.Success
 
-                if(response.penalty != null) {
-                    penalties.value = response.penalty
+                if (response != null) {
+                    requestState.value = RequestState.Success
+                    penalties.value = response
                 }
-                Log.d("PenaltyViewModel", response.toString())
+
+                Log.d("PenaltyTypeViewModel", response.toString())
             }
             catch (e: Exception) {
-                apiResponse.value = RequestState.Error
-                Log.d("PenaltyViewModel", e.toString())
+                requestState.value = RequestState.Error
+                Log.d("PenaltyTypeViewModel", e.toString())
             }
         }
     }
 
-    fun updatePenalty(): Boolean {
-        apiResponse.value = RequestState.Loading
+    fun postPenaltyType() {
+        requestState.value = RequestState.Loading
+
         viewModelScope.launch {
             try {
-                if (verifyPenalty()) {
+                if (verifyPenaltyType()) {
+                    val response = withContext(Dispatchers.IO) {
+                        penaltyTypeRepository.postPenaltyType(
+                            penaltyType = createPenaltyType()
+                        )
+                    }
 
-                    lastResponse.value = repository.updatePenalty(
-                        penalty = createPenalty()
-                    )
-                    apiResponse.value = RequestState.Success
-                    Log.d("PenaltyViewModel", lastResponse.toString())
+                    if (response != null) {
+                        requestState.value = RequestState.Success
+                        postPenaltyType.value = true
+                    }
+
+                    Log.d("PenaltyTypeViewModel", response.toString())
                 }
             } catch (e: Exception) {
-                apiResponse.value = RequestState.Error
-                Log.d("PenaltyViewModel", e.toString())
+                requestState.value = RequestState.Error
+                Log.d("PenaltyTypeViewModel", e.toString())
             }
         }
+    }
+    fun updatePenalty() {
+        requestState.value = RequestState.Loading
 
-        return if(lastResponse.value.success) {
-            getAllPenalties()
-            true
-        } else {
-            false
+        viewModelScope.launch {
+            try {
+                if (verifyPenaltyType()) {
+                    val response = withContext(Dispatchers.IO) {
+                        penaltyTypeRepository.updatePenaltyType(
+                            id = penaltyTypeUiState.value.id,
+                            penaltyType = createPenaltyType()
+                        )
+                    }
+
+                    if (response) {
+                        requestState.value = RequestState.Success
+                        updatePenaltyType.value = true
+                    }
+
+                    Log.d("PenaltyTypeViewModel", "${penaltyTypeUiState.value.id} ${penaltyTypeUiState.value.name} successfully updated")
+                }
+            } catch (e: Exception) {
+                requestState.value = RequestState.Error
+                Log.d("PenaltyTypeViewModel", e.toString())
+            }
         }
     }
 
-    fun deletePenalty(): Boolean {
-        apiResponse.value = RequestState.Loading
+    fun deletePenalty() {
+        requestState.value = RequestState.Loading
+
         viewModelScope.launch {
             try {
-                lastResponse.value = repository.deletePenalty(penaltyId = penaltyTypeUiState.value.id)
-                apiResponse.value = RequestState.Success
-                Log.d("PenaltyViewModel", lastResponse.toString())
+                if (verifyPenaltyType()) {
+                    val response = withContext(Dispatchers.IO) {
+                        penaltyTypeRepository.deletePenaltyType(
+                            penaltyTypeId = penaltyTypeUiState.value.id
+                        )
+                    }
+
+                    if (response) {
+                        requestState.value = RequestState.Success
+                    }
+
+                    Log.d("PenaltyTypeViewModel", "${penaltyTypeUiState.value.id} ${penaltyTypeUiState.value.name} successfully deleted")
+                }
             } catch (e: Exception) {
-                apiResponse.value = RequestState.Error
-                lastResponse.value = ApiResponse(success = false, error = e)
-                Log.d("PenaltyViewModel", e.toString())
+                requestState.value = RequestState.Error
+                Log.d("PenaltyTypeViewModel", e.toString())
             }
         }
+    }
 
-        return if(lastResponse.value.success) {
-            getAllPenalties()
-            true
-        } else
-            false
+    fun resetPenaltyTypeUiState() {
+        penaltyTypeUiState.value = PenaltyTypeUiState()
     }
 
     fun onPenaltyUiEvent(event: PenaltyTypeUiEvent) {
@@ -260,13 +263,5 @@ class PenaltyTypeViewModel @Inject constructor(
                 getPenaltiesBySearch()
             }
         }
-    }
-
-    fun resetPenalty() {
-        penaltyTypeUiState.value = PenaltyTypeUiState()
-    }
-
-    fun resetLastResponse() {
-        lastResponse.value = ApiResponse()
     }
 }

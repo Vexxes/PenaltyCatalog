@@ -6,7 +6,7 @@ import de.vexxes.penaltycatalog.util.SearchAppBarState
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.compose.composable
 import de.vexxes.penaltycatalog.domain.uievent.SearchUiEvent
-import de.vexxes.penaltycatalog.presentation.screen.penaltyType.PenaltyListScreen
+import de.vexxes.penaltycatalog.presentation.screen.penaltyType.PenaltyTypeListScreen
 import de.vexxes.penaltycatalog.viewmodels.PenaltyTypeViewModel
 
 fun NavGraphBuilder.penaltyListComposable(
@@ -21,13 +21,13 @@ fun NavGraphBuilder.penaltyListComposable(
             penaltyTypeViewModel.onSearchUiEvent(SearchUiEvent.SearchAppBarStateChanged(SearchAppBarState.CLOSED))
         }
 
-        PenaltyListScreen(
+        PenaltyTypeListScreen(
             penaltyTypeViewModel = penaltyTypeViewModel,
-            navigateToPenaltyDetailScreen = { penaltyId ->
-                navigateToPenaltyDetailScreen(penaltyId)
+            navigateToPenaltyDetailScreen = { penaltyTypeId ->
+                navigateToPenaltyDetailScreen(penaltyTypeId)
             },
-            navigateToPenaltyEditScreen = { penaltyId ->
-                navigateToPenaltyEditScreen(penaltyId)
+            navigateToPenaltyEditScreen = { penaltyTypeId ->
+                navigateToPenaltyEditScreen(penaltyTypeId)
             }
         )
     }

@@ -10,7 +10,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import de.vexxes.penaltycatalog.component.BackSaveTopBar
-import de.vexxes.penaltycatalog.domain.model.Penalty
+import de.vexxes.penaltycatalog.domain.model.PenaltyType
 import de.vexxes.penaltycatalog.domain.model.penaltyExample1
 import de.vexxes.penaltycatalog.domain.model.penaltyExample2
 import de.vexxes.penaltycatalog.domain.model.penaltyExample3
@@ -60,7 +60,7 @@ fun PenaltyHistoryEditScreen(
 @Composable
 private fun PenaltyHistoryEditScaffold(
     penaltyHistoryUiState: PenaltyHistoryUiState,
-    penalties: List<Penalty>,
+    penalties: List<PenaltyType>,
     players: List<Player>,
     onPenaltyChanged: (String) -> Unit,
     onPlayerChanged: (String) -> Unit,

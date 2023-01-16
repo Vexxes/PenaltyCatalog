@@ -17,7 +17,7 @@ fun penaltyTypeUiStateExample1(): PenaltyTypeUiState {
         name = "Monatsbeitrag",
         description = "",
         isBeer = false,
-        value = "500",
+        value = "5",
         valueDeclaredPenalties = "10"
     )
 }

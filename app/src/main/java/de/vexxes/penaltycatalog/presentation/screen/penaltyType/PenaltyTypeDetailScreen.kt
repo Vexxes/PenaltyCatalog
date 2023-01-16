@@ -19,7 +19,7 @@ import de.vexxes.penaltycatalog.domain.uistate.penaltyTypeUiStateExample1
 import de.vexxes.penaltycatalog.viewmodels.PenaltyTypeViewModel
 
 @Composable
-fun PenaltyDetailScreen(
+fun PenaltyTypeDetailScreen(
     penaltyTypeViewModel: PenaltyTypeViewModel,
     onBackClicked: () -> Unit,
     onDeleteClicked: (String) -> Unit,
@@ -47,7 +47,7 @@ fun PenaltyDetailScreen(
         )
     }
 
-    PenaltyDetailScreen(
+    PenaltyTypeDetailScreen(
         penaltyTypeUiState = penaltyUiState,
         onBackClicked = onBackClicked,
         onDeleteClicked = { showAlertDialog = true },
@@ -57,7 +57,7 @@ fun PenaltyDetailScreen(
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-private fun PenaltyDetailScreen(
+private fun PenaltyTypeDetailScreen(
     penaltyTypeUiState: PenaltyTypeUiState,
     onBackClicked: () -> Unit,
     onDeleteClicked: () -> Unit,
@@ -76,7 +76,7 @@ private fun PenaltyDetailScreen(
             Box(
                 modifier = Modifier.padding(it)
             ) {
-                PenaltyDetailContent(penaltyTypeUiState = penaltyTypeUiState)
+                PenaltyTypeDetailContent(penaltyTypeUiState = penaltyTypeUiState)
             }
         }
     )
@@ -84,8 +84,8 @@ private fun PenaltyDetailScreen(
 
 @Preview(showBackground = true)
 @Composable
-private fun PenaltyDetailScreenPreview() {
-    PenaltyDetailScreen(
+private fun PenaltyTypeDetailScreenPreview() {
+    PenaltyTypeDetailScreen(
         penaltyTypeUiState = penaltyTypeUiStateExample1(),
         onBackClicked = { },
         onDeleteClicked = { },

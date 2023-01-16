@@ -103,6 +103,8 @@ class PlayerViewModel @Inject constructor(
                 if(response.isNotEmpty()) {
                     requestState.value = RequestState.Success
                     players.value = response
+                } else {
+                    requestState.value = RequestState.Idle
                 }
 
                 Log.d("PlayerViewModel", response.toString())

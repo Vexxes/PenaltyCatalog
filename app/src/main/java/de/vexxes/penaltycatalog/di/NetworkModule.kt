@@ -6,6 +6,7 @@ import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
 import de.vexxes.penaltycatalog.data.remote.KtorApi
+import de.vexxes.penaltycatalog.data.remote.PenaltyTypeKtorApi
 import de.vexxes.penaltycatalog.data.remote.PlayerKtorApi
 import de.vexxes.penaltycatalog.util.BASE_URL
 import kotlinx.serialization.ExperimentalSerializationApi
@@ -59,6 +60,12 @@ object NetworkModule {
     @Singleton
     fun provideKtorApi(retrofit: Retrofit): KtorApi {
         return retrofit.create(KtorApi::class.java)
+    }
+
+    @Provides
+    @Singleton
+    fun providePenaltyTypeKtorApi(retrofit: Retrofit): PenaltyTypeKtorApi {
+        return retrofit.create(PenaltyTypeKtorApi::class.java)
     }
 
     @Provides

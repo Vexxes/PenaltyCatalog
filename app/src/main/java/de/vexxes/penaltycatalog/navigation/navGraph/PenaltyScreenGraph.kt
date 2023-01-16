@@ -21,11 +21,11 @@ fun NavGraphBuilder.penaltyScreensGraph(
     ) {
         penaltyListComposable(
             penaltyTypeViewModel = penaltyTypeViewModel,
-            navigateToPenaltyDetailScreen = { penaltyId ->
-                navController.navigate(route = Screen.PenaltyDetail.route + "/$penaltyId")
+            navigateToPenaltyDetailScreen = { penaltyTypeId ->
+                navController.navigate(route = Screen.PenaltyDetail.route + "/$penaltyTypeId")
             },
-            navigateToPenaltyEditScreen = { penaltyId ->
-                navController.navigate(route = Screen.PenaltyEdit.route + "/$penaltyId")
+            navigateToPenaltyEditScreen = { penaltyTypeId ->
+                navController.navigate(route = Screen.PenaltyEdit.route + "/$penaltyTypeId")
             }
         )
 
@@ -34,8 +34,8 @@ fun NavGraphBuilder.penaltyScreensGraph(
             navigateToPenaltyList = {
                 navController.navigate(ScreenNavigation.Penalties.route)
             },
-            onEditClicked = { penaltyId ->
-                navController.navigate(Screen.PenaltyEdit.route + "/$penaltyId")
+            onEditClicked = { penaltyTypeId ->
+                navController.navigate(Screen.PenaltyEdit.route + "/$penaltyTypeId")
             }
         )
 

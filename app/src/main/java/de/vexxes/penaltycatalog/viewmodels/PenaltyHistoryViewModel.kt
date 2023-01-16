@@ -7,10 +7,10 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
 import de.vexxes.penaltycatalog.domain.model.ApiResponse
-import de.vexxes.penaltycatalog.domain.model.Penalty
+import de.vexxes.penaltycatalog.domain.model.PenaltyType
 import de.vexxes.penaltycatalog.domain.model.PenaltyReceived
 import de.vexxes.penaltycatalog.domain.model.Player
-import de.vexxes.penaltycatalog.domain.enums.toValue
+import de.vexxes.penaltycatalog.domain.repository.PenaltyTypeRepository
 import de.vexxes.penaltycatalog.domain.repository.Repository
 import de.vexxes.penaltycatalog.domain.uievent.PenaltyHistoryUiEvent
 import de.vexxes.penaltycatalog.domain.uievent.SearchUiEvent
@@ -20,16 +20,16 @@ import de.vexxes.penaltycatalog.util.RequestState
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import java.time.LocalDate
 import javax.inject.Inject
 
 @HiltViewModel
 class PenaltyHistoryViewModel @Inject constructor(
-    private val repository: Repository
+    private val repository: Repository,
+    private val penaltyTypeRepository: PenaltyTypeRepository
 ) : ViewModel() {
 
     val penaltyReceived: MutableState<List<PenaltyReceived>> = mutableStateOf(emptyList())
-    var penalties: MutableState<List<Penalty>> = mutableStateOf(emptyList())
+    var penalties: MutableState<List<PenaltyType>> = mutableStateOf(emptyList())
     var players: MutableState<List<Player>> = mutableStateOf(emptyList())
 
     var penaltyHistoryUiState: MutableState<PenaltyHistoryUiState> = mutableStateOf(PenaltyHistoryUiState())
@@ -71,19 +71,20 @@ class PenaltyHistoryViewModel @Inject constructor(
         viewModelScope.launch {
             try {
                 val response = withContext(Dispatchers.IO) {
-                    repository.getAllPenalties()
+                    penaltyTypeRepository.getAllPenaltyTypes()
                 }
 
                 apiResponse.value = RequestState.Success
 
-                if(response.penalty != null) {
-                    penalties.value = response.penalty
+                if(response.isNotEmpty()) {
+                    penalties.value = response
                 }
-                Log.d("PenaltyViewModel", response.toString())
+
+                Log.d("PenaltyHistoryViewModel", response.toString())
             }
             catch (e: Exception) {
                 apiResponse.value = RequestState.Error
-                Log.d("PenaltyViewModel", e.toString())
+                Log.d("PenaltyHistoryViewModel", e.toString())
             }
         }
     }
@@ -108,7 +109,7 @@ class PenaltyHistoryViewModel @Inject constructor(
             }
             catch (e: Exception) {
                 apiResponse.value = RequestState.Error
-                Log.d("PlayerViewModel", e.toString())
+                Log.d("PenaltyHistoryViewModel", e.toString())
             }
         }
     }
@@ -248,7 +249,7 @@ class PenaltyHistoryViewModel @Inject constructor(
                     if (penalty.id == event.penaltyId) {
                         penaltyHistoryUiState.value = penaltyHistoryUiState.value.copy(
                             penaltyId = event.penaltyId,
-                            penaltyValue = penalty.value,
+                            penaltyValue = penalty.value.toString(),
                             penaltyIsBeer = penalty.isBeer
                         )
                     }

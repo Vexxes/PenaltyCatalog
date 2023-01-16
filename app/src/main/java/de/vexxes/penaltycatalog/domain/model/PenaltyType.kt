@@ -1,42 +1,53 @@
 package de.vexxes.penaltycatalog.domain.model
 
+import de.vexxes.penaltycatalog.domain.uistate.PenaltyTypeUiState
 import kotlinx.serialization.Serializable
 
 @Serializable
-data class Penalty(
+data class PenaltyType(
     val id: String = "",
     val name: String = "",
     val description: String = "",
     val isBeer: Boolean = false,
-    val value: String = "",
+    val value: Double = 0.0,
 )
 
-fun penaltyExample1(): Penalty {
-    return Penalty(
+fun PenaltyType.convertToPenaltyTypeUiState(): PenaltyTypeUiState {
+    return PenaltyTypeUiState(
+        id = this.id,
+        name = this.name,
+        description = this.description,
+        isBeer = this.isBeer,
+        value = this.value.toInt().toString()
+    )
+}
+
+fun penaltyExample1(): PenaltyType {
+    return PenaltyType(
         id = "",
         name = "Rote Karte wegen Meckern",
         description = "",
         isBeer = false,
-        value = "1500"
+        value = 15.0
     )
 }
 
-fun penaltyExample2(): Penalty {
-    return Penalty(
+fun penaltyExample2(): PenaltyType {
+    return PenaltyType(
         id = "",
         name = "Verspätete Zahlung des Monatsbeitrag",
         description = "zzgl. pro Monat",
         isBeer = false,
-        value = "500"
+        value = 5.0
     )
 }
 
-fun penaltyExample3(): Penalty {
-    return Penalty(
+fun penaltyExample3(): PenaltyType {
+    return PenaltyType(
         id = "",
         name = "Getränke zur Besprechung",
         description = "Mitzubringen in alphabetischer Reihenfolge nach dem Freitagstraining",
         isBeer = true,
-        value = "1"
+        value = 5.0
     )
 }

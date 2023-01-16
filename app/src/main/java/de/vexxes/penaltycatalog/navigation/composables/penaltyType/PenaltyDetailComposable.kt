@@ -14,7 +14,7 @@ import androidx.navigation.NavType
 import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
 import de.vexxes.penaltycatalog.navigation.Screen
-import de.vexxes.penaltycatalog.presentation.screen.penaltyType.PenaltyDetailScreen
+import de.vexxes.penaltycatalog.presentation.screen.penaltyType.PenaltyTypeDetailScreen
 import de.vexxes.penaltycatalog.viewmodels.PenaltyTypeViewModel
 
 fun NavGraphBuilder.penaltyDetailComposable(
@@ -24,16 +24,16 @@ fun NavGraphBuilder.penaltyDetailComposable(
 ) {
     composable(
         route = Screen.PenaltyDetail.route + Screen.PenaltyDetail.argument,
-        arguments = listOf(navArgument("penaltyId") {
+        arguments = listOf(navArgument("penaltyTypeId") {
             type = NavType.StringType
         })
     ) { navBackStackEntry ->
 
         // Get penaltyId from argument
-        val penaltyId = navBackStackEntry.arguments?.getString("penaltyId")
-        LaunchedEffect(key1 = penaltyId) {
-            if (!penaltyId.isNullOrEmpty() && penaltyId != "-1") {
-                penaltyTypeViewModel.getPenaltyById(penaltyId = penaltyId)
+        val penaltyTypeId = navBackStackEntry.arguments?.getString("penaltyTypeId")
+        LaunchedEffect(key1 = penaltyTypeId) {
+            if (!penaltyTypeId.isNullOrEmpty() && penaltyTypeId != "-1") {
+                penaltyTypeViewModel.getPenaltyTypeById(penaltyTypeId = penaltyTypeId)
             }
         }
 
@@ -47,7 +47,7 @@ fun NavGraphBuilder.penaltyDetailComposable(
             enter = fadeIn(animationSpec = tween(durationMillis = 500)),
             exit = fadeOut(animationSpec = tween(durationMillis = 500))
         ) {
-            PenaltyDetailScreen(
+            PenaltyTypeDetailScreen(
                 penaltyTypeViewModel = penaltyTypeViewModel,
                 onBackClicked = {
                     navigateToPenaltyList()

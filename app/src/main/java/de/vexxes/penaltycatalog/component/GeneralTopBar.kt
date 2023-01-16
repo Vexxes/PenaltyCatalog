@@ -38,14 +38,16 @@ fun GeneralTopBar(
     onDefaultSearchClicked: () -> Unit,
     onSortClicked: (SortOrder) -> Unit,
     onSearchTextChanged: (String) -> Unit,
-    onCloseClicked: () -> Unit
+    onCloseClicked: () -> Unit,
+    showSortIcon: Boolean = true
 ) {
 
     when(searchAppBarState) {
         SearchAppBarState.CLOSED -> {
             DefaultTopBar(
                 onSearchClicked = onDefaultSearchClicked,
-                onSortClicked = onSortClicked
+                onSortClicked = onSortClicked,
+                showSortIcon = showSortIcon
             )
         }
 
@@ -63,14 +65,15 @@ fun GeneralTopBar(
 @Composable
 fun DefaultTopBar(
     onSearchClicked: () -> Unit,
-    onSortClicked: (SortOrder) -> Unit
+    onSortClicked: (SortOrder) -> Unit,
+    showSortIcon: Boolean = true
 ) {
     TopAppBar(
         title = { },
 
         actions = {
             SearchIcon(onSearchClicked = onSearchClicked)
-            SortIcon(onSortClicked = onSortClicked)
+            if (showSortIcon) SortIcon(onSortClicked = onSortClicked)
         }
     )
 }
@@ -192,7 +195,7 @@ fun DefaultTopBarPreview(
 ) {
     DefaultTopBar(
         onSearchClicked = { },
-        onSortClicked = { }
+        onSortClicked = { },
     )
 }
 
