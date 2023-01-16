@@ -4,54 +4,45 @@ import java.time.LocalDate
 
 data class PenaltyHistoryUiState(
     val id: String = "",
-    val playerName: String = "",
-    val penaltyName: String = "",
+    val playerId: String = "",
+    val penaltyId: String = "",
     val penaltyValue: String = "",
     val penaltyIsBeer: Boolean = false,
     val timeOfPenalty: LocalDate = LocalDate.now(),
-    val penaltyPaid: Boolean = false,
-    val playerNameError: Boolean = false,
-    val penaltyNameError: Boolean = false
+    val penaltyPaid: LocalDate = LocalDate.MIN, // TODO: Other start date?,
+    val playerIdError: Boolean = false,
+    val penaltyIdError: Boolean = false
 )
 
 fun penaltyHistoryUiStateExample1(): PenaltyHistoryUiState {
     return PenaltyHistoryUiState(
         id = "",
-        playerName = "Mustermann, Max",
-        penaltyName = "Verspätete Zahlung des Monatsbeitrag",
+        playerId = "",
+        penaltyId = "",
         penaltyValue = "500",
         penaltyIsBeer = false,
-        timeOfPenalty = LocalDate.now(),
-        penaltyPaid = false,
-        playerNameError = false,
-        penaltyNameError = false
+        timeOfPenalty = LocalDate.now()
     )
 }
 
 fun penaltyHistoryUiStateExample2(): PenaltyHistoryUiState {
     return PenaltyHistoryUiState(
         id = "",
-        playerName = "Mustermann, Max",
-        penaltyName = "Verspätete Zahlung des Monatsbeitrag",
+        playerId = "",
+        penaltyId = "",
         penaltyValue = "500",
         penaltyIsBeer = false,
         timeOfPenalty = LocalDate.now(),
-        penaltyPaid = true,
-        playerNameError = false,
-        penaltyNameError = false
     )
 }
 
 fun penaltyHistoryUiStateExample3(): PenaltyHistoryUiState {
     return PenaltyHistoryUiState(
         id = "",
-        playerName = "Mustermann, Max",
-        penaltyName = "Geburtstag",
+        playerId = "",
+        penaltyId = "",
         penaltyValue = "1",
         penaltyIsBeer = true,
-        timeOfPenalty = LocalDate.now(),
-        penaltyPaid = true,
-        playerNameError = false,
-        penaltyNameError = false
+        timeOfPenalty = LocalDate.now()
     )
 }

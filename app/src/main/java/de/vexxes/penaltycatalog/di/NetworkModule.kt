@@ -6,6 +6,8 @@ import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
 import de.vexxes.penaltycatalog.data.remote.KtorApi
+import de.vexxes.penaltycatalog.data.remote.PenaltyTypeKtorApi
+import de.vexxes.penaltycatalog.data.remote.PlayerKtorApi
 import de.vexxes.penaltycatalog.util.BASE_URL
 import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.json.Json
@@ -15,6 +17,7 @@ import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.OkHttpClient
 import okhttp3.Response
 import retrofit2.Retrofit
+import retrofit2.converter.scalars.ScalarsConverterFactory
 import java.net.CookieManager
 import java.util.concurrent.TimeUnit
 import javax.inject.Singleton
@@ -48,6 +51,7 @@ object NetworkModule {
         return Retrofit.Builder()
             .baseUrl(BASE_URL)
             .client(okHttpClient)
+            .addConverterFactory(ScalarsConverterFactory.create())
             .addConverterFactory(Json.asConverterFactory(contentType))
             .build()
     }
@@ -56,6 +60,18 @@ object NetworkModule {
     @Singleton
     fun provideKtorApi(retrofit: Retrofit): KtorApi {
         return retrofit.create(KtorApi::class.java)
+    }
+
+    @Provides
+    @Singleton
+    fun providePenaltyTypeKtorApi(retrofit: Retrofit): PenaltyTypeKtorApi {
+        return retrofit.create(PenaltyTypeKtorApi::class.java)
+    }
+
+    @Provides
+    @Singleton
+    fun providePlayerKtorApi(retrofit: Retrofit): PlayerKtorApi {
+        return retrofit.create(PlayerKtorApi::class.java)
     }
 
 }

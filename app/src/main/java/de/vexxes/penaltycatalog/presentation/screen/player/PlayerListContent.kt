@@ -74,7 +74,7 @@ private fun PlayerItem(
     Row(
         modifier = Modifier
             .clickable {
-                navigateToPlayerDetailScreen(player._id)
+                navigateToPlayerDetailScreen(player.id)
             }
             .fillMaxWidth()
             .height(60.dp)

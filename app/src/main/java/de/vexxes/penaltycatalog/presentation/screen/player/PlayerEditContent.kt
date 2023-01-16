@@ -89,7 +89,7 @@ fun PlayerEditContentPreview() {
 
     val player = playerExample()
     val playerUiState = PlayerUiState(
-        id = player._id,
+        id = player.id,
         number = player.number.toString(),
         firstName = player.firstName,
         lastName = player.lastName,

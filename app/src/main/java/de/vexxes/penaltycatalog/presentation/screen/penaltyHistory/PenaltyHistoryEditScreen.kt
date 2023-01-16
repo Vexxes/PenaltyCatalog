@@ -1,4 +1,4 @@
-package de.vexxes.penaltycatalog.presentation.screen.history
+package de.vexxes.penaltycatalog.presentation.screen.penaltyHistory
 
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.layout.Box
@@ -10,7 +10,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import de.vexxes.penaltycatalog.component.BackSaveTopBar
-import de.vexxes.penaltycatalog.domain.model.Penalty
+import de.vexxes.penaltycatalog.domain.model.PenaltyType
 import de.vexxes.penaltycatalog.domain.model.penaltyExample1
 import de.vexxes.penaltycatalog.domain.model.penaltyExample2
 import de.vexxes.penaltycatalog.domain.model.penaltyExample3
@@ -42,11 +42,11 @@ fun PenaltyHistoryEditScreen(
         penaltyHistoryUiState = penaltyHistoryUiState,
         penalties = penalties,
         players = players,
-        onPenaltyChanged = { id, name ->
-            penaltyHistoryViewModel.onPenaltyHistoryUiEvent(PenaltyHistoryUiEvent.PenaltyNameChanged(id, name))
+        onPenaltyChanged = {
+            penaltyHistoryViewModel.onPenaltyHistoryUiEvent(PenaltyHistoryUiEvent.PenaltyIdChanged(it))
         },
         onPlayerChanged = {
-            penaltyHistoryViewModel.onPenaltyHistoryUiEvent(PenaltyHistoryUiEvent.PlayerNameChanged(it))
+            penaltyHistoryViewModel.onPenaltyHistoryUiEvent(PenaltyHistoryUiEvent.PlayerIdChanged(it))
         },
         onTimeOfPenaltyChanged = {
             penaltyHistoryViewModel.onPenaltyHistoryUiEvent(PenaltyHistoryUiEvent.TimeOfPenaltyChanged(it))
@@ -60,9 +60,9 @@ fun PenaltyHistoryEditScreen(
 @Composable
 private fun PenaltyHistoryEditScaffold(
     penaltyHistoryUiState: PenaltyHistoryUiState,
-    penalties: List<Penalty>,
+    penalties: List<PenaltyType>,
     players: List<Player>,
-    onPenaltyChanged: (String, String) -> Unit,
+    onPenaltyChanged: (String) -> Unit,
     onPlayerChanged: (String) -> Unit,
     onTimeOfPenaltyChanged: (LocalDate) -> Unit,
     onBackClicked: () -> Unit,
@@ -111,7 +111,7 @@ private fun PenaltyHistoryEditScreenPreview() {
         penaltyHistoryUiState = penaltyHistoryUiStateExample1(),
         penalties = penalties,
         players = players,
-        onPenaltyChanged = { _, _ -> },
+        onPenaltyChanged = { },
         onPlayerChanged = { },
         onTimeOfPenaltyChanged = { },
         onBackClicked = { },

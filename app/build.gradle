@@ -41,7 +41,7 @@ android {
         compose true
     }
     composeOptions {
-        kotlinCompilerExtensionVersion '1.1.1'
+        kotlinCompilerExtensionVersion '1.3.2'
     }
     packagingOptions {
         resources {
@@ -51,7 +51,7 @@ android {
 
     tasks.withType(org.jetbrains.kotlin.gradle.tasks.KotlinCompile).configureEach {
         kotlinOptions {
-            freeCompilerArgs += "-Xopt-in=kotlin.RequiresOptIn"
+            freeCompilerArgs += "-opt-in=kotlin.RequiresOptIn"
             freeCompilerArgs += ["-Xjvm-default=all"]
         }
     }
@@ -62,13 +62,13 @@ dependencies {
     implementation 'androidx.core:core-ktx:1.9.0'
     implementation 'androidx.lifecycle:lifecycle-runtime-ktx:2.5.1'
     implementation 'androidx.activity:activity-compose:1.6.1'
-    implementation "androidx.compose.ui:ui:1.4.0-alpha03"
+    implementation "androidx.compose.ui:ui:$compose_version"
     implementation "androidx.compose.ui:ui-tooling-preview:$compose_version"
-    implementation 'androidx.compose.material3:material3:1.1.0-alpha03'
-    implementation 'androidx.compose.material:material:1.4.0-alpha03'
+    implementation "androidx.compose.material:material:$compose_version"
+    implementation 'androidx.compose.material3:material3:1.1.0-alpha04'
     testImplementation 'junit:junit:4.13.2'
-    androidTestImplementation 'androidx.test.ext:junit:1.1.4'
-    androidTestImplementation 'androidx.test.espresso:espresso-core:3.5.0'
+    androidTestImplementation 'androidx.test.ext:junit:1.1.5'
+    androidTestImplementation 'androidx.test.espresso:espresso-core:3.5.1'
     androidTestImplementation "androidx.compose.ui:ui-test-junit4:$compose_version"
     debugImplementation "androidx.compose.ui:ui-tooling:$compose_version"
     debugImplementation "androidx.compose.ui:ui-test-manifest:$compose_version"
@@ -81,6 +81,7 @@ dependencies {
     implementation 'com.squareup.retrofit2:converter-gson:2.9.0'
     implementation("com.jakewharton.retrofit:retrofit2-kotlinx-serialization-converter:0.8.0")
     implementation("com.squareup.okhttp3:okhttp-urlconnection:4.4.1")
+    implementation 'com.squareup.retrofit2:converter-scalars:2.9.0'
 
     // Compose Navigation
     implementation 'androidx.navigation:navigation-compose:2.5.3'
@@ -103,5 +104,6 @@ dependencies {
     implementation 'org.jetbrains.kotlinx:kotlinx-datetime:0.4.0'
 
     // Implementation of custom library for date picker /*TODO Remove, when Jetpack Compose has official support for date picker*/
-    implementation 'com.github.mateusz800:Expandable-Compose-Calendar:1.0.0'
+    implementation 'com.maxkeppeler.sheets-compose-dialogs:core:1.0.2' // necessary
+    implementation 'com.maxkeppeler.sheets-compose-dialogs:calendar:1.0.2'
 }

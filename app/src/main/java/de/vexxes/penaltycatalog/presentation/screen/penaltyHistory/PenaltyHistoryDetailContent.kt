@@ -1,52 +1,12 @@
-package de.vexxes.penaltycatalog.presentation.screen.history
+package de.vexxes.penaltycatalog.presentation.screen.penaltyHistory
 
-import android.icu.text.NumberFormat
-import androidx.compose.animation.core.animateFloatAsState
-import androidx.compose.foundation.background
-import androidx.compose.foundation.border
-import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ThumbDown
-import androidx.compose.material.icons.filled.ThumbUp
-import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.Icon
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedTextField
-import androidx.compose.material3.Text
-import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.alpha
-import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.vector.ImageVector
-import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.input.VisualTransformation
-import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.DpSize
 import androidx.compose.ui.unit.dp
-import de.vexxes.penaltycatalog.R
 import de.vexxes.penaltycatalog.domain.uistate.PenaltyHistoryUiState
-import de.vexxes.penaltycatalog.domain.uistate.penaltyHistoryUiStateExample1
-import de.vexxes.penaltycatalog.domain.uistate.penaltyHistoryUiStateExample2
-import de.vexxes.penaltycatalog.domain.uistate.penaltyHistoryUiStateExample3
-import de.vexxes.penaltycatalog.domain.visualTransformation.CurrencyAmountInputVisualTransformation
-import de.vexxes.penaltycatalog.ui.theme.Typography
-import de.vexxes.penaltycatalog.ui.theme.colorSchemeSegButtons
 
 @Composable
 fun PenaltyHistoryDetailContent(
@@ -58,6 +18,7 @@ fun PenaltyHistoryDetailContent(
             .fillMaxSize()
             .padding(8.dp)
     ) {
+        /* TODO: Read penaltyName and playerName
         PenaltyHistoryHeader(text = penaltyHistoryUiState.penaltyName)
         PenaltyHistoryButtonsPaid(
             penaltyPaid = penaltyHistoryUiState.penaltyPaid,
@@ -69,9 +30,11 @@ fun PenaltyHistoryDetailContent(
             value = penaltyHistoryUiState.penaltyValue,
             isBeer = penaltyHistoryUiState.penaltyIsBeer
         )
+         */
     }
 }
 
+/*
 @Composable
 private fun PenaltyHistoryHeader(
     text: String
@@ -266,3 +229,4 @@ private fun PenaltyHistoryDetailContentPreview2() {
 private fun PenaltyHistoryDetailContentPreview3() {
     PenaltyHistoryDetailContent(penaltyHistoryUiStateExample3()) { }
 }
+*/

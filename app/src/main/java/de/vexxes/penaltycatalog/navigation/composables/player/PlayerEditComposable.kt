@@ -13,7 +13,6 @@ import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavType
 import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
-import de.vexxes.penaltycatalog.domain.model.ApiResponse
 import de.vexxes.penaltycatalog.navigation.Screen
 import de.vexxes.penaltycatalog.presentation.screen.player.PlayerEditScreen
 import de.vexxes.penaltycatalog.viewmodels.PlayerViewModel
@@ -41,7 +40,16 @@ fun NavGraphBuilder.playerEditComposable(
         }
         LaunchedEffect(key1 = true) {
             visible = true
-            playerViewModel.lastResponse.value = ApiResponse()
+        }
+
+        // Make invisible and navigate back, if postPlayer or updatePlayer was successful
+        var postPlayer by playerViewModel.postPlayer
+        var updatePlayer by playerViewModel.updatePlayer
+        if (postPlayer || updatePlayer) {
+            postPlayer = false
+            updatePlayer = false
+            visible = false
+            navigateBack()
         }
 
         AnimatedVisibility(
@@ -56,9 +64,10 @@ fun NavGraphBuilder.playerEditComposable(
                     navigateBack()
                 },
                 onSaveClicked = {
-                    if (playerViewModel.updatePlayer()) {
-                        visible = false
-                        navigateBack()
+                    if (playerViewModel.playerUiState.value.id == "") {
+                        playerViewModel.postPlayer()
+                    } else {
+                        playerViewModel.updatePlayer()
                     }
                 }
             )

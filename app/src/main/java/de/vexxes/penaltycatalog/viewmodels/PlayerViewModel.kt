@@ -6,10 +6,8 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
-import de.vexxes.penaltycatalog.domain.model.ApiResponse
 import de.vexxes.penaltycatalog.domain.model.Player
-import de.vexxes.penaltycatalog.domain.model.toValue
-import de.vexxes.penaltycatalog.domain.repository.Repository
+import de.vexxes.penaltycatalog.domain.repository.PlayerRepository
 import de.vexxes.penaltycatalog.domain.uievent.PlayerUiEvent
 import de.vexxes.penaltycatalog.domain.uievent.SearchUiEvent
 import de.vexxes.penaltycatalog.domain.uistate.PlayerUiState
@@ -22,7 +20,7 @@ import javax.inject.Inject
 
 @HiltViewModel
 class PlayerViewModel @Inject constructor(
-    private val repository: Repository
+    private val playerRepository: PlayerRepository
 ): ViewModel() {
 
     var players: MutableState<List<Player>> = mutableStateOf(emptyList())
@@ -34,8 +32,11 @@ class PlayerViewModel @Inject constructor(
     var searchUiState: MutableState<SearchUiState> = mutableStateOf(SearchUiState())
         private set
 
-    var apiResponse: MutableState<RequestState<ApiResponse>> = mutableStateOf(RequestState.Idle)
-    var lastResponse: MutableState<ApiResponse> = mutableStateOf(ApiResponse())
+    var requestState: MutableState<RequestState> = mutableStateOf(RequestState.Idle)
+
+    var postPlayer: MutableState<Boolean> = mutableStateOf(false)
+    var updatePlayer: MutableState<Boolean> = mutableStateOf(false)
+
 
     init {
         getAllPlayers()
@@ -43,7 +44,7 @@ class PlayerViewModel @Inject constructor(
 
     private fun convertResponseToPlayer(player: Player) {
         playerUiState.value = playerUiState.value.copy(
-            id = player._id,
+            id = player.id,
             number = if(player.number > 0) player.number.toString() else "",
             firstName = player.firstName,
             lastName = player.lastName,
@@ -61,7 +62,6 @@ class PlayerViewModel @Inject constructor(
 
     private fun createPlayer(): Player {
         return Player(
-            _id = playerUiState.value.id,
             number = playerUiState.value.number.toInt(),
             firstName = playerUiState.value.firstName,
             lastName = playerUiState.value.lastName,
@@ -92,117 +92,149 @@ class PlayerViewModel @Inject constructor(
     }
 
     fun getAllPlayers() {
-        apiResponse.value = RequestState.Loading
+        requestState.value = RequestState.Loading
 
         viewModelScope.launch {
             try {
                 val response = withContext(Dispatchers.IO) {
-                    repository.getAllPlayers(sortOrder = searchUiState.value.sortOrder.toValue())
+                    playerRepository.getAllPlayers()
                 }
 
-                apiResponse.value = RequestState.Success(response)
-
-                if(response.player != null) {
-                    players.value = response.player
+                if(response.isNotEmpty()) {
+                    requestState.value = RequestState.Success
+                    players.value = response
+                } else {
+                    requestState.value = RequestState.Idle
                 }
+
                 Log.d("PlayerViewModel", response.toString())
             }
             catch (e: Exception) {
-                apiResponse.value = RequestState.Error(e)
+                requestState.value = RequestState.Error
                 Log.d("PlayerViewModel", e.toString())
             }
         }
     }
 
     fun getPlayerById(playerId: String) {
-        apiResponse.value = RequestState.Loading
+        requestState.value = RequestState.Loading
 
         viewModelScope.launch {
             try {
                 val response = withContext(Dispatchers.IO) {
-                    repository.getPlayerById(playerId = playerId)
+                    playerRepository.getPlayerById(id = playerId)
                 }
-                apiResponse.value = RequestState.Success(response)
 
-                if (response.player != null) {
-                    convertResponseToPlayer(player = response.player.first())
+                if (response != null) {
+                    requestState.value = RequestState.Success
+                    convertResponseToPlayer(player = response)
                 } else {
                     playerUiState.value = PlayerUiState()
                 }
+
                 Log.d("PlayerViewModel", response.toString())
             }
             catch (e: Exception) {
-                apiResponse.value = RequestState.Error(e)
+                requestState.value = RequestState.Error
                 Log.d("PlayerViewModel", e.toString())
             }
         }
     }
 
-    fun getPlayersBySearch() {
-        apiResponse.value = RequestState.Loading
+    private fun getPlayersBySearch() {
+        requestState.value = RequestState.Loading
 
         viewModelScope.launch {
             try {
                 val response = withContext(Dispatchers.IO) {
-                    repository.getPlayersBySearch(searchText = searchUiState.value.searchText)
+                    playerRepository.getPlayersBySearch(name = searchUiState.value.searchText)
                 }
-                apiResponse.value = RequestState.Success(response)
 
-                if(response.player != null) {
-                    players.value = response.player
+                if(response != null) {
+                    requestState.value = RequestState.Success
+                    players.value = response
                 }
                 Log.d("PlayerViewModel", response.toString())
             }
             catch (e: Exception) {
-                apiResponse.value = RequestState.Error(e)
+                requestState.value = RequestState.Error
                 Log.d("PlayerViewModel", e.toString())
             }
         }
     }
 
-    fun updatePlayer(): Boolean {
-        apiResponse.value = RequestState.Loading
+    fun postPlayer() {
+        requestState.value = RequestState.Loading
+
         viewModelScope.launch {
             try {
                 if (verifyPlayer()) {
-                    lastResponse.value = repository.updatePlayer(
-                        player = createPlayer()
-                    )
-                    apiResponse.value = RequestState.Success(lastResponse.value)
-                    Log.d("PlayerViewModel", lastResponse.toString())
+                    val response = withContext(Dispatchers.IO) {
+                        playerRepository.postPlayer(
+                            player = createPlayer()
+                        )
+                    }
+
+                    if (response != null) {
+                        requestState.value = RequestState.Success
+                        postPlayer.value = true
+                    }
+                    Log.d("PlayerViewModel", response.toString())
                 }
             } catch (e: Exception) {
-                apiResponse.value = RequestState.Error(e)
+                requestState.value = RequestState.Error
                 Log.d("PlayerViewModel", e.toString())
             }
         }
-
-        return if(lastResponse.value.success) {
-            getAllPlayers()
-            true
-        } else
-            false
     }
 
-    fun deletePlayer(): Boolean {
-        apiResponse.value = RequestState.Loading
+    fun updatePlayer() {
+        requestState.value = RequestState.Loading
+
         viewModelScope.launch {
             try {
-                lastResponse.value = repository.deletePlayer(playerId = playerUiState.value.id)
-                apiResponse.value = RequestState.Success(lastResponse.value)
-                Log.d("PlayerViewModel", lastResponse.toString())
+                if (verifyPlayer()) {
+                    val response = withContext(Dispatchers.IO) {
+                        playerRepository.updatePlayer(
+                            id = playerUiState.value.id,
+                            player = createPlayer()
+                        )
+                    }
+
+                    if (response) {
+                        requestState.value = RequestState.Success
+                        updatePlayer.value = true
+                    }
+                    Log.d("PlayerViewModel", "${playerUiState.value.id} ${playerUiState.value.firstName} ${playerUiState.value.lastName} successfully updated")
+                }
             } catch (e: Exception) {
-                lastResponse.value = ApiResponse(success = false, error = e)
-                apiResponse.value = RequestState.Error(e)
+                requestState.value = RequestState.Error
                 Log.d("PlayerViewModel", e.toString())
             }
         }
+    }
 
-        return if(lastResponse.value.success) {
-            getAllPlayers()
-            true
-        } else
-            false
+    fun deletePlayer() {
+        requestState.value = RequestState.Loading
+
+        viewModelScope.launch {
+            try {
+                val response = withContext(Dispatchers.IO) {
+                    playerRepository.deletePlayer(
+                        id = playerUiState.value.id
+                    )
+                }
+
+                if (response) {
+                    requestState.value = RequestState.Success
+                }
+                Log.d("PlayerViewModel", "${playerUiState.value.id} ${playerUiState.value.firstName} ${playerUiState.value.lastName} successfully deleted")
+
+            } catch (e: Exception) {
+                requestState.value = RequestState.Error
+                Log.d("PlayerViewModel", e.toString())
+            }
+        }
     }
 
     fun resetPlayerUiState() {
@@ -287,13 +319,6 @@ class PlayerViewModel @Inject constructor(
 
     fun onSearchUiEvent(event: SearchUiEvent) {
         when(event) {
-            is SearchUiEvent.SortOrderChanged -> {
-                searchUiState.value = searchUiState.value.copy(
-                    sortOrder = event.sortOrder
-                )
-                getAllPlayers()
-            }
-
             is SearchUiEvent.SearchAppBarStateChanged -> {
                 searchUiState.value = searchUiState.value.copy(
                     searchAppBarState = event.searchAppBarState
@@ -307,9 +332,5 @@ class PlayerViewModel @Inject constructor(
                 getPlayersBySearch()
             }
         }
-    }
-
-    fun resetLastResponse() {
-        lastResponse.value = ApiResponse()
     }
 }

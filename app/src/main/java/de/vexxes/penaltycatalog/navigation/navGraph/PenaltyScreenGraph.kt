@@ -6,41 +6,41 @@ import androidx.navigation.navigation
 import de.vexxes.penaltycatalog.navigation.Graph
 import de.vexxes.penaltycatalog.navigation.Screen
 import de.vexxes.penaltycatalog.navigation.ScreenNavigation
-import de.vexxes.penaltycatalog.navigation.composables.penalty.penaltyDetailComposable
-import de.vexxes.penaltycatalog.navigation.composables.penalty.penaltyEditComposable
-import de.vexxes.penaltycatalog.viewmodels.PenaltyViewModel
-import de.vexxes.penaltycatalog.navigation.composables.penalty.penaltyListComposable as penaltyListComposable
+import de.vexxes.penaltycatalog.navigation.composables.penaltyType.penaltyDetailComposable
+import de.vexxes.penaltycatalog.navigation.composables.penaltyType.penaltyEditComposable
+import de.vexxes.penaltycatalog.viewmodels.PenaltyTypeViewModel
+import de.vexxes.penaltycatalog.navigation.composables.penaltyType.penaltyListComposable as penaltyListComposable
 
 fun NavGraphBuilder.penaltyScreensGraph(
     navController: NavController,
-    penaltyViewModel: PenaltyViewModel
+    penaltyTypeViewModel: PenaltyTypeViewModel
 ) {
     navigation(
         startDestination = ScreenNavigation.Penalties.route,
         route = Graph.PENALTY
     ) {
         penaltyListComposable(
-            penaltyViewModel = penaltyViewModel,
-            navigateToPenaltyDetailScreen = { penaltyId ->
-                navController.navigate(route = Screen.PenaltyDetail.route + "/$penaltyId")
+            penaltyTypeViewModel = penaltyTypeViewModel,
+            navigateToPenaltyDetailScreen = { penaltyTypeId ->
+                navController.navigate(route = Screen.PenaltyDetail.route + "/$penaltyTypeId")
             },
-            navigateToPenaltyEditScreen = { penaltyId ->
-                navController.navigate(route = Screen.PenaltyEdit.route + "/$penaltyId")
+            navigateToPenaltyEditScreen = { penaltyTypeId ->
+                navController.navigate(route = Screen.PenaltyEdit.route + "/$penaltyTypeId")
             }
         )
 
         penaltyDetailComposable(
-            penaltyViewModel = penaltyViewModel,
+            penaltyTypeViewModel = penaltyTypeViewModel,
             navigateToPenaltyList = {
                 navController.navigate(ScreenNavigation.Penalties.route)
             },
-            onEditClicked = { penaltyId ->
-                navController.navigate(Screen.PenaltyEdit.route + "/$penaltyId")
+            onEditClicked = { penaltyTypeId ->
+                navController.navigate(Screen.PenaltyEdit.route + "/$penaltyTypeId")
             }
         )
 
         penaltyEditComposable(
-            penaltyViewModel = penaltyViewModel,
+            penaltyTypeViewModel = penaltyTypeViewModel,
             navigateBack = {
                 navController.popBackStack()
             }

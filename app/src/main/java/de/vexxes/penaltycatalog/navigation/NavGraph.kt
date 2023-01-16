@@ -19,7 +19,7 @@ import de.vexxes.penaltycatalog.navigation.navGraph.penaltyScreensGraph
 import de.vexxes.penaltycatalog.navigation.navGraph.playerScreensGraph
 import de.vexxes.penaltycatalog.ui.theme.Typography
 import de.vexxes.penaltycatalog.viewmodels.PenaltyHistoryViewModel
-import de.vexxes.penaltycatalog.viewmodels.PenaltyViewModel
+import de.vexxes.penaltycatalog.viewmodels.PenaltyTypeViewModel
 import de.vexxes.penaltycatalog.viewmodels.PlayerViewModel
 
 object Graph {
@@ -36,7 +36,7 @@ fun SetupNavGraph(
     paddingValues: PaddingValues,
     navController: NavHostController,
     playerViewModel: PlayerViewModel,
-    penaltyViewModel: PenaltyViewModel,
+    penaltyTypeViewModel: PenaltyTypeViewModel,
     penaltyHistoryViewModel: PenaltyHistoryViewModel
 ) {
     NavHost(
@@ -47,7 +47,7 @@ fun SetupNavGraph(
     ) {
         penaltyScreensGraph(
             navController = navController,
-            penaltyViewModel = penaltyViewModel
+            penaltyTypeViewModel = penaltyTypeViewModel
         )
 
         playerScreensGraph(
@@ -77,7 +77,7 @@ fun SetupNavGraph(
 fun MainScreen(
     navController: NavHostController,
     playerViewModel: PlayerViewModel,
-    penaltyViewModel: PenaltyViewModel,
+    penaltyTypeViewModel: PenaltyTypeViewModel,
     penaltyHistoryViewModel: PenaltyHistoryViewModel
 ) {
     Scaffold(
@@ -87,7 +87,7 @@ fun MainScreen(
             paddingValues = paddingValues,
             navController = navController,
             playerViewModel = playerViewModel,
-            penaltyViewModel = penaltyViewModel,
+            penaltyTypeViewModel = penaltyTypeViewModel,
             penaltyHistoryViewModel = penaltyHistoryViewModel
         )
     }

@@ -1,4 +1,4 @@
-package de.vexxes.penaltycatalog.navigation.composables.penalty
+package de.vexxes.penaltycatalog.navigation.composables.penaltyType
 
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.tween
@@ -13,27 +13,26 @@ import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavType
 import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
-import de.vexxes.penaltycatalog.domain.model.ApiResponse
 import de.vexxes.penaltycatalog.navigation.Screen
-import de.vexxes.penaltycatalog.presentation.screen.penalty.PenaltyEditScreen
-import de.vexxes.penaltycatalog.viewmodels.PenaltyViewModel
+import de.vexxes.penaltycatalog.presentation.screen.penaltyType.PenaltyTypeEditScreen
+import de.vexxes.penaltycatalog.viewmodels.PenaltyTypeViewModel
 
 fun NavGraphBuilder.penaltyEditComposable(
-    penaltyViewModel: PenaltyViewModel,
+    penaltyTypeViewModel: PenaltyTypeViewModel,
     navigateBack: () -> Unit
 ) {
     composable(
         route = Screen.PenaltyEdit.route + Screen.PenaltyEdit.argument,
-        arguments = listOf(navArgument("penaltyId") {
+        arguments = listOf(navArgument("penaltyTypeId") {
             type = NavType.StringType
         })
     ) { navBackStackEntry ->
 
         // Get penaltyId from argument
-        val penaltyId = navBackStackEntry.arguments?.getString("penaltyId")
-        LaunchedEffect(key1 = penaltyId) {
-            if (penaltyId == "-1")
-                penaltyViewModel.resetPenalty()
+        val penaltyTypeId = navBackStackEntry.arguments?.getString("penaltyTypeId")
+        LaunchedEffect(key1 = penaltyTypeId) {
+            if (penaltyTypeId == "-1")
+                penaltyTypeViewModel.resetPenaltyTypeUiState()
         }
 
         var visible by remember {
@@ -41,7 +40,16 @@ fun NavGraphBuilder.penaltyEditComposable(
         }
         LaunchedEffect(key1 = true) {
             visible = true
-            penaltyViewModel.lastResponse.value = ApiResponse()
+        }
+
+        // Make invisible and navigate back, if postPlayer or updatePlayer was successful
+        var postPenaltyType by penaltyTypeViewModel.postPenaltyType
+        var updatePenaltyType by penaltyTypeViewModel.updatePenaltyType
+        if (postPenaltyType || updatePenaltyType) {
+            postPenaltyType = false
+            updatePenaltyType = false
+            visible = false
+            navigateBack()
         }
 
         AnimatedVisibility(
@@ -49,16 +57,17 @@ fun NavGraphBuilder.penaltyEditComposable(
             enter = slideInHorizontally(animationSpec = tween(durationMillis = 300)) { fullWidth -> fullWidth },
             exit = slideOutHorizontally(animationSpec = tween(durationMillis = 300)) { fullWidth -> fullWidth }
         ) {
-            PenaltyEditScreen(
-                penaltyViewModel = penaltyViewModel,
+            PenaltyTypeEditScreen(
+                penaltyTypeViewModel = penaltyTypeViewModel,
                 onBackClicked = {
                     visible = false
                     navigateBack()
                 },
                 onSaveClicked = {
-                    if (penaltyViewModel.updatePenalty()) {
-                        visible = false
-                        navigateBack()
+                    if (penaltyTypeViewModel.penaltyTypeUiState.value.id == "") {
+                        penaltyTypeViewModel.postPenaltyType()
+                    } else {
+                        penaltyTypeViewModel.updatePenalty()
                     }
                 }
             )

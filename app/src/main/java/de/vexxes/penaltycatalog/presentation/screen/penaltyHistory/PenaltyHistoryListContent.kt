@@ -1,7 +1,6 @@
-package de.vexxes.penaltycatalog.presentation.screen.history
+package de.vexxes.penaltycatalog.presentation.screen.penaltyHistory
 
 import android.icu.text.NumberFormat
-import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -24,30 +23,28 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import de.vexxes.penaltycatalog.R
 import de.vexxes.penaltycatalog.component.EmptyContent
-import de.vexxes.penaltycatalog.domain.model.PenaltyHistory
-import de.vexxes.penaltycatalog.domain.model.penaltyHistoryExample1
-import de.vexxes.penaltycatalog.domain.model.penaltyHistoryExample2
-import de.vexxes.penaltycatalog.domain.model.penaltyHistoryExample3
-import de.vexxes.penaltycatalog.domain.visualTransformation.CurrencyAmountInputVisualTransformation
+import de.vexxes.penaltycatalog.domain.model.PenaltyReceived
+import de.vexxes.penaltycatalog.domain.model.penaltyReceivedExample1
+import de.vexxes.penaltycatalog.domain.model.penaltyReceivedExample2
+import de.vexxes.penaltycatalog.domain.model.penaltyReceivedExample3
 import de.vexxes.penaltycatalog.ui.theme.Typography
-import de.vexxes.penaltycatalog.ui.theme.colorSchemeSegButtons
 import de.vexxes.penaltycatalog.util.FilterPaidState
+import java.time.LocalDate
 
 @Composable
 fun PenaltyHistoryListContent(
-    penaltyHistory: List<PenaltyHistory>,
+    penaltyReceived: List<PenaltyReceived>,
     filterPaidState: FilterPaidState,
     navigateToPenaltyHistoryDetailScreen: (penaltyHistoryId: String) -> Unit
 ) {
-    if (penaltyHistory.isNotEmpty()) {
+    if (penaltyReceived.isNotEmpty()) {
         DisplayPenaltyHistory(
-            penaltyHistory = penaltyHistory,
+            penaltyReceived = penaltyReceived,
             filterPaidState = filterPaidState,
             navigateToPenaltyHistoryDetailScreen = navigateToPenaltyHistoryDetailScreen
         )
@@ -58,7 +55,7 @@ fun PenaltyHistoryListContent(
 
 @Composable
 private fun DisplayPenaltyHistory(
-    penaltyHistory: List<PenaltyHistory>,
+    penaltyReceived: List<PenaltyReceived>,
     filterPaidState: FilterPaidState,
     navigateToPenaltyHistoryDetailScreen: (penaltyHistoryId: String) -> Unit
 ) {
@@ -67,7 +64,7 @@ private fun DisplayPenaltyHistory(
         verticalArrangement = Arrangement.spacedBy(4.dp)
     ) {
         items(
-            items = penaltyHistory,
+            items = penaltyReceived,
             key = { penaltyHistoryItem ->
                 penaltyHistoryItem.hashCode()
             }
@@ -76,23 +73,24 @@ private fun DisplayPenaltyHistory(
             when (filterPaidState) {
                 FilterPaidState.OFF -> {
                     PenaltyHistoryItem(
-                        penaltyHistory = penaltyHistoryItem,
+                        penaltyReceived = penaltyHistoryItem,
                         navigateToPenaltyHistoryDetailScreen = navigateToPenaltyHistoryDetailScreen
                     )
                 }
 
+                // TODO: Redo when clear is how to handle penaltyPaid
                 FilterPaidState.PAID -> {
-                    if (penaltyHistoryItem.penaltyPaid)
+                    if (LocalDate.now() > penaltyHistoryItem.penaltyPaid)
                         PenaltyHistoryItem(
-                            penaltyHistory = penaltyHistoryItem,
+                            penaltyReceived = penaltyHistoryItem,
                             navigateToPenaltyHistoryDetailScreen = navigateToPenaltyHistoryDetailScreen
                         )
                 }
 
                 FilterPaidState.NOT_PAID -> {
-                    if (!penaltyHistoryItem.penaltyPaid) {
+                    if (LocalDate.now() < penaltyHistoryItem.penaltyPaid) {
                         PenaltyHistoryItem(
-                            penaltyHistory = penaltyHistoryItem,
+                            penaltyReceived = penaltyHistoryItem,
                             navigateToPenaltyHistoryDetailScreen = navigateToPenaltyHistoryDetailScreen
                         )
                     }
@@ -104,19 +102,22 @@ private fun DisplayPenaltyHistory(
 
 @Composable
 private fun PenaltyHistoryItem(
-    penaltyHistory: PenaltyHistory,
+    penaltyReceived: PenaltyReceived,
     navigateToPenaltyHistoryDetailScreen: (penaltyHistoryId: String) -> Unit
 ) {
     Row(
         modifier = Modifier
             .clickable {
-                navigateToPenaltyHistoryDetailScreen(penaltyHistory._id)
+                navigateToPenaltyHistoryDetailScreen(penaltyReceived.id)
             }
             .fillMaxWidth()
             .height(72.dp)
+            //TODO: Find a way to get background color
+            /*
             .background(
-                if (penaltyHistory.penaltyPaid) colorSchemeSegButtons().backgroundPaid else colorSchemeSegButtons().backgroundNotPaid
+                if (penaltyReceived.penaltyPaid) colorSchemeSegButtons().backgroundPaid else colorSchemeSegButtons().backgroundNotPaid
             )
+             */
     ) {
         Column(
             modifier = Modifier
@@ -126,25 +127,29 @@ private fun PenaltyHistoryItem(
             verticalArrangement = Arrangement.Center
         ) {
             PenaltyHistoryPlayerName(
-                text = penaltyHistory.playerName
+                // TODO: Get playerName with playerId
+                text = penaltyReceived.playerId
             )
 
             PenaltyHistorySubText(
-                text = penaltyHistory.penaltyName
+                // TODO: Get penaltyName with penaltyId
+                text = penaltyReceived.penaltyId
             )
 
             PenaltyHistorySubText(
-                text = penaltyHistory.timeOfPenalty
+                text = penaltyReceived.timeOfPenalty.toString()
             )
         }
 
+        /* TODO: Read penaltyAmount from with penaltyId
         PenaltyHistoryPenaltyAmount(
             modifier = Modifier
                 .padding(end = 8.dp)
                 .weight(0.4f),
-            value = penaltyHistory.penaltyValue,
-            isBeer = penaltyHistory.penaltyIsBeer,
-            color = if (penaltyHistory.penaltyPaid) colorSchemeSegButtons().backgroundPaid else colorSchemeSegButtons().backgroundNotPaid)
+            value = penaltyReceived.penaltyValue,
+            isBeer = penaltyReceived.penaltyIsBeer,
+            color = if (penaltyReceived.penaltyPaid) colorSchemeSegButtons().backgroundPaid else colorSchemeSegButtons().backgroundNotPaid)
+         */
     }
 }
 
@@ -189,9 +194,9 @@ private fun PenaltyHistoryPenaltyAmount(
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.End
     ) {
-        val visualTransformation = if (isBeer) VisualTransformation.None else CurrencyAmountInputVisualTransformation(
+/*        val visualTransformation = if (isBeer) VisualTransformation.None else CurrencyAmountInputVisualTransformation(
             fixedCursorAtTheEnd = true
-        )
+        )*/
 
         Text(
             text = if (isBeer) stringResource(id = R.string.Box) else NumberFormat.getCurrencyInstance().currency.symbol,
@@ -213,7 +218,7 @@ private fun PenaltyHistoryPenaltyAmount(
             enabled = false,
             readOnly = true,
             textStyle = Typography.titleMedium.copy(textAlign = TextAlign.Right),
-            visualTransformation = visualTransformation,
+//            visualTransformation = visualTransformation,
             colors = TextFieldDefaults.outlinedTextFieldColors(
                 disabledTextColor = MaterialTheme.colorScheme.onSurface,
                 disabledBorderColor = MaterialTheme.colorScheme.outline,
@@ -230,7 +235,7 @@ private fun PenaltyHistoryPenaltyAmount(
 @Preview(showBackground = true)
 private fun PenaltyHistoryItemPreview() {
     PenaltyHistoryItem(
-        penaltyHistory = penaltyHistoryExample1(),
+        penaltyReceived = penaltyReceivedExample1(),
         navigateToPenaltyHistoryDetailScreen = { }
     )
 }
@@ -239,10 +244,10 @@ private fun PenaltyHistoryItemPreview() {
 @Preview(showBackground = true)
 private fun PenaltyHistoryContentPreview1() {
     PenaltyHistoryListContent(
-        penaltyHistory = listOf(
-            penaltyHistoryExample1(),
-            penaltyHistoryExample2(),
-            penaltyHistoryExample3()
+        penaltyReceived = listOf(
+            penaltyReceivedExample1(),
+            penaltyReceivedExample2(),
+            penaltyReceivedExample3()
         ),
         filterPaidState = FilterPaidState.OFF,
         navigateToPenaltyHistoryDetailScreen = { }
@@ -253,10 +258,10 @@ private fun PenaltyHistoryContentPreview1() {
 @Preview(showBackground = true)
 private fun PenaltyHistoryContentPreview2() {
     PenaltyHistoryListContent(
-        penaltyHistory = listOf(
-            penaltyHistoryExample1(),
-            penaltyHistoryExample2(),
-            penaltyHistoryExample3()
+        penaltyReceived = listOf(
+            penaltyReceivedExample1(),
+            penaltyReceivedExample2(),
+            penaltyReceivedExample3()
         ),
         filterPaidState = FilterPaidState.PAID,
         navigateToPenaltyHistoryDetailScreen = { }
@@ -267,10 +272,10 @@ private fun PenaltyHistoryContentPreview2() {
 @Preview(showBackground = true)
 private fun PenaltyHistoryContentPreview3() {
     PenaltyHistoryListContent(
-        penaltyHistory = listOf(
-            penaltyHistoryExample1(),
-            penaltyHistoryExample2(),
-            penaltyHistoryExample3()
+        penaltyReceived = listOf(
+            penaltyReceivedExample1(),
+            penaltyReceivedExample2(),
+            penaltyReceivedExample3()
         ),
         filterPaidState = FilterPaidState.NOT_PAID,
         navigateToPenaltyHistoryDetailScreen = { }

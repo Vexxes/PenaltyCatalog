@@ -1,4 +1,4 @@
-package de.vexxes.penaltycatalog.presentation.screen.history
+package de.vexxes.penaltycatalog.presentation.screen.penaltyType
 
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.layout.Box
@@ -14,55 +14,54 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import de.vexxes.penaltycatalog.component.BackDeleteEditTopBar
 import de.vexxes.penaltycatalog.component.DeleteAlertDialog
-import de.vexxes.penaltycatalog.domain.uievent.PenaltyHistoryUiEvent
-import de.vexxes.penaltycatalog.domain.uistate.PenaltyHistoryUiState
-import de.vexxes.penaltycatalog.domain.uistate.penaltyHistoryUiStateExample1
-import de.vexxes.penaltycatalog.viewmodels.PenaltyHistoryViewModel
+import de.vexxes.penaltycatalog.domain.uistate.PenaltyTypeUiState
+import de.vexxes.penaltycatalog.domain.uistate.penaltyTypeUiStateExample1
+import de.vexxes.penaltycatalog.viewmodels.PenaltyTypeViewModel
 
 @Composable
-fun PenaltyHistoryDetailScreen(
-    penaltyHistoryViewModel: PenaltyHistoryViewModel,
+fun PenaltyTypeDetailScreen(
+    penaltyTypeViewModel: PenaltyTypeViewModel,
     onBackClicked: () -> Unit,
     onDeleteClicked: (String) -> Unit,
-    onEditClicked: (String) -> Unit
+    onEditClicked: (String) -> Unit,
 ) {
-    val penaltyHistoryUiState by penaltyHistoryViewModel.penaltyHistoryUiState
+    val penaltyUiState by penaltyTypeViewModel.penaltyTypeUiState
     var showAlertDialog by remember { mutableStateOf(false) }
 
     BackHandler {
         onBackClicked()
     }
 
-    if (showAlertDialog) {
+    if(showAlertDialog) {
         DeleteAlertDialog(
             title = "Permanently delete?",
-            text = "Penalty History will be deleted permanently and can't be restored",
+            text = "Penalty will be deleted permanently and can't be restored",
             onDismissRequest = { showAlertDialog = false },
             onConfirmClicked = {
                 showAlertDialog = false
-                onDeleteClicked(penaltyHistoryUiState.id)
+                onDeleteClicked(penaltyUiState.id)
             },
-            onDismissButton = { showAlertDialog = false }
+            onDismissButton = {
+                showAlertDialog = false
+            }
         )
     }
 
-    PenaltyHistoryDetailScreen(
-        penaltyHistoryUiState = penaltyHistoryUiState,
+    PenaltyTypeDetailScreen(
+        penaltyTypeUiState = penaltyUiState,
         onBackClicked = onBackClicked,
         onDeleteClicked = { showAlertDialog = true },
-        onEditClicked = { onEditClicked(penaltyHistoryUiState.id) },
-        onPaidState = { penaltyHistoryViewModel.onPenaltyHistoryUiEvent(PenaltyHistoryUiEvent.PenaltyPaidChanged(it)) }
+        onEditClicked = { onEditClicked(penaltyUiState.id) }
     )
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-private fun PenaltyHistoryDetailScreen(
-    penaltyHistoryUiState: PenaltyHistoryUiState,
+private fun PenaltyTypeDetailScreen(
+    penaltyTypeUiState: PenaltyTypeUiState,
     onBackClicked: () -> Unit,
     onDeleteClicked: () -> Unit,
-    onEditClicked: () -> Unit,
-    onPaidState: (Boolean) -> Unit
+    onEditClicked: () -> Unit
 ) {
     Scaffold(
         topBar = {
@@ -74,11 +73,10 @@ private fun PenaltyHistoryDetailScreen(
         },
 
         content = {
-            Box(modifier = Modifier.padding(it)) {
-                PenaltyHistoryDetailContent(
-                    penaltyHistoryUiState = penaltyHistoryUiState,
-                    onPaidState = onPaidState
-                )
+            Box(
+                modifier = Modifier.padding(it)
+            ) {
+                PenaltyTypeDetailContent(penaltyTypeUiState = penaltyTypeUiState)
             }
         }
     )
@@ -86,12 +84,11 @@ private fun PenaltyHistoryDetailScreen(
 
 @Preview(showBackground = true)
 @Composable
-private fun PenaltyHistoryDetailScreenPreview() {
-    PenaltyHistoryDetailScreen(
-        penaltyHistoryUiState = penaltyHistoryUiStateExample1(),
+private fun PenaltyTypeDetailScreenPreview() {
+    PenaltyTypeDetailScreen(
+        penaltyTypeUiState = penaltyTypeUiStateExample1(),
         onBackClicked = { },
         onDeleteClicked = { },
-        onEditClicked = { },
-        onPaidState = { }
+        onEditClicked = { }
     )
 }

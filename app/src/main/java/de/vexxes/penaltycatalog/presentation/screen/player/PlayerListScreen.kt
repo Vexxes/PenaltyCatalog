@@ -18,6 +18,9 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
@@ -25,10 +28,8 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import de.vexxes.penaltycatalog.R
 import de.vexxes.penaltycatalog.component.GeneralTopBar
-import de.vexxes.penaltycatalog.domain.model.ApiResponse
 import de.vexxes.penaltycatalog.domain.model.Player
 import de.vexxes.penaltycatalog.domain.model.playerExample
-import de.vexxes.penaltycatalog.domain.model.SortOrder
 import de.vexxes.penaltycatalog.domain.uievent.SearchUiEvent
 import de.vexxes.penaltycatalog.util.RequestState
 import de.vexxes.penaltycatalog.util.SearchAppBarState
@@ -43,11 +44,11 @@ fun PlayerListScreen(
     playerViewModel: PlayerViewModel
 ) {
     val players by playerViewModel.players
-    val apiResponse by playerViewModel.lastResponse
+    val requestState by playerViewModel.requestState
     val searchUiState by playerViewModel.searchUiState
 
     val refreshPlayers = { playerViewModel.getAllPlayers() }
-    val refreshing = playerViewModel.apiResponse.value is RequestState.Loading
+    val refreshing = requestState is RequestState.Loading
     val pullRefreshState = rememberPullRefreshState(refreshing = refreshing, onRefresh = { refreshPlayers() })
 
     LaunchedEffect(key1 = true) {
@@ -66,16 +67,12 @@ fun PlayerListScreen(
             onDefaultSearchClicked = {
                 playerViewModel.onSearchUiEvent(SearchUiEvent.SearchAppBarStateChanged(SearchAppBarState.OPENED))
             },
-            onSortClicked = { sortOrder ->
-                playerViewModel.onSearchUiEvent(SearchUiEvent.SortOrderChanged(sortOrder))
-            },
             onCloseClicked = {
                 playerViewModel.onSearchUiEvent(SearchUiEvent.SearchAppBarStateChanged(SearchAppBarState.CLOSED))
                 playerViewModel.onSearchUiEvent(SearchUiEvent.SearchTextChanged(""))
             },
             players = players,
-            apiResponse = apiResponse,
-            resetApiResponse = { playerViewModel.resetLastResponse() },
+            requestState = requestState,
             navigateToPlayerDetailScreen = navigateToPlayerDetailScreen,
             navigateToPlayerEditScreen = navigateToPlayerEditScreen
         )
@@ -93,11 +90,9 @@ fun PlayerListScaffold(
     searchText: String,
     onSearchTextChanged: (String) -> Unit,
     onDefaultSearchClicked: () -> Unit,
-    onSortClicked: (SortOrder) -> Unit,
     onCloseClicked: () -> Unit,
     players: List<Player>,
-    apiResponse: ApiResponse,
-    resetApiResponse: () -> Unit,
+    requestState: RequestState,
     navigateToPlayerDetailScreen: (String) -> Unit,
     navigateToPlayerEditScreen: (String) -> Unit
 ) {
@@ -108,7 +103,7 @@ fun PlayerListScaffold(
                 searchAppBarState = searchAppBarState,
                 searchTextState = searchText,
                 onDefaultSearchClicked = onDefaultSearchClicked,
-                onSortClicked = onSortClicked,
+                onSortClicked = { },
                 onSearchTextChanged = onSearchTextChanged,
                 onCloseClicked = onCloseClicked
             )
@@ -128,13 +123,13 @@ fun PlayerListScaffold(
         floatingActionButton = {
             PlayerFab(navigateToPlayerDetailScreen = navigateToPlayerEditScreen)
         },
-
+/*
         snackbarHost = {
             PlayerListSnackbar(
-                apiResponse = apiResponse,
-                resetApiResponse = resetApiResponse
+                requestState = requestState,
             )
         }
+ */
     )
 }
 
@@ -155,29 +150,31 @@ fun PlayerFab(
 
 @Composable
 fun PlayerListSnackbar(
-    apiResponse: ApiResponse,
-    resetApiResponse: () -> Unit
+    requestState: RequestState
 ) {
+    var showSnackbar by remember { mutableStateOf(true)}
+
     /*TODO Other approach possible?*/
     // Reset snackbar after 3 seconds
-    LaunchedEffect(key1 = true) {
+    LaunchedEffect(key1 = requestState) {
+        showSnackbar = true
         delay(3000)
-        resetApiResponse()
+        showSnackbar = false
     }
 
-    if(apiResponse.hashCode() != ApiResponse().hashCode()) {
+    if (showSnackbar) {
         Snackbar(
             modifier = Modifier
                 .padding(8.dp),
             action = {
                     Text(
                         modifier = Modifier
-                            .clickable { resetApiResponse() },
+                            .clickable { /*resetApiResponse()*/ },
                         text = stringResource(id = R.string.Ok))
             }
         ) {
             Text(
-                text = if(!apiResponse.message.isNullOrEmpty()) apiResponse.message else ""
+                text = "" //if(!apiResponse.message.isNullOrEmpty()) apiResponse.message else ""
             )
         }
     }
@@ -197,11 +194,9 @@ fun PlayerListScreenPreview() {
         searchText = "",
         onSearchTextChanged = { },
         onDefaultSearchClicked = { },
-        onSortClicked = { },
         onCloseClicked = { },
         players = players,
-        apiResponse = ApiResponse(),
-        resetApiResponse = { },
+        requestState = RequestState.Success,
         navigateToPlayerDetailScreen = { },
         navigateToPlayerEditScreen = { }
     )

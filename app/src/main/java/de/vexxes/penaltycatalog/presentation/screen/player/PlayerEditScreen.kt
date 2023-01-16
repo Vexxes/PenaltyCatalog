@@ -6,7 +6,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
@@ -23,14 +22,6 @@ fun PlayerEditScreen(
     onSaveClicked: (String?) -> Unit
 ) {
     val playerUiState by playerViewModel.playerUiState
-    val lastResponse by playerViewModel.lastResponse
-
-    // Go back after lastResponse message is true
-    LaunchedEffect(key1 = lastResponse) {
-        if (lastResponse.success) {
-            onBackClicked()
-        }
-    }
 
     BackHandler {
         onBackClicked()
@@ -112,7 +103,7 @@ private fun PlayerEditScreenPreview() {
 
     val player = playerExample()
     val playerUiState = PlayerUiState(
-        id = player._id,
+        id = player.id,
         number = player.number.toString(),
         firstName = player.firstName,
         lastName = player.lastName,

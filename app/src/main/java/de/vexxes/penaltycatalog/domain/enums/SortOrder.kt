@@ -1,4 +1,4 @@
-package de.vexxes.penaltycatalog.domain.model
+package de.vexxes.penaltycatalog.domain.enums
 
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.North
