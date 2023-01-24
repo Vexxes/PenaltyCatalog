@@ -1,4 +1,4 @@
-package de.vexxes.penaltycatalog.presentation.screen.penaltyHistory
+package de.vexxes.penaltycatalog.presentation.screen.penaltyReceived
 
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.foundation.border
@@ -44,16 +44,16 @@ import de.vexxes.penaltycatalog.R
 import de.vexxes.penaltycatalog.component.InputOutlinedField
 import de.vexxes.penaltycatalog.domain.model.PenaltyType
 import de.vexxes.penaltycatalog.domain.model.Player
-import de.vexxes.penaltycatalog.domain.uistate.PenaltyHistoryUiState
-import de.vexxes.penaltycatalog.domain.uistate.penaltyHistoryUiStateExample1
-import de.vexxes.penaltycatalog.domain.uistate.penaltyHistoryUiStateExample2
-import de.vexxes.penaltycatalog.domain.uistate.penaltyHistoryUiStateExample3
+import de.vexxes.penaltycatalog.domain.uistate.PenaltyReceivedUiState
+import de.vexxes.penaltycatalog.domain.uistate.penaltyReceivedUiStateExample1
+import de.vexxes.penaltycatalog.domain.uistate.penaltyReceivedUiStateExample2
+import de.vexxes.penaltycatalog.domain.uistate.penaltyReceivedUiStateExample3
 import de.vexxes.penaltycatalog.ui.theme.Typography
-import java.time.LocalDate
+import kotlinx.datetime.LocalDate
 
 @Composable
-fun PenaltyHistoryEditContent(
-    penaltyHistoryUiState: PenaltyHistoryUiState,
+fun PenaltyReceivedEditContent(
+    penaltyReceivedUiState: PenaltyReceivedUiState,
     penaltyList: List<PenaltyType>,
     playerList: List<Player>,
     onPenaltyChanged: (String) -> Unit,
@@ -65,8 +65,8 @@ fun PenaltyHistoryEditContent(
             .fillMaxSize()
             .padding(8.dp)
     ) {
-        PenaltyHistoryDatePicker(
-            timeOfPenalty = penaltyHistoryUiState.timeOfPenalty,
+        PenaltyReceivedDatePicker(
+            timeOfPenalty = penaltyReceivedUiState.timeOfPenalty,
             onTimeOfPenaltyChanged = onTimeOfPenaltyChanged
         )
 /*
@@ -96,7 +96,7 @@ fun PenaltyHistoryEditContent(
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-private fun PenaltyHistoryDatePicker(
+private fun PenaltyReceivedDatePicker(
     timeOfPenalty: LocalDate,
     onTimeOfPenaltyChanged: (LocalDate) -> Unit
 ) {
@@ -110,7 +110,7 @@ private fun PenaltyHistoryDatePicker(
             style = CalendarStyle.MONTH
         ),
         selection = CalendarSelection.Date { selectedDate ->
-            onTimeOfPenaltyChanged(selectedDate)
+            onTimeOfPenaltyChanged(LocalDate.parse(selectedDate.toString()))
         }
     )
 
@@ -143,7 +143,7 @@ private fun PenaltyHistoryDatePicker(
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-private fun PenaltyHistoryPlayerExposedMenu(
+private fun PenaltyReceivedPlayerExposedMenu(
     text: String,
     error: Boolean,
     playerList: List<Player>,
@@ -209,7 +209,7 @@ private fun PenaltyHistoryPlayerExposedMenu(
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-private fun PenaltyHistoryPenaltyExposedMenu(
+private fun PenaltyReceivedPenaltyExposedMenu(
     text: String,
     error: Boolean,
     penaltyList: List<PenaltyType>,
@@ -275,7 +275,7 @@ private fun PenaltyHistoryPenaltyExposedMenu(
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-private fun PenaltyHistoryAmount(
+private fun PenaltyReceivedAmount(
     value: String,
     isBeer: Boolean
 ) {
@@ -333,9 +333,9 @@ private fun PenaltyHistoryAmount(
 
 @Composable
 @Preview(showBackground = true)
-private fun PenaltyHistoryEditContentPreview1() {
-    PenaltyHistoryEditContent(
-        penaltyHistoryUiState = penaltyHistoryUiStateExample1(),
+private fun PenaltyReceivedEditContentPreview1() {
+    PenaltyReceivedEditContent(
+        penaltyReceivedUiState = penaltyReceivedUiStateExample1(),
         penaltyList = emptyList(),
         playerList = emptyList(),
         onPenaltyChanged = { },
@@ -346,9 +346,9 @@ private fun PenaltyHistoryEditContentPreview1() {
 
 @Composable
 @Preview(showBackground = true)
-private fun PenaltyHistoryEditContentPreview2() {
-    PenaltyHistoryEditContent(
-        penaltyHistoryUiState = penaltyHistoryUiStateExample2(),
+private fun PenaltyReceivedEditContentPreview2() {
+    PenaltyReceivedEditContent(
+        penaltyReceivedUiState = penaltyReceivedUiStateExample2(),
         penaltyList = emptyList(),
         playerList = emptyList(),
         onPenaltyChanged = { },
@@ -359,9 +359,9 @@ private fun PenaltyHistoryEditContentPreview2() {
 
 @Composable
 @Preview(showBackground = true)
-private fun PenaltyHistoryEditContentPreview3() {
-    PenaltyHistoryEditContent(
-        penaltyHistoryUiState = penaltyHistoryUiStateExample3(),
+private fun PenaltyReceivedEditContentPreview3() {
+    PenaltyReceivedEditContent(
+        penaltyReceivedUiState = penaltyReceivedUiStateExample3(),
         penaltyList = emptyList(),
         playerList = emptyList(),
         onPenaltyChanged = { },

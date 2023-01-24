@@ -1,4 +1,4 @@
-package de.vexxes.penaltycatalog.presentation.screen.penaltyHistory
+package de.vexxes.penaltycatalog.presentation.screen.penaltyReceived
 
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
@@ -55,43 +55,42 @@ import de.vexxes.penaltycatalog.ui.theme.colorSchemeSegButtons
 import de.vexxes.penaltycatalog.util.FilterPaidState
 import de.vexxes.penaltycatalog.util.RequestState
 import de.vexxes.penaltycatalog.util.SearchAppBarState
-import de.vexxes.penaltycatalog.viewmodels.PenaltyHistoryViewModel
+import de.vexxes.penaltycatalog.viewmodels.PenaltyReceivedViewModel
 import kotlinx.coroutines.delay
 
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
-fun PenaltyHistoryListScreen(
-    penaltyHistoryViewModel: PenaltyHistoryViewModel,
-    navigateToPenaltyHistoryDetailScreen: (penaltyHistoryId: String) -> Unit,
-    navigateToPenaltyHistoryEditScreen: (penaltyHistoryId: String) -> Unit
+fun PenaltyReceivedListScreen(
+    penaltyReceivedViewModel: PenaltyReceivedViewModel,
+    navigateToPenaltyReceivedDetailScreen: (penaltyHistoryId: String) -> Unit,
+    navigateToPenaltyReceivedEditScreen: (penaltyHistoryId: String) -> Unit
 ) {
-    val penaltyHistory by penaltyHistoryViewModel.penaltyReceived
-    val apiResponse by penaltyHistoryViewModel.lastResponse
-    val searchUiState by penaltyHistoryViewModel.searchUiState
+    val penaltyReceived by penaltyReceivedViewModel.penaltyReceived
+    val requestState by penaltyReceivedViewModel.requestState
+    val searchUiState by penaltyReceivedViewModel.searchUiState
     
-    val refreshPenaltyHistory = { penaltyHistoryViewModel.getAllPenaltyHistory() }
-    val refreshing = penaltyHistoryViewModel.apiResponse.value is RequestState.Loading
-    val pullRefreshState = rememberPullRefreshState(refreshing = refreshing, onRefresh = { refreshPenaltyHistory() })
+    val refreshPenaltyReceived = { penaltyReceivedViewModel.getAllPenaltyReceived() }
+    val refreshing = penaltyReceivedViewModel.requestState.value is RequestState.Loading
+    val pullRefreshState = rememberPullRefreshState(refreshing = refreshing, onRefresh = { refreshPenaltyReceived() })
 
     LaunchedEffect(key1 = true) {
-        refreshPenaltyHistory()
+        refreshPenaltyReceived()
     }
 
     Box(modifier = Modifier.pullRefresh(pullRefreshState)) {
-        PenaltyHistoryListScaffold(
+        PenaltyReceivedListScaffold(
             searchUiState = searchUiState,
-            onSearchTextChanged = { penaltyHistoryViewModel.onSearchUiEvent(SearchUiEvent.SearchTextChanged(it)) },
-            onDefaultSearchClicked = { penaltyHistoryViewModel.onSearchUiEvent(SearchUiEvent.SearchAppBarStateChanged(SearchAppBarState.OPENED)) },
+            onSearchTextChanged = { penaltyReceivedViewModel.onSearchUiEvent(SearchUiEvent.SearchTextChanged(it)) },
+            onDefaultSearchClicked = { penaltyReceivedViewModel.onSearchUiEvent(SearchUiEvent.SearchAppBarStateChanged(SearchAppBarState.OPENED)) },
             onSortClicked = { /*TODO Implement order function with different sort orders like date, name, etc...*/},
             onCloseClicked = {
-                penaltyHistoryViewModel.onSearchUiEvent(SearchUiEvent.SearchAppBarStateChanged(SearchAppBarState.CLOSED))
-                penaltyHistoryViewModel.onSearchUiEvent(SearchUiEvent.SearchTextChanged(""))
+                penaltyReceivedViewModel.onSearchUiEvent(SearchUiEvent.SearchAppBarStateChanged(SearchAppBarState.CLOSED))
+                penaltyReceivedViewModel.onSearchUiEvent(SearchUiEvent.SearchTextChanged(""))
             },
-            penaltyReceived = penaltyHistory,
-            apiResponse = apiResponse,
-            resetApiResponse = { penaltyHistoryViewModel.resetLastResponse() },
-            navigateToPenaltyHistoryDetailScreen = navigateToPenaltyHistoryDetailScreen,
-            navigateToPenaltyHistoryEditScreen = navigateToPenaltyHistoryEditScreen
+            penaltyReceived = penaltyReceived,
+            requestState = requestState,
+            navigateToPenaltyReceivedDetailScreen = navigateToPenaltyReceivedDetailScreen,
+            navigateToPenaltyReceivedEditScreen = navigateToPenaltyReceivedEditScreen
         )
 
         PullRefreshIndicator(refreshing = refreshing, state = pullRefreshState, modifier = Modifier.align(Alignment.TopCenter))
@@ -100,17 +99,16 @@ fun PenaltyHistoryListScreen(
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun PenaltyHistoryListScaffold(
+fun PenaltyReceivedListScaffold(
     searchUiState: SearchUiState,
     onSearchTextChanged: (String) -> Unit,
     onDefaultSearchClicked: () -> Unit,
     onSortClicked: (SortOrder) -> Unit,
     onCloseClicked: () -> Unit,
     penaltyReceived: List<PenaltyReceived>,
-    apiResponse: ApiResponse,
-    resetApiResponse: () -> Unit,
-    navigateToPenaltyHistoryDetailScreen: (String) -> Unit,
-    navigateToPenaltyHistoryEditScreen: (String) -> Unit
+    requestState: RequestState,
+    navigateToPenaltyReceivedDetailScreen: (String) -> Unit,
+    navigateToPenaltyReceivedEditScreen: (String) -> Unit
 ) {
 
     var filterPaidState by remember { mutableStateOf(FilterPaidState.OFF) }
@@ -131,16 +129,16 @@ fun PenaltyHistoryListScaffold(
 
             Box(modifier = Modifier.padding(it)) {
                 Column {
-                    PenaltyHistoryChips(
+                    PenaltyReceivedChips(
                         filterPaidState = filterPaidState,
                         onFilterStateChanged = { filterPaidStateNew ->
                             filterPaidState = filterPaidStateNew
                         }
                     )
-                    PenaltyHistoryListContent(
+                    PenaltyReceivedListContent(
                         penaltyReceived = penaltyReceived,
                         filterPaidState = filterPaidState,
-                        navigateToPenaltyHistoryDetailScreen = navigateToPenaltyHistoryDetailScreen
+                        navigateToPenaltyReceivedDetailScreen = navigateToPenaltyReceivedDetailScreen
                     )
                 }
 
@@ -148,21 +146,21 @@ fun PenaltyHistoryListScaffold(
         },
 
         floatingActionButton = {
-            PenaltyHistoryFab(navigateToPenaltyHistoryEditScreen = navigateToPenaltyHistoryEditScreen)
+            PenaltyReceivedFab(navigateToPenaltyReceivedEditScreen = navigateToPenaltyReceivedEditScreen)
         },
 
-        snackbarHost = {
+/*        snackbarHost = {
             PenaltyHistoryListSnackbar(
                 apiResponse = apiResponse,
                 resetApiResponse = resetApiResponse
             )
-        }
+        }*/
     )
 }
 
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
-fun PenaltyHistoryChips(
+fun PenaltyReceivedChips(
     filterPaidState: FilterPaidState,
     onFilterStateChanged: (FilterPaidState) -> Unit
 ) {
@@ -184,7 +182,7 @@ fun PenaltyHistoryChips(
         ),
         horizontalArrangement = Arrangement.Center,
     ) {
-        PenaltyHistoryChip(
+        PenaltyReceivedChip(
             imageVector = Icons.Default.AttachMoney,
             text = stringResource(id = R.string.Paid),
             onClicked = {
@@ -196,7 +194,7 @@ fun PenaltyHistoryChips(
             chipColors = if (filterPaidState == FilterPaidState.PAID) chipColorsPaid else ChipDefaults.chipColors()
         )
 
-        PenaltyHistoryChip(
+        PenaltyReceivedChip(
             imageVector = Icons.Default.MoneyOff,
             text = stringResource(id = R.string.NotPaid),
             onClicked = {
@@ -212,7 +210,7 @@ fun PenaltyHistoryChips(
 
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
-private fun PenaltyHistoryChip(
+private fun PenaltyReceivedChip(
     imageVector: ImageVector,
     text: String,
     onClicked: () -> Unit,
@@ -242,12 +240,12 @@ private fun PenaltyHistoryChip(
 }
 
 @Composable
-fun PenaltyHistoryFab(
-    navigateToPenaltyHistoryEditScreen: (String) -> Unit
+fun PenaltyReceivedFab(
+    navigateToPenaltyReceivedEditScreen: (String) -> Unit
 ) {
     FloatingActionButton(
         onClick = {
-            navigateToPenaltyHistoryEditScreen("-1")
+            navigateToPenaltyReceivedEditScreen("-1")
         }) {
         Icon(
             imageVector = Icons.Default.Add,
@@ -257,7 +255,7 @@ fun PenaltyHistoryFab(
 }
 
 @Composable
-fun PenaltyHistoryListSnackbar(
+fun PenaltyReceivedListSnackbar(
     apiResponse: ApiResponse,
     resetApiResponse: () -> Unit
 ) {
@@ -289,8 +287,8 @@ fun PenaltyHistoryListSnackbar(
 
 @Composable
 @Preview(showBackground = true)
-private fun PenaltyHistoryListScreenPreview() {
-    PenaltyHistoryListScaffold(
+private fun PenaltyReceivedListScreenPreview() {
+    PenaltyReceivedListScaffold(
         searchUiState = SearchUiState(),
         onSearchTextChanged = { },
         onDefaultSearchClicked = { },
@@ -301,36 +299,35 @@ private fun PenaltyHistoryListScreenPreview() {
             penaltyReceivedExample2(),
             penaltyReceivedExample3()
         ),
-        apiResponse = ApiResponse(),
-        resetApiResponse = { },
-        navigateToPenaltyHistoryDetailScreen = { },
-        navigateToPenaltyHistoryEditScreen = { }
+        requestState = RequestState.Success,
+        navigateToPenaltyReceivedDetailScreen = { },
+        navigateToPenaltyReceivedEditScreen = { }
     )
 }
 
 @Composable
 @Preview
-fun PenaltyHistoryFabPreview() {
-    PenaltyHistoryFab(
-        navigateToPenaltyHistoryEditScreen = { }
+fun PenaltyReceivedFabPreview() {
+    PenaltyReceivedFab(
+        navigateToPenaltyReceivedEditScreen = { }
     )
 }
 
 @Composable
 @Preview(showBackground = true)
-private fun PenaltyHistoryChipsPreview() {
+private fun PenaltyReceivedChipsPreview() {
     Column {
-        PenaltyHistoryChips(
+        PenaltyReceivedChips(
             filterPaidState = FilterPaidState.OFF,
             onFilterStateChanged = { }
         )
 
-        PenaltyHistoryChips(
+        PenaltyReceivedChips(
             filterPaidState = FilterPaidState.PAID,
             onFilterStateChanged = { }
         )
 
-        PenaltyHistoryChips(
+        PenaltyReceivedChips(
             filterPaidState = FilterPaidState.NOT_PAID,
             onFilterStateChanged = { }
         )

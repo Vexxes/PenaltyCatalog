@@ -1,16 +1,16 @@
-package de.vexxes.penaltycatalog.navigation.composables.penaltyHistory
+package de.vexxes.penaltycatalog.navigation.composables.penaltyReceived
 
 import androidx.compose.runtime.LaunchedEffect
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.compose.composable
 import de.vexxes.penaltycatalog.domain.uievent.SearchUiEvent
 import de.vexxes.penaltycatalog.navigation.ScreenNavigation
-import de.vexxes.penaltycatalog.presentation.screen.penaltyHistory.PenaltyHistoryListScreen
+import de.vexxes.penaltycatalog.presentation.screen.penaltyReceived.PenaltyReceivedListScreen
 import de.vexxes.penaltycatalog.util.SearchAppBarState
-import de.vexxes.penaltycatalog.viewmodels.PenaltyHistoryViewModel
+import de.vexxes.penaltycatalog.viewmodels.PenaltyReceivedViewModel
 
 fun NavGraphBuilder.penaltyHistoryListComposable(
-    penaltyHistoryViewModel: PenaltyHistoryViewModel,
+    penaltyReceivedViewModel: PenaltyReceivedViewModel,
     navigateToPenaltyHistoryDetailScreen: (String) -> Unit,
     navigateToPenaltyHistoryEditScreen: (String) -> Unit,
 ) {
@@ -18,15 +18,15 @@ fun NavGraphBuilder.penaltyHistoryListComposable(
         route = ScreenNavigation.PenaltyHistory.route
     ) {
         LaunchedEffect(true) {
-            penaltyHistoryViewModel.onSearchUiEvent(SearchUiEvent.SearchAppBarStateChanged(SearchAppBarState.CLOSED))
+            penaltyReceivedViewModel.onSearchUiEvent(SearchUiEvent.SearchAppBarStateChanged(SearchAppBarState.CLOSED))
         }
 
-        PenaltyHistoryListScreen(
-            penaltyHistoryViewModel = penaltyHistoryViewModel,
-            navigateToPenaltyHistoryDetailScreen = { penaltyHistoryId ->
+        PenaltyReceivedListScreen(
+            penaltyReceivedViewModel = penaltyReceivedViewModel,
+            navigateToPenaltyReceivedDetailScreen = { penaltyHistoryId ->
                 navigateToPenaltyHistoryDetailScreen(penaltyHistoryId)
             },
-            navigateToPenaltyHistoryEditScreen = { penaltyHistoryId ->
+            navigateToPenaltyReceivedEditScreen = { penaltyHistoryId ->
                 navigateToPenaltyHistoryEditScreen(penaltyHistoryId)
             }
         )

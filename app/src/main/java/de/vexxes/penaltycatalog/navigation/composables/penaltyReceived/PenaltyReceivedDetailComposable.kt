@@ -1,4 +1,4 @@
-package de.vexxes.penaltycatalog.navigation.composables.penaltyHistory
+package de.vexxes.penaltycatalog.navigation.composables.penaltyReceived
 
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.tween
@@ -14,26 +14,26 @@ import androidx.navigation.NavType
 import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
 import de.vexxes.penaltycatalog.navigation.Screen
-import de.vexxes.penaltycatalog.presentation.screen.penaltyHistory.PenaltyHistoryDetailScreen
-import de.vexxes.penaltycatalog.viewmodels.PenaltyHistoryViewModel
+import de.vexxes.penaltycatalog.presentation.screen.penaltyReceived.PenaltyReceivedDetailScreen
+import de.vexxes.penaltycatalog.viewmodels.PenaltyReceivedViewModel
 
 fun NavGraphBuilder.penaltyHistoryDetailComposable(
-    penaltyHistoryViewModel: PenaltyHistoryViewModel,
+    penaltyReceivedViewModel: PenaltyReceivedViewModel,
     navigateToPenaltyHistoryList: () -> Unit,
     onEditClicked: (String) -> Unit
 ) {
     composable(
         route = Screen.PenaltyHistoryDetail.route + Screen.PenaltyHistoryDetail.argument,
-        arguments = listOf(navArgument("penaltyHistoryId") {
+        arguments = listOf(navArgument("penaltyReceivedId") {
             type = NavType.StringType
         })
     ) { navBackStackEntry ->
 
         // Get penaltyHistoryId from argument
-        val penaltyHistoryId = navBackStackEntry.arguments?.getString("penaltyHistoryId")
-        LaunchedEffect(key1 = penaltyHistoryId) {
-            if (!penaltyHistoryId.isNullOrEmpty() && penaltyHistoryId != "-1") {
-                penaltyHistoryViewModel.getPenaltyHistoryById(penaltyHistoryId = penaltyHistoryId)
+        val penaltyReceivedId = navBackStackEntry.arguments?.getString("penaltyReceivedId")
+        LaunchedEffect(key1 = penaltyReceivedId) {
+            if (!penaltyReceivedId.isNullOrEmpty() && penaltyReceivedId != "-1") {
+                penaltyReceivedViewModel.getPenaltyReceivedById(penaltyReceivedId = penaltyReceivedId)
             }
         }
 
@@ -47,13 +47,13 @@ fun NavGraphBuilder.penaltyHistoryDetailComposable(
             enter = fadeIn(animationSpec = tween(durationMillis = 500)),
             exit = fadeOut(animationSpec = tween(durationMillis = 500))
         ) {
-            PenaltyHistoryDetailScreen(
-                penaltyHistoryViewModel = penaltyHistoryViewModel,
+            PenaltyReceivedDetailScreen(
+                penaltyReceivedViewModel = penaltyReceivedViewModel,
                 onBackClicked = {
                     navigateToPenaltyHistoryList()
                 },
                 onDeleteClicked = {
-                    penaltyHistoryViewModel.deletePenaltyHistory()
+                    penaltyReceivedViewModel.deletePenaltyReceived()
                     navigateToPenaltyHistoryList()
                 },
                 onEditClicked = { onEditClicked(it) }

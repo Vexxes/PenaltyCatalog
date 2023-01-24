@@ -1,4 +1,4 @@
-package de.vexxes.penaltycatalog.navigation.composables.penaltyHistory
+package de.vexxes.penaltycatalog.navigation.composables.penaltyReceived
 
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.tween
@@ -13,35 +13,43 @@ import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavType
 import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
-import de.vexxes.penaltycatalog.domain.model.ApiResponse
 import de.vexxes.penaltycatalog.navigation.Screen
-import de.vexxes.penaltycatalog.presentation.screen.penaltyHistory.PenaltyHistoryEditScreen
-import de.vexxes.penaltycatalog.viewmodels.PenaltyHistoryViewModel
+import de.vexxes.penaltycatalog.presentation.screen.penaltyReceived.PenaltyReceivedEditScreen
+import de.vexxes.penaltycatalog.viewmodels.PenaltyReceivedViewModel
 
 fun NavGraphBuilder.penaltyHistoryEditComposable(
-    penaltyHistoryViewModel: PenaltyHistoryViewModel,
+    penaltyReceivedViewModel: PenaltyReceivedViewModel,
     navigateBack: () -> Unit
 ) {
     composable(
         route = Screen.PenaltyHistoryEdit.route + Screen.PenaltyHistoryEdit.argument,
-        arguments = listOf(navArgument("penaltyHistoryId") {
+        arguments = listOf(navArgument("penaltyReceivedId") {
             type = NavType.StringType
         })
     ) { navBackStackEntry ->
 
         // Get penaltyHistoryId from argument
-        val penaltyHistoryId = navBackStackEntry.arguments?.getString("penaltyHistoryId")
-        LaunchedEffect(key1 = penaltyHistoryId) {
-            if (penaltyHistoryId == "-1")
-                penaltyHistoryViewModel.resetPenaltyHistory()
+        val penaltyReceivedId = navBackStackEntry.arguments?.getString("penaltyReceivedId")
+        LaunchedEffect(key1 = penaltyReceivedId) {
+            if (penaltyReceivedId == "-1")
+                penaltyReceivedViewModel.resetPenaltyHistory()
         }
 
         var visible by remember { mutableStateOf(false) }
         LaunchedEffect(key1 = true) {
             visible = true
-            penaltyHistoryViewModel.lastResponse.value = ApiResponse()
-            penaltyHistoryViewModel.getAllPenalties()
-            penaltyHistoryViewModel.getAllPlayers()
+            penaltyReceivedViewModel.getAllPenalties()
+            penaltyReceivedViewModel.getAllPlayers()
+        }
+
+        // Make invisible and navigate back, if postPenaltyReceived or updatePenaltyReceived was successful
+        var postPenaltyReceived by penaltyReceivedViewModel.postPenaltyReceived
+        var updatePenaltyReceived by penaltyReceivedViewModel.updatePenaltyReceived
+        if (postPenaltyReceived || updatePenaltyReceived) {
+            postPenaltyReceived = false
+            updatePenaltyReceived = false
+            visible = false
+            navigateBack()
         }
 
         AnimatedVisibility(
@@ -49,16 +57,17 @@ fun NavGraphBuilder.penaltyHistoryEditComposable(
             enter = slideInHorizontally(animationSpec = tween(durationMillis = 300)) { fullWidth -> fullWidth },
             exit = slideOutHorizontally(animationSpec = tween(durationMillis = 300)) { fullWidth -> fullWidth }
         ) {
-            PenaltyHistoryEditScreen(
-                penaltyHistoryViewModel = penaltyHistoryViewModel,
+            PenaltyReceivedEditScreen(
+                penaltyReceivedViewModel = penaltyReceivedViewModel,
                 onBackClicked = {
                     visible = false
                     navigateBack()
                 },
                 onSaveClicked = {
-                    if (penaltyHistoryViewModel.updatePenaltyHistory()) {
-                        visible = false
-                        navigateBack()
+                    if (penaltyReceivedViewModel.penaltyReceivedUiState.value.id == "") {
+                        penaltyReceivedViewModel.postPenaltyReceived()
+                    } else {
+                        penaltyReceivedViewModel.updatePenaltyReceived()
                     }
                 }
             )

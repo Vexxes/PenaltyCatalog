@@ -1,44 +1,76 @@
 package de.vexxes.penaltycatalog.domain.model
 
+import kotlinx.datetime.Clock
+import kotlinx.datetime.LocalDate
+import kotlinx.datetime.TimeZone
+import kotlinx.datetime.toLocalDateTime
 import kotlinx.serialization.Contextual
 import kotlinx.serialization.Serializable
-import java.time.LocalDate
 
 @Serializable
 data class PenaltyReceived(
     val id: String = "",
-    val penaltyId: String = "",
+    val penaltyTypeId: String = "",
     val playerId: String = "",
-    @Contextual val timeOfPenalty: LocalDate = LocalDate.now(),
-    @Contextual val penaltyPaid: LocalDate = LocalDate.now()
+    val timeOfPenalty: LocalDate,
+    val timeOfPenaltyPaid: LocalDate? = null
 )
 
 fun penaltyReceivedExample1(): PenaltyReceived {
     return PenaltyReceived(
         id = "",
-        penaltyId = "",
+        penaltyTypeId = "",
         playerId = "",
-        timeOfPenalty = LocalDate.now(),
-        penaltyPaid = LocalDate.now()
+        timeOfPenalty = LocalDate.parse("2023-01-23")
     )
 }
 
 fun penaltyReceivedExample2(): PenaltyReceived {
     return PenaltyReceived(
         id = "",
-        penaltyId = "",
+        penaltyTypeId = "",
         playerId = "",
-        timeOfPenalty = LocalDate.now(),
-        penaltyPaid = LocalDate.now()
+        timeOfPenalty = LocalDate.parse("2023-01-23")
     )
 }
 
 fun penaltyReceivedExample3(): PenaltyReceived {
     return PenaltyReceived(
         id = "",
-        penaltyId = "",
+        penaltyTypeId = "",
         playerId = "",
-        timeOfPenalty = LocalDate.now(),
-        penaltyPaid = LocalDate.now()
+        timeOfPenalty = LocalDate.parse("2023-01-23"),
+        timeOfPenaltyPaid = LocalDate.parse("2023-01-23")
     )
 }
+
+/*
+fun penaltyReceivedExample1(): PenaltyReceived {
+    return PenaltyReceived(
+        id = "",
+        penaltyTypeId = "",
+        playerId = "",
+        timeOfPenalty = "",
+        timeOfPenaltyPaid = ""
+    )
+}
+
+fun penaltyReceivedExample2(): PenaltyReceived {
+    return PenaltyReceived(
+        id = "",
+        penaltyTypeId = "",
+        playerId = "",
+        timeOfPenalty = "",
+        timeOfPenaltyPaid = ""
+    )
+}
+
+fun penaltyReceivedExample3(): PenaltyReceived {
+    return PenaltyReceived(
+        id = "",
+        penaltyTypeId = "",
+        playerId = "",
+        timeOfPenalty = "",
+        timeOfPenaltyPaid = ""
+    )
+}*/

@@ -18,7 +18,7 @@ import de.vexxes.penaltycatalog.navigation.navGraph.penaltyHistoryGraph
 import de.vexxes.penaltycatalog.navigation.navGraph.penaltyScreensGraph
 import de.vexxes.penaltycatalog.navigation.navGraph.playerScreensGraph
 import de.vexxes.penaltycatalog.ui.theme.Typography
-import de.vexxes.penaltycatalog.viewmodels.PenaltyHistoryViewModel
+import de.vexxes.penaltycatalog.viewmodels.PenaltyReceivedViewModel
 import de.vexxes.penaltycatalog.viewmodels.PenaltyTypeViewModel
 import de.vexxes.penaltycatalog.viewmodels.PlayerViewModel
 
@@ -37,7 +37,7 @@ fun SetupNavGraph(
     navController: NavHostController,
     playerViewModel: PlayerViewModel,
     penaltyTypeViewModel: PenaltyTypeViewModel,
-    penaltyHistoryViewModel: PenaltyHistoryViewModel
+    penaltyReceivedViewModel: PenaltyReceivedViewModel
 ) {
     NavHost(
         modifier = Modifier.padding(paddingValues),
@@ -57,7 +57,7 @@ fun SetupNavGraph(
 
         penaltyHistoryGraph(
             navController = navController,
-            penaltyHistoryViewModel = penaltyHistoryViewModel
+            penaltyReceivedViewModel = penaltyReceivedViewModel
         )
 
         composable(route = ScreenNavigation.Cancellations.route) {
@@ -78,7 +78,7 @@ fun MainScreen(
     navController: NavHostController,
     playerViewModel: PlayerViewModel,
     penaltyTypeViewModel: PenaltyTypeViewModel,
-    penaltyHistoryViewModel: PenaltyHistoryViewModel
+    penaltyReceivedViewModel: PenaltyReceivedViewModel
 ) {
     Scaffold(
         bottomBar = { BottomBar(navController = navController) }
@@ -88,7 +88,7 @@ fun MainScreen(
             navController = navController,
             playerViewModel = playerViewModel,
             penaltyTypeViewModel = penaltyTypeViewModel,
-            penaltyHistoryViewModel = penaltyHistoryViewModel
+            penaltyReceivedViewModel = penaltyReceivedViewModel
         )
     }
 }

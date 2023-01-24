@@ -6,21 +6,21 @@ import androidx.navigation.navigation
 import de.vexxes.penaltycatalog.navigation.Graph
 import de.vexxes.penaltycatalog.navigation.Screen
 import de.vexxes.penaltycatalog.navigation.ScreenNavigation
-import de.vexxes.penaltycatalog.navigation.composables.penaltyHistory.penaltyHistoryDetailComposable
-import de.vexxes.penaltycatalog.navigation.composables.penaltyHistory.penaltyHistoryEditComposable
-import de.vexxes.penaltycatalog.navigation.composables.penaltyHistory.penaltyHistoryListComposable
-import de.vexxes.penaltycatalog.viewmodels.PenaltyHistoryViewModel
+import de.vexxes.penaltycatalog.navigation.composables.penaltyReceived.penaltyHistoryDetailComposable
+import de.vexxes.penaltycatalog.navigation.composables.penaltyReceived.penaltyHistoryEditComposable
+import de.vexxes.penaltycatalog.navigation.composables.penaltyReceived.penaltyHistoryListComposable
+import de.vexxes.penaltycatalog.viewmodels.PenaltyReceivedViewModel
 
 fun NavGraphBuilder.penaltyHistoryGraph(
     navController: NavController,
-    penaltyHistoryViewModel: PenaltyHistoryViewModel
+    penaltyReceivedViewModel: PenaltyReceivedViewModel
 ) {
     navigation(
         startDestination = ScreenNavigation.PenaltyHistory.route,
         route = Graph.HISTORY
     ) {
         penaltyHistoryListComposable(
-            penaltyHistoryViewModel = penaltyHistoryViewModel,
+            penaltyReceivedViewModel = penaltyReceivedViewModel,
             navigateToPenaltyHistoryDetailScreen = { penaltyHistoryId ->
                 navController.navigate(route = Screen.PenaltyHistoryDetail.route + "/$penaltyHistoryId")
             },
@@ -30,7 +30,7 @@ fun NavGraphBuilder.penaltyHistoryGraph(
         )
 
         penaltyHistoryDetailComposable(
-            penaltyHistoryViewModel = penaltyHistoryViewModel,
+            penaltyReceivedViewModel = penaltyReceivedViewModel,
             navigateToPenaltyHistoryList = {
                 navController.navigate(ScreenNavigation.PenaltyHistory.route)
             },
@@ -40,7 +40,7 @@ fun NavGraphBuilder.penaltyHistoryGraph(
         )
 
         penaltyHistoryEditComposable(
-            penaltyHistoryViewModel = penaltyHistoryViewModel,
+            penaltyReceivedViewModel = penaltyReceivedViewModel,
             navigateBack = { navController.popBackStack() }
         )
     }

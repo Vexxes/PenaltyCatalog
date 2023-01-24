@@ -1,4 +1,4 @@
-package de.vexxes.penaltycatalog.presentation.screen.penaltyHistory
+package de.vexxes.penaltycatalog.presentation.screen.penaltyReceived
 
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.layout.Box
@@ -16,40 +16,38 @@ import de.vexxes.penaltycatalog.domain.model.penaltyExample2
 import de.vexxes.penaltycatalog.domain.model.penaltyExample3
 import de.vexxes.penaltycatalog.domain.model.Player
 import de.vexxes.penaltycatalog.domain.model.playerExample
-import de.vexxes.penaltycatalog.domain.uievent.PenaltyHistoryUiEvent
-import de.vexxes.penaltycatalog.domain.uistate.PenaltyHistoryUiState
-import de.vexxes.penaltycatalog.domain.uistate.penaltyHistoryUiStateExample1
-import de.vexxes.penaltycatalog.viewmodels.PenaltyHistoryViewModel
-import java.time.LocalDate
+import de.vexxes.penaltycatalog.domain.uievent.PenaltyReceivedUiEvent
+import de.vexxes.penaltycatalog.domain.uistate.PenaltyReceivedUiState
+import de.vexxes.penaltycatalog.domain.uistate.penaltyReceivedUiStateExample1
+import de.vexxes.penaltycatalog.viewmodels.PenaltyReceivedViewModel
+import kotlinx.datetime.LocalDate
 
 @Composable
-fun PenaltyHistoryEditScreen(
-    penaltyHistoryViewModel: PenaltyHistoryViewModel,
+fun PenaltyReceivedEditScreen(
+    penaltyReceivedViewModel: PenaltyReceivedViewModel,
     onBackClicked: () -> Unit,
     onSaveClicked: (String?) -> Unit
 ) {
-    val penaltyHistoryUiState by penaltyHistoryViewModel.penaltyHistoryUiState
-    val penalties by penaltyHistoryViewModel.penalties
-    val players by penaltyHistoryViewModel.players
-
-    println(players.toString())
+    val penaltyReceivedUiState by penaltyReceivedViewModel.penaltyReceivedUiState
+    val penalties by penaltyReceivedViewModel.penalties
+    val players by penaltyReceivedViewModel.players
 
     BackHandler {
         onBackClicked()
     }
 
-    PenaltyHistoryEditScaffold(
-        penaltyHistoryUiState = penaltyHistoryUiState,
+    PenaltyReceivedEditScaffold(
+        penaltyReceivedUiState = penaltyReceivedUiState,
         penalties = penalties,
         players = players,
         onPenaltyChanged = {
-            penaltyHistoryViewModel.onPenaltyHistoryUiEvent(PenaltyHistoryUiEvent.PenaltyIdChanged(it))
+            penaltyReceivedViewModel.onPenaltyHistoryUiEvent(PenaltyReceivedUiEvent.PenaltyIdChanged(it))
         },
         onPlayerChanged = {
-            penaltyHistoryViewModel.onPenaltyHistoryUiEvent(PenaltyHistoryUiEvent.PlayerIdChanged(it))
+            penaltyReceivedViewModel.onPenaltyHistoryUiEvent(PenaltyReceivedUiEvent.PlayerIdChanged(it))
         },
         onTimeOfPenaltyChanged = {
-            penaltyHistoryViewModel.onPenaltyHistoryUiEvent(PenaltyHistoryUiEvent.TimeOfPenaltyChanged(it))
+            penaltyReceivedViewModel.onPenaltyHistoryUiEvent(PenaltyReceivedUiEvent.TimeOfPenaltyChanged(it))
         },
         onBackClicked = onBackClicked,
         onSaveClicked = onSaveClicked
@@ -58,8 +56,8 @@ fun PenaltyHistoryEditScreen(
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-private fun PenaltyHistoryEditScaffold(
-    penaltyHistoryUiState: PenaltyHistoryUiState,
+private fun PenaltyReceivedEditScaffold(
+    penaltyReceivedUiState: PenaltyReceivedUiState,
     penalties: List<PenaltyType>,
     players: List<Player>,
     onPenaltyChanged: (String) -> Unit,
@@ -72,14 +70,14 @@ private fun PenaltyHistoryEditScaffold(
         topBar = {
             BackSaveTopBar(
                 onBackClicked = onBackClicked,
-                onSaveClicked = { onSaveClicked(penaltyHistoryUiState.id) }
+                onSaveClicked = { onSaveClicked(penaltyReceivedUiState.id) }
             )
         },
 
         content = { paddingValues ->
             Box(modifier = Modifier.padding(paddingValues)) {
-                PenaltyHistoryEditContent(
-                    penaltyHistoryUiState = penaltyHistoryUiState,
+                PenaltyReceivedEditContent(
+                    penaltyReceivedUiState = penaltyReceivedUiState,
                     penaltyList = penalties,
                     playerList = players,
                     onPenaltyChanged = onPenaltyChanged,
@@ -94,7 +92,7 @@ private fun PenaltyHistoryEditScaffold(
 
 @Composable
 @Preview(showBackground = true)
-private fun PenaltyHistoryEditScreenPreview() {
+private fun PenaltyReceivedEditScreenPreview() {
     val penalties = listOf(
         penaltyExample1(),
         penaltyExample2(),
@@ -107,8 +105,8 @@ private fun PenaltyHistoryEditScreenPreview() {
         playerExample()
     )
 
-    PenaltyHistoryEditScaffold(
-        penaltyHistoryUiState = penaltyHistoryUiStateExample1(),
+    PenaltyReceivedEditScaffold(
+        penaltyReceivedUiState = penaltyReceivedUiStateExample1(),
         penalties = penalties,
         players = players,
         onPenaltyChanged = { },

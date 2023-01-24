@@ -1,4 +1,4 @@
-package de.vexxes.penaltycatalog.presentation.screen.penaltyHistory
+package de.vexxes.penaltycatalog.presentation.screen.penaltyReceived
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
@@ -6,11 +6,11 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import de.vexxes.penaltycatalog.domain.uistate.PenaltyHistoryUiState
+import de.vexxes.penaltycatalog.domain.uistate.PenaltyReceivedUiState
 
 @Composable
-fun PenaltyHistoryDetailContent(
-    penaltyHistoryUiState: PenaltyHistoryUiState,
+fun PenaltyReceivedDetailContent(
+    penaltyReceivedUiState: PenaltyReceivedUiState,
     onPaidState: (Boolean) -> Unit
 ) {
     Column(

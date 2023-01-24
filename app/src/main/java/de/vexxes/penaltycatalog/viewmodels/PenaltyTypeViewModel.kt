@@ -164,6 +164,7 @@ class PenaltyTypeViewModel @Inject constructor(
             }
         }
     }
+
     fun updatePenalty() {
         requestState.value = RequestState.Loading
 
@@ -196,19 +197,19 @@ class PenaltyTypeViewModel @Inject constructor(
 
         viewModelScope.launch {
             try {
-                if (verifyPenaltyType()) {
-                    val response = withContext(Dispatchers.IO) {
-                        penaltyTypeRepository.deletePenaltyType(
-                            penaltyTypeId = penaltyTypeUiState.value.id
-                        )
-                    }
-
-                    if (response) {
-                        requestState.value = RequestState.Success
-                    }
-
-                    Log.d("PenaltyTypeViewModel", "${penaltyTypeUiState.value.id} ${penaltyTypeUiState.value.name} successfully deleted")
+                val response = withContext(Dispatchers.IO) {
+                    penaltyTypeRepository.deletePenaltyType(
+                        penaltyTypeId = penaltyTypeUiState.value.id
+                    )
                 }
+
+                if (response) {
+                    requestState.value = RequestState.Success
+                } else {
+                    requestState.value = RequestState.Idle
+                }
+
+                Log.d("PenaltyTypeViewModel", "${penaltyTypeUiState.value.id} ${penaltyTypeUiState.value.name} successfully deleted")
             } catch (e: Exception) {
                 requestState.value = RequestState.Error
                 Log.d("PenaltyTypeViewModel", e.toString())

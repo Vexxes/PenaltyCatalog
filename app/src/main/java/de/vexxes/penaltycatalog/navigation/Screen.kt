@@ -65,10 +65,10 @@ sealed class Screen(val route: String, val argument: String = "") {
 
     object PenaltyHistoryDetail: Screen(
         route = "penaltyHistory_detail_screen",
-        argument = "/{penaltyHistoryId}"
+        argument = "/{penaltyReceivedId}"
     )
     object PenaltyHistoryEdit: Screen(
         route = "penaltyHistory_edit_screen",
-        argument = "/{penaltyHistoryId}"
+        argument = "/{penaltyReceivedId}"
     )
 }

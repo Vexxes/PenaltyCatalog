@@ -35,14 +35,12 @@ fun NavGraphBuilder.penaltyEditComposable(
                 penaltyTypeViewModel.resetPenaltyTypeUiState()
         }
 
-        var visible by remember {
-            mutableStateOf(false)
-        }
+        var visible by remember { mutableStateOf(false) }
         LaunchedEffect(key1 = true) {
             visible = true
         }
 
-        // Make invisible and navigate back, if postPlayer or updatePlayer was successful
+        // Make invisible and navigate back, if postPenaltyType or updatePenaltyType was successful
         var postPenaltyType by penaltyTypeViewModel.postPenaltyType
         var updatePenaltyType by penaltyTypeViewModel.updatePenaltyType
         if (postPenaltyType || updatePenaltyType) {
