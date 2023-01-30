@@ -49,6 +49,7 @@
     <string name="Category">Category</string>
     <string name="Player">Player</string>
     <string name="DateOfPenalty">Date of penalty</string>
+    <string name="DateOfPenaltyPaid">Date of penalty paid</string>
     <string name="PenaltyName">penalty name</string>
     <string name="PenaltyDescription">penalty description</string>
     <string name="Amount">Amount</string>

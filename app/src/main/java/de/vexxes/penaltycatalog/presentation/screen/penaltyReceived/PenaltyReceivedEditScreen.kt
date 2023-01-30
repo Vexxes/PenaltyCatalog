@@ -40,14 +40,14 @@ fun PenaltyReceivedEditScreen(
         penaltyReceivedUiState = penaltyReceivedUiState,
         penalties = penalties,
         players = players,
-        onPenaltyChanged = {
-            penaltyReceivedViewModel.onPenaltyHistoryUiEvent(PenaltyReceivedUiEvent.PenaltyIdChanged(it))
+        onPenaltyIdChanged = {
+            penaltyReceivedViewModel.onPenaltyReceivedUiEvent(PenaltyReceivedUiEvent.PenaltyIdChanged(it))
         },
-        onPlayerChanged = {
-            penaltyReceivedViewModel.onPenaltyHistoryUiEvent(PenaltyReceivedUiEvent.PlayerIdChanged(it))
+        onPlayerIdChanged = {
+            penaltyReceivedViewModel.onPenaltyReceivedUiEvent(PenaltyReceivedUiEvent.PlayerIdChanged(it))
         },
         onTimeOfPenaltyChanged = {
-            penaltyReceivedViewModel.onPenaltyHistoryUiEvent(PenaltyReceivedUiEvent.TimeOfPenaltyChanged(it))
+            penaltyReceivedViewModel.onPenaltyReceivedUiEvent(PenaltyReceivedUiEvent.TimeOfPenaltyChanged(it))
         },
         onBackClicked = onBackClicked,
         onSaveClicked = onSaveClicked
@@ -60,8 +60,8 @@ private fun PenaltyReceivedEditScaffold(
     penaltyReceivedUiState: PenaltyReceivedUiState,
     penalties: List<PenaltyType>,
     players: List<Player>,
-    onPenaltyChanged: (String) -> Unit,
-    onPlayerChanged: (String) -> Unit,
+    onPenaltyIdChanged: (String) -> Unit,
+    onPlayerIdChanged: (String) -> Unit,
     onTimeOfPenaltyChanged: (LocalDate) -> Unit,
     onBackClicked: () -> Unit,
     onSaveClicked: (String?) -> Unit
@@ -80,8 +80,8 @@ private fun PenaltyReceivedEditScaffold(
                     penaltyReceivedUiState = penaltyReceivedUiState,
                     penaltyList = penalties,
                     playerList = players,
-                    onPenaltyChanged = onPenaltyChanged,
-                    onPlayerChanged = onPlayerChanged,
+                    onPenaltyIdChanged = onPenaltyIdChanged,
+                    onPlayerIdChanged = onPlayerIdChanged,
                     onTimeOfPenaltyChanged = onTimeOfPenaltyChanged
                 )
             }
@@ -109,8 +109,8 @@ private fun PenaltyReceivedEditScreenPreview() {
         penaltyReceivedUiState = penaltyReceivedUiStateExample1(),
         penalties = penalties,
         players = players,
-        onPenaltyChanged = { },
-        onPlayerChanged = { },
+        onPenaltyIdChanged = { },
+        onPlayerIdChanged = { },
         onTimeOfPenaltyChanged = { },
         onBackClicked = { },
         onSaveClicked = { }

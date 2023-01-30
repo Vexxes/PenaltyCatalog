@@ -1,42 +1,89 @@
 package de.vexxes.penaltycatalog.presentation.screen.penaltyReceived
 
+import android.icu.text.NumberFormat
+import android.icu.util.Currency
+import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.foundation.background
+import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.BasicTextField
+import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ThumbDown
+import androidx.compose.material.icons.filled.ThumbUp
+import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.DpSize
 import androidx.compose.ui.unit.dp
+import de.vexxes.penaltycatalog.R
 import de.vexxes.penaltycatalog.domain.uistate.PenaltyReceivedUiState
+import de.vexxes.penaltycatalog.domain.uistate.penaltyReceivedUiStateExample1
+import de.vexxes.penaltycatalog.domain.uistate.penaltyReceivedUiStateExample2
+import de.vexxes.penaltycatalog.domain.uistate.penaltyReceivedUiStateExample3
+import de.vexxes.penaltycatalog.domain.visualTransformation.NumberCommaTransformation
+import de.vexxes.penaltycatalog.ui.theme.Typography
+import de.vexxes.penaltycatalog.ui.theme.colorSchemeSegButtons
+import kotlinx.datetime.Clock
+import kotlinx.datetime.LocalDate
+import kotlinx.datetime.TimeZone
+import kotlinx.datetime.toLocalDateTime
 
 @Composable
 fun PenaltyReceivedDetailContent(
     penaltyReceivedUiState: PenaltyReceivedUiState,
-    onPaidState: (Boolean) -> Unit
+    onPaidStateChanged: (LocalDate?) -> Unit
 ) {
+    val timeOfPenalty = penaltyReceivedUiState.timeOfPenalty
+    val timeOfPenaltyPaid = penaltyReceivedUiState.timeOfPenaltyPaid
+
     Column(
         modifier = Modifier
             .fillMaxSize()
             .padding(8.dp)
     ) {
-        /* TODO: Read penaltyName and playerName
-        PenaltyHistoryHeader(text = penaltyHistoryUiState.penaltyName)
+        PenaltyReceivedHeader(text = penaltyReceivedUiState.penaltyName)
+
         PenaltyHistoryButtonsPaid(
-            penaltyPaid = penaltyHistoryUiState.penaltyPaid,
-            onPaidState = onPaidState
+            penaltyPaid = if(timeOfPenaltyPaid != null) timeOfPenaltyPaid >= timeOfPenalty else false,
+            onPaidStateChanged = onPaidStateChanged
         )
-        PenaltyHistoryPlayerName(penaltyHistoryUiState.playerName)
-        PenaltyHistoryDateOfPenalty(penaltyHistoryUiState.timeOfPenalty.toString())
-        PenaltyAmount(
-            value = penaltyHistoryUiState.penaltyValue,
-            isBeer = penaltyHistoryUiState.penaltyIsBeer
-        )
-         */
+
+        PenaltyReceivedPlayerName(text = penaltyReceivedUiState.playerName)
+
+        PenaltyReceivedAmount(
+            value = penaltyReceivedUiState.penaltyValue,
+            isBeer = penaltyReceivedUiState.penaltyIsBeer)
+
+        PenaltyReceivedTimeOfPenalty(timeOfPenalty = penaltyReceivedUiState.timeOfPenalty)
+
+        if (penaltyReceivedUiState.timeOfPenaltyPaid != null) PenaltyReceivedTimeOfPenaltyPaid(timeOfPenaltyPaid = penaltyReceivedUiState.timeOfPenaltyPaid)
     }
 }
 
-/*
 @Composable
-private fun PenaltyHistoryHeader(
+private fun PenaltyReceivedHeader(
     text: String
 ) {
     Text(
@@ -46,13 +93,88 @@ private fun PenaltyHistoryHeader(
 }
 
 @Composable
+private fun PenaltyReceivedPlayerName(
+    text: String
+) {
+    LabelHeader(text = stringResource(id = R.string.Player))
+
+    Text(
+        modifier = Modifier
+            .fillMaxWidth(),
+        text = text,
+        style = Typography.titleLarge
+    )
+}
+
+@Composable
+private fun PenaltyReceivedAmount(
+    value: String,
+    isBeer: Boolean
+) {
+    val format = NumberFormat.getCurrencyInstance()
+    format.currency = Currency.getInstance("EUR")
+    format.maximumFractionDigits = 2
+
+    val leadingText = if (isBeer) "${stringResource(id = R.string.Box)} " else "${format.currency.symbol} "
+
+    LabelHeader(text = stringResource(id = R.string.Amount))
+
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+    ) {
+        Text(
+            text = leadingText,
+            style = Typography.titleLarge
+        )
+
+        BasicTextField (
+            value = value,
+            onValueChange = { },
+            enabled = false,
+            textStyle = Typography.titleLarge.copy(color = MaterialTheme.colorScheme.onSurface),
+            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+            visualTransformation = NumberCommaTransformation()
+        )
+    }
+}
+
+@Composable
+private fun PenaltyReceivedTimeOfPenalty(
+    timeOfPenalty: LocalDate
+) {
+    LabelHeader(text = stringResource(id = R.string.DateOfPenalty))
+
+    Text(
+        modifier = Modifier
+            .fillMaxWidth(),
+        text = timeOfPenalty.toString(),
+        style = Typography.titleLarge
+    )
+}
+
+@Composable
+private fun PenaltyReceivedTimeOfPenaltyPaid(
+    timeOfPenaltyPaid: LocalDate
+) {
+    LabelHeader(text = stringResource(id = R.string.DateOfPenaltyPaid))
+
+    Text(
+        modifier = Modifier
+            .fillMaxWidth(),
+        text = timeOfPenaltyPaid.toString(),
+        style = Typography.titleLarge
+    )
+}
+
+@Composable
 private fun PenaltyHistoryButtonsPaid(
     penaltyPaid: Boolean,
-    onPaidState: (Boolean) -> Unit
+    onPaidStateChanged: (LocalDate?) -> Unit
 ) {
     Row(
         modifier = Modifier
-            .padding(top = 8.dp)
+            .padding(top = 32.dp)
             .fillMaxWidth(),
         horizontalArrangement = Arrangement.Center
     ) {
@@ -62,7 +184,7 @@ private fun PenaltyHistoryButtonsPaid(
             foregroundColor = colorSchemeSegButtons().foregroundPaid,
             backgroundColor = colorSchemeSegButtons().backgroundPaid,
             imageVector = Icons.Default.ThumbUp,
-            onButtonPressed = { onPaidState(true) }
+            onButtonPressed = { onPaidStateChanged(Clock.System.now().toLocalDateTime(TimeZone.UTC).date) }
         )
 
         ChipBox(
@@ -71,7 +193,7 @@ private fun PenaltyHistoryButtonsPaid(
             foregroundColor = colorSchemeSegButtons().foregroundNotPaid,
             backgroundColor = colorSchemeSegButtons().backgroundNotPaid,
             imageVector = Icons.Default.ThumbDown,
-            onButtonPressed = { onPaidState(false) }
+            onButtonPressed = { onPaidStateChanged(null) }
         )
     }
 }
@@ -128,66 +250,6 @@ private fun ChipBox(
 }
 
 @Composable
-private fun PenaltyHistoryPlayerName(
-    text: String
-) {
-    LabelHeader(text = stringResource(id = R.string.Player))
-    ValueText(text = text)
-}
-
-@Composable
-private fun PenaltyHistoryDateOfPenalty(
-    text: String
-) {
-    LabelHeader(text = stringResource(id = R.string.DateOfPenalty))
-    ValueText(text = text)
-}
-
-@OptIn(ExperimentalMaterial3Api::class)
-@Composable
-private fun PenaltyAmount(
-    value: String,
-    isBeer: Boolean
-) {
-    LabelHeader(text = stringResource(id = R.string.Amount))
-
-    Row(
-        modifier = Modifier
-            .fillMaxWidth(),
-        verticalAlignment = Alignment.CenterVertically,
-    ) {
-        val visualTransformation = if (isBeer) VisualTransformation.None else CurrencyAmountInputVisualTransformation(
-            fixedCursorAtTheEnd = true
-        )
-
-        Text(
-            text = if (isBeer) stringResource(id = R.string.Box) else NumberFormat.getCurrencyInstance().currency.symbol,
-            style = Typography.titleLarge.copy(textAlign = TextAlign.Right)
-        )
-
-        OutlinedTextField(
-            value = value,
-            onValueChange = { },
-            modifier = Modifier
-                .width(100.dp)
-                .border(1.dp, MaterialTheme.colorScheme.surface, TextFieldDefaults.outlinedShape),
-            enabled = false,
-            readOnly = true,
-            textStyle = Typography.titleLarge,
-            visualTransformation = visualTransformation,
-            colors = TextFieldDefaults.outlinedTextFieldColors(
-                disabledTextColor = MaterialTheme.colorScheme.onSurface,
-                disabledBorderColor = MaterialTheme.colorScheme.outline,
-                disabledPlaceholderColor = MaterialTheme.colorScheme.onSurfaceVariant,
-                disabledLabelColor = MaterialTheme.colorScheme.onSurfaceVariant,
-                disabledLeadingIconColor = MaterialTheme.colorScheme.onSurfaceVariant,
-                disabledTrailingIconColor = MaterialTheme.colorScheme.onSurfaceVariant
-            )
-        )
-    }
-}
-
-@Composable
 private fun LabelHeader(
     text: String
 ) {
@@ -201,32 +263,28 @@ private fun LabelHeader(
 }
 
 @Composable
-private fun ValueText(
-    text: String
-) {
-    Text(
-        modifier = Modifier
-            .fillMaxWidth(),
-        text = text,
-        style = Typography.titleLarge
+@Preview(showBackground = true)
+private fun PenaltyReceivedDetailContentPreview1() {
+    PenaltyReceivedDetailContent(
+        penaltyReceivedUiState = penaltyReceivedUiStateExample1(),
+        onPaidStateChanged = { }
     )
 }
 
-@Preview(showBackground = true)
 @Composable
-private fun PenaltyHistoryDetailContentPreview1() {
-    PenaltyHistoryDetailContent(penaltyHistoryUiStateExample1()) { }
+@Preview(showBackground = true)
+private fun PenaltyReceivedDetailContentPreview2() {
+    PenaltyReceivedDetailContent(
+        penaltyReceivedUiState = penaltyReceivedUiStateExample2(),
+        onPaidStateChanged = { }
+    )
 }
 
-@Preview(showBackground = true)
 @Composable
-private fun PenaltyHistoryDetailContentPreview2() {
-    PenaltyHistoryDetailContent(penaltyHistoryUiStateExample2()) { }
-}
-
 @Preview(showBackground = true)
-@Composable
-private fun PenaltyHistoryDetailContentPreview3() {
-    PenaltyHistoryDetailContent(penaltyHistoryUiStateExample3()) { }
+private fun PenaltyReceivedDetailContentPreview3() {
+    PenaltyReceivedDetailContent(
+        penaltyReceivedUiState = penaltyReceivedUiStateExample3(),
+        onPaidStateChanged = { }
+    )
 }
-*/

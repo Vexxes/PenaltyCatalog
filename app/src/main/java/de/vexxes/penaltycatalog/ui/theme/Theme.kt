@@ -64,19 +64,6 @@ val LightColorScheme = lightColorScheme(
     outline = NeutralVariant50,
 )
 
-val DarkColorSegButtons = darkColorSchemeSegButtons()
-val LightColorSegButtons = lightColorSchemeSegButtons()
-
-@Composable
-fun colorSchemeSegButtons(): ColorSegmentedButtons {
-    val darkTheme = isSystemInDarkTheme()
-
-    return when {
-        darkTheme -> DarkColorSegButtons
-        else -> LightColorSegButtons
-    }
-}
-
 @Composable
 fun PenaltyCatalogTheme(
     darkTheme: Boolean = isSystemInDarkTheme(),

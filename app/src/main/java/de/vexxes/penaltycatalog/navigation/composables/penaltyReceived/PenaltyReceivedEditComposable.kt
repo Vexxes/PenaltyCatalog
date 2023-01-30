@@ -22,7 +22,7 @@ fun NavGraphBuilder.penaltyHistoryEditComposable(
     navigateBack: () -> Unit
 ) {
     composable(
-        route = Screen.PenaltyHistoryEdit.route + Screen.PenaltyHistoryEdit.argument,
+        route = Screen.PenaltyReceivedEdit.route + Screen.PenaltyReceivedEdit.argument,
         arguments = listOf(navArgument("penaltyReceivedId") {
             type = NavType.StringType
         })
@@ -32,14 +32,13 @@ fun NavGraphBuilder.penaltyHistoryEditComposable(
         val penaltyReceivedId = navBackStackEntry.arguments?.getString("penaltyReceivedId")
         LaunchedEffect(key1 = penaltyReceivedId) {
             if (penaltyReceivedId == "-1")
-                penaltyReceivedViewModel.resetPenaltyHistory()
+                penaltyReceivedViewModel.resetPenaltyReceived()
         }
 
         var visible by remember { mutableStateOf(false) }
         LaunchedEffect(key1 = true) {
             visible = true
-            penaltyReceivedViewModel.getAllPenalties()
-            penaltyReceivedViewModel.getAllPlayers()
+            penaltyReceivedViewModel.updateLists()
         }
 
         // Make invisible and navigate back, if postPenaltyReceived or updatePenaltyReceived was successful

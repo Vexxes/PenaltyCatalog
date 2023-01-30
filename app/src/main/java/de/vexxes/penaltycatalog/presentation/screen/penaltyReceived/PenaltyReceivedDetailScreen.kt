@@ -14,9 +14,11 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import de.vexxes.penaltycatalog.component.BackDeleteEditTopBar
 import de.vexxes.penaltycatalog.component.DeleteAlertDialog
+import de.vexxes.penaltycatalog.domain.uievent.PenaltyReceivedUiEvent
 import de.vexxes.penaltycatalog.domain.uistate.PenaltyReceivedUiState
 import de.vexxes.penaltycatalog.domain.uistate.penaltyReceivedUiStateExample1
 import de.vexxes.penaltycatalog.viewmodels.PenaltyReceivedViewModel
+import kotlinx.datetime.LocalDate
 
 @Composable
 fun PenaltyReceivedDetailScreen(
@@ -50,7 +52,7 @@ fun PenaltyReceivedDetailScreen(
         onBackClicked = onBackClicked,
         onDeleteClicked = { showAlertDialog = true },
         onEditClicked = { onEditClicked(penaltyReceivedUiState.id) },
-        onPaidState = { /*TODO: penaltyHistoryViewModel.onPenaltyHistoryUiEvent(PenaltyHistoryUiEvent.PenaltyPaidChanged(it)) */ }
+        onPaidStateChanged = { penaltyReceivedViewModel.onPenaltyReceivedUiEvent(PenaltyReceivedUiEvent.PenaltyPaidChanged(it)) }
     )
 }
 
@@ -61,7 +63,7 @@ private fun PenaltyReceivedDetailScreen(
     onBackClicked: () -> Unit,
     onDeleteClicked: () -> Unit,
     onEditClicked: () -> Unit,
-    onPaidState: (Boolean) -> Unit
+    onPaidStateChanged: (LocalDate?) -> Unit
 ) {
     Scaffold(
         topBar = {
@@ -76,7 +78,7 @@ private fun PenaltyReceivedDetailScreen(
             Box(modifier = Modifier.padding(it)) {
                 PenaltyReceivedDetailContent(
                     penaltyReceivedUiState = penaltyReceivedUiState,
-                    onPaidState = onPaidState
+                    onPaidStateChanged = onPaidStateChanged
                 )
             }
         }
@@ -91,6 +93,6 @@ private fun PenaltyReceivedDetailScreenPreview() {
         onBackClicked = { },
         onDeleteClicked = { },
         onEditClicked = { },
-        onPaidState = { }
+        onPaidStateChanged = { }
     )
 }

@@ -12,7 +12,7 @@ interface PenaltyReceivedKtorApi {
     @GET("penalties-received")
     suspend fun getAllPenaltiesReceived(): List<PenaltyReceived>
 
-    @GET("penalty-received/{penaltyReceivedId")
+    @GET("penalty-received/{penaltyReceivedId}")
     suspend fun getPenaltyReceivedById(@Path("penaltyReceivedId") penaltyReceivedId: String): PenaltyReceived
 
     @GET("penalty-received-playerId/{playerId}")

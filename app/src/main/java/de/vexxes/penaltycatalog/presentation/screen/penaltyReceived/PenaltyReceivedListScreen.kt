@@ -43,13 +43,13 @@ import androidx.compose.ui.unit.dp
 import de.vexxes.penaltycatalog.R
 import de.vexxes.penaltycatalog.component.GeneralTopBar
 import de.vexxes.penaltycatalog.domain.model.ApiResponse
-import de.vexxes.penaltycatalog.domain.model.PenaltyReceived
 import de.vexxes.penaltycatalog.domain.enums.SortOrder
-import de.vexxes.penaltycatalog.domain.model.penaltyReceivedExample1
-import de.vexxes.penaltycatalog.domain.model.penaltyReceivedExample2
-import de.vexxes.penaltycatalog.domain.model.penaltyReceivedExample3
 import de.vexxes.penaltycatalog.domain.uievent.SearchUiEvent
+import de.vexxes.penaltycatalog.domain.uistate.PenaltyReceivedUiState
 import de.vexxes.penaltycatalog.domain.uistate.SearchUiState
+import de.vexxes.penaltycatalog.domain.uistate.penaltyReceivedUiStateExample1
+import de.vexxes.penaltycatalog.domain.uistate.penaltyReceivedUiStateExample2
+import de.vexxes.penaltycatalog.domain.uistate.penaltyReceivedUiStateExample3
 import de.vexxes.penaltycatalog.ui.theme.Typography
 import de.vexxes.penaltycatalog.ui.theme.colorSchemeSegButtons
 import de.vexxes.penaltycatalog.util.FilterPaidState
@@ -65,17 +65,17 @@ fun PenaltyReceivedListScreen(
     navigateToPenaltyReceivedDetailScreen: (penaltyHistoryId: String) -> Unit,
     navigateToPenaltyReceivedEditScreen: (penaltyHistoryId: String) -> Unit
 ) {
-    val penaltyReceived by penaltyReceivedViewModel.penaltyReceived
+    val penaltyReceivedUiStateList by penaltyReceivedViewModel.penaltyReceivedUiStateList
     val requestState by penaltyReceivedViewModel.requestState
     val searchUiState by penaltyReceivedViewModel.searchUiState
     
-    val refreshPenaltyReceived = { penaltyReceivedViewModel.getAllPenaltyReceived() }
+    val refreshPenaltyReceived = { penaltyReceivedViewModel.updateLists() }
     val refreshing = penaltyReceivedViewModel.requestState.value is RequestState.Loading
     val pullRefreshState = rememberPullRefreshState(refreshing = refreshing, onRefresh = { refreshPenaltyReceived() })
 
-    LaunchedEffect(key1 = true) {
+/*    LaunchedEffect(key1 = true) {
         refreshPenaltyReceived()
-    }
+    }*/
 
     Box(modifier = Modifier.pullRefresh(pullRefreshState)) {
         PenaltyReceivedListScaffold(
@@ -87,7 +87,7 @@ fun PenaltyReceivedListScreen(
                 penaltyReceivedViewModel.onSearchUiEvent(SearchUiEvent.SearchAppBarStateChanged(SearchAppBarState.CLOSED))
                 penaltyReceivedViewModel.onSearchUiEvent(SearchUiEvent.SearchTextChanged(""))
             },
-            penaltyReceived = penaltyReceived,
+            penaltyReceivedUiStateList = penaltyReceivedUiStateList,
             requestState = requestState,
             navigateToPenaltyReceivedDetailScreen = navigateToPenaltyReceivedDetailScreen,
             navigateToPenaltyReceivedEditScreen = navigateToPenaltyReceivedEditScreen
@@ -105,7 +105,7 @@ fun PenaltyReceivedListScaffold(
     onDefaultSearchClicked: () -> Unit,
     onSortClicked: (SortOrder) -> Unit,
     onCloseClicked: () -> Unit,
-    penaltyReceived: List<PenaltyReceived>,
+    penaltyReceivedUiStateList: List<PenaltyReceivedUiState>,
     requestState: RequestState,
     navigateToPenaltyReceivedDetailScreen: (String) -> Unit,
     navigateToPenaltyReceivedEditScreen: (String) -> Unit
@@ -136,7 +136,7 @@ fun PenaltyReceivedListScaffold(
                         }
                     )
                     PenaltyReceivedListContent(
-                        penaltyReceived = penaltyReceived,
+                        penaltyReceivedUiStateList = penaltyReceivedUiStateList,
                         filterPaidState = filterPaidState,
                         navigateToPenaltyReceivedDetailScreen = navigateToPenaltyReceivedDetailScreen
                     )
@@ -294,10 +294,10 @@ private fun PenaltyReceivedListScreenPreview() {
         onDefaultSearchClicked = { },
         onSortClicked = { },
         onCloseClicked = { },
-        penaltyReceived = listOf(
-            penaltyReceivedExample1(),
-            penaltyReceivedExample2(),
-            penaltyReceivedExample3()
+        penaltyReceivedUiStateList = listOf(
+            penaltyReceivedUiStateExample1(),
+            penaltyReceivedUiStateExample2(),
+            penaltyReceivedUiStateExample3()
         ),
         requestState = RequestState.Success,
         navigateToPenaltyReceivedDetailScreen = { },

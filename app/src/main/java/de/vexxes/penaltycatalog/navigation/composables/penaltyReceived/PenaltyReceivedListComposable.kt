@@ -9,25 +9,27 @@ import de.vexxes.penaltycatalog.presentation.screen.penaltyReceived.PenaltyRecei
 import de.vexxes.penaltycatalog.util.SearchAppBarState
 import de.vexxes.penaltycatalog.viewmodels.PenaltyReceivedViewModel
 
-fun NavGraphBuilder.penaltyHistoryListComposable(
+fun NavGraphBuilder.penaltyReceivedListComposable(
     penaltyReceivedViewModel: PenaltyReceivedViewModel,
-    navigateToPenaltyHistoryDetailScreen: (String) -> Unit,
-    navigateToPenaltyHistoryEditScreen: (String) -> Unit,
+    navigateToPenaltyReceivedDetailScreen: (String) -> Unit,
+    navigateToPenaltyReceivedEditScreen: (String) -> Unit,
 ) {
     composable(
-        route = ScreenNavigation.PenaltyHistory.route
+        route = ScreenNavigation.PenaltyReceived.route
     ) {
         LaunchedEffect(true) {
             penaltyReceivedViewModel.onSearchUiEvent(SearchUiEvent.SearchAppBarStateChanged(SearchAppBarState.CLOSED))
         }
 
+        penaltyReceivedViewModel.updateLists()
+
         PenaltyReceivedListScreen(
             penaltyReceivedViewModel = penaltyReceivedViewModel,
             navigateToPenaltyReceivedDetailScreen = { penaltyHistoryId ->
-                navigateToPenaltyHistoryDetailScreen(penaltyHistoryId)
+                navigateToPenaltyReceivedDetailScreen(penaltyHistoryId)
             },
             navigateToPenaltyReceivedEditScreen = { penaltyHistoryId ->
-                navigateToPenaltyHistoryEditScreen(penaltyHistoryId)
+                navigateToPenaltyReceivedEditScreen(penaltyHistoryId)
             }
         )
     }

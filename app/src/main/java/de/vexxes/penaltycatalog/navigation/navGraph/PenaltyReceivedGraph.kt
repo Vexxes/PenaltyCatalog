@@ -6,36 +6,36 @@ import androidx.navigation.navigation
 import de.vexxes.penaltycatalog.navigation.Graph
 import de.vexxes.penaltycatalog.navigation.Screen
 import de.vexxes.penaltycatalog.navigation.ScreenNavigation
-import de.vexxes.penaltycatalog.navigation.composables.penaltyReceived.penaltyHistoryDetailComposable
+import de.vexxes.penaltycatalog.navigation.composables.penaltyReceived.penaltyReceivedDetailComposable
 import de.vexxes.penaltycatalog.navigation.composables.penaltyReceived.penaltyHistoryEditComposable
-import de.vexxes.penaltycatalog.navigation.composables.penaltyReceived.penaltyHistoryListComposable
+import de.vexxes.penaltycatalog.navigation.composables.penaltyReceived.penaltyReceivedListComposable
 import de.vexxes.penaltycatalog.viewmodels.PenaltyReceivedViewModel
 
-fun NavGraphBuilder.penaltyHistoryGraph(
+fun NavGraphBuilder.penaltyReceivedGraph(
     navController: NavController,
     penaltyReceivedViewModel: PenaltyReceivedViewModel
 ) {
     navigation(
-        startDestination = ScreenNavigation.PenaltyHistory.route,
+        startDestination = ScreenNavigation.PenaltyReceived.route,
         route = Graph.HISTORY
     ) {
-        penaltyHistoryListComposable(
+        penaltyReceivedListComposable(
             penaltyReceivedViewModel = penaltyReceivedViewModel,
-            navigateToPenaltyHistoryDetailScreen = { penaltyHistoryId ->
-                navController.navigate(route = Screen.PenaltyHistoryDetail.route + "/$penaltyHistoryId")
+            navigateToPenaltyReceivedDetailScreen = { penaltyReceivedId ->
+                navController.navigate(route = Screen.PenaltyReceivedDetail.route + "/$penaltyReceivedId")
             },
-            navigateToPenaltyHistoryEditScreen = { penaltyHistoryId ->
-                navController.navigate(route = Screen.PenaltyHistoryEdit.route + "/$penaltyHistoryId")
+            navigateToPenaltyReceivedEditScreen = { penaltyReceivedId ->
+                navController.navigate(route = Screen.PenaltyReceivedEdit.route + "/$penaltyReceivedId")
             }
         )
 
-        penaltyHistoryDetailComposable(
+        penaltyReceivedDetailComposable(
             penaltyReceivedViewModel = penaltyReceivedViewModel,
-            navigateToPenaltyHistoryList = {
-                navController.navigate(ScreenNavigation.PenaltyHistory.route)
+            navigateToPenaltyReceivedList = {
+                navController.navigate(ScreenNavigation.PenaltyReceived.route)
             },
-            onEditClicked = { penaltyHistoryId ->
-                navController.navigate(Screen.PenaltyHistoryEdit.route + "/$penaltyHistoryId")
+            onEditClicked = { penaltyReceivedId ->
+                navController.navigate(Screen.PenaltyReceivedEdit.route + "/$penaltyReceivedId")
             }
         )
 

@@ -21,7 +21,7 @@ sealed class ScreenNavigation(val route: String, var name: String, val iconSelec
         iconUnselected = Icons.Outlined.Groups
     )
 
-    object PenaltyHistory : ScreenNavigation(
+    object PenaltyReceived : ScreenNavigation(
         route = "penalty_history_screen",
         name = "",
         iconSelected = Icons.Filled.History,
@@ -63,11 +63,11 @@ sealed class Screen(val route: String, val argument: String = "") {
         argument = "/{playerId}"
     )
 
-    object PenaltyHistoryDetail: Screen(
+    object PenaltyReceivedDetail: Screen(
         route = "penaltyHistory_detail_screen",
         argument = "/{penaltyReceivedId}"
     )
-    object PenaltyHistoryEdit: Screen(
+    object PenaltyReceivedEdit: Screen(
         route = "penaltyHistory_edit_screen",
         argument = "/{penaltyReceivedId}"
     )

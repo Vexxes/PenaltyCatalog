@@ -24,7 +24,7 @@ fun BottomBar(navController: NavController) {
     val players = ScreenNavigation.Players
     players.name = stringResource(id = R.string.Players)
 
-    val penaltyHistory = ScreenNavigation.PenaltyHistory
+    val penaltyHistory = ScreenNavigation.PenaltyReceived
     penaltyHistory.name = stringResource(id = R.string.PenaltyHistory)
 
     val cancellations = ScreenNavigation.Cancellations

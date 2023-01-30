@@ -74,8 +74,7 @@ private fun PenaltyTypeAmount(
     format.currency = Currency.getInstance("EUR")
     format.maximumFractionDigits = 2
 
-    var leadingText = if (isBeer) stringResource(id = R.string.Box) else format.currency.symbol
-    leadingText = "$leadingText "
+    val leadingText = if (isBeer) "${stringResource(id = R.string.Box)} " else "${format.currency.symbol} "
 
     LabelHeader(text = stringResource(id = R.string.Amount))
 

@@ -21,12 +21,10 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import de.vexxes.penaltycatalog.R
 import de.vexxes.penaltycatalog.component.EmptyContent
 import de.vexxes.penaltycatalog.domain.model.PenaltyType
@@ -114,7 +112,7 @@ private fun PenaltyTypeName(
     Text(
         modifier = Modifier.padding(start = 8.dp),
         text = text,
-        style = Typography.titleMedium.copy(fontSize = 19.sp, fontWeight = FontWeight.Bold),
+        style = Typography.titleLarge,
         textAlign = TextAlign.Left,
     )
 }
@@ -128,8 +126,7 @@ private fun PenaltyTypeAmount(
     format.currency = Currency.getInstance("EUR")
     format.maximumFractionDigits = 2
 
-    var leadingText = if (isBeer) stringResource(id = R.string.Box) else format.currency.symbol
-    leadingText = "$leadingText "
+    val leadingText = if (isBeer) "${stringResource(id = R.string.Box)} " else "${format.currency.symbol} "
 
     Row(
         modifier = Modifier

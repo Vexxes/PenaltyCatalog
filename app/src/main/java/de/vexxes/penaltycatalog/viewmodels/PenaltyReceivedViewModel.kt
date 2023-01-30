@@ -2,6 +2,7 @@ package de.vexxes.penaltycatalog.viewmodels
 
 import android.util.Log
 import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -20,7 +21,6 @@ import de.vexxes.penaltycatalog.util.RequestState
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import kotlinx.datetime.LocalDate
 import javax.inject.Inject
 
 @HiltViewModel
@@ -30,9 +30,10 @@ class PenaltyReceivedViewModel @Inject constructor(
     private val playerRepository: PlayerRepository
 ) : ViewModel() {
 
+    val penaltyReceivedUiStateList: MutableState<List<PenaltyReceivedUiState>> = mutableStateOf(emptyList())
     val penaltyReceived: MutableState<List<PenaltyReceived>> = mutableStateOf(emptyList())
-    var penalties: MutableState<List<PenaltyType>> = mutableStateOf(emptyList())
-    var players: MutableState<List<Player>> = mutableStateOf(emptyList())
+    val penalties: MutableState<List<PenaltyType>> = mutableStateOf(emptyList())
+    val players: MutableState<List<Player>> = mutableStateOf(emptyList())
 
     var penaltyReceivedUiState: MutableState<PenaltyReceivedUiState> =
         mutableStateOf(PenaltyReceivedUiState())
@@ -47,17 +48,47 @@ class PenaltyReceivedViewModel @Inject constructor(
     var updatePenaltyReceived: MutableState<Boolean> = mutableStateOf(false)
 
     init {
-//        getAllPenaltyReceived()
+        updateLists()
     }
 
-    private fun convertResponseToPenaltyReceived(penaltyReceived: PenaltyReceived) {
-        penaltyReceivedUiState.value = penaltyReceivedUiState.value.copy(
+    private fun combinePenaltyReceivedUiState(penaltyReceived: PenaltyReceived): PenaltyReceivedUiState {
+        val player = players.value.find { it.id == penaltyReceived.playerId }
+        val penaltyType = penalties.value.find { it.id == penaltyReceived.penaltyTypeId }
+
+        // Create default uistate
+        var penaltyReceivedUiStateTemp = PenaltyReceivedUiState(
             id = penaltyReceived.id,
             playerId = penaltyReceived.playerId,
             penaltyId = penaltyReceived.penaltyTypeId,
             timeOfPenalty = penaltyReceived.timeOfPenalty,
             timeOfPenaltyPaid = penaltyReceived.timeOfPenaltyPaid
         )
+
+        // Add player information to uistate if available
+        penaltyReceivedUiStateTemp = if (player != null) {
+            penaltyReceivedUiStateTemp.copy(
+                playerName = "${player.lastName}, ${player.firstName}"
+            )
+        } else {
+            penaltyReceivedUiStateTemp.copy(
+                playerName = penaltyReceived.playerId
+            )
+        }
+
+        // Add penaltyType information to uistate if available
+        penaltyReceivedUiStateTemp = if (penaltyType != null) {
+            penaltyReceivedUiStateTemp.copy(
+                penaltyName = penaltyType.name,
+                penaltyValue = penaltyType.value.toInt().toString(),
+                penaltyIsBeer = penaltyType.isBeer,
+            )
+        } else {
+            penaltyReceivedUiStateTemp.copy(
+                penaltyName = penaltyReceived.penaltyTypeId
+            )
+        }
+
+        return penaltyReceivedUiStateTemp
     }
 
     private fun createPenaltyReceived(): PenaltyReceived {
@@ -70,7 +101,7 @@ class PenaltyReceivedViewModel @Inject constructor(
         )
     }
 
-    fun getAllPenalties() {
+    private fun getAllPenalties() {
         requestState.value = RequestState.Loading
 
         viewModelScope.launch {
@@ -93,7 +124,30 @@ class PenaltyReceivedViewModel @Inject constructor(
         }
     }
 
-    fun getAllPlayers() {
+    private fun getAllPenaltyReceived() {
+        requestState.value = RequestState.Loading
+
+        viewModelScope.launch {
+            try {
+                val response = withContext(Dispatchers.IO) {
+                    penaltyReceivedRepository.getAllPenaltyReceived()
+                }
+
+                if (response.isNotEmpty()) {
+                    requestState.value = RequestState.Success
+                    penaltyReceived.value = response
+                } else {
+                    requestState.value = RequestState.Idle
+                }
+                Log.d("PenaltyReceivedViewModel", response.toString())
+            } catch (e: Exception) {
+                requestState.value = RequestState.Error
+                Log.d("PenaltyReceivedViewModel", e.toString())
+            }
+        }
+    }
+
+    private fun getAllPlayers() {
         requestState.value = RequestState.Loading
 
         viewModelScope.launch {
@@ -117,7 +171,20 @@ class PenaltyReceivedViewModel @Inject constructor(
         }
     }
 
-    /*TODO Implement logic*/
+    private fun mergeLists() {
+        val tempList = mutableStateListOf<PenaltyReceivedUiState>()
+
+        penaltyReceived.value.forEach { penaltyReceived ->
+            combinePenaltyReceivedUiState(penaltyReceived = penaltyReceived).let {
+                tempList.add(it)
+            }
+        }
+
+        penaltyReceivedUiStateList.value = tempList.sortedByDescending { it.timeOfPenalty }
+
+        Log.d("PenaltyReceivedViewModel", "${tempList.toList()}")
+    }
+
     private fun verifyPenaltyReceived(): Boolean {
         val playerIdResult = penaltyReceivedUiState.value.playerId.isEmpty()
         val penaltyIdResult = penaltyReceivedUiState.value.penaltyId.isEmpty()
@@ -128,29 +195,6 @@ class PenaltyReceivedViewModel @Inject constructor(
         )
 
         return !(playerIdResult || penaltyIdResult)
-    }
-
-    fun getAllPenaltyReceived() {
-        requestState.value = RequestState.Loading
-
-        viewModelScope.launch {
-            try {
-                val response = withContext(Dispatchers.IO) {
-                    penaltyReceivedRepository.getAllPenaltyReceived()
-                }
-
-                if (response.isNotEmpty()) {
-                    requestState.value = RequestState.Success
-                    penaltyReceived.value = response
-                } else {
-                    requestState.value = RequestState.Idle
-                }
-                Log.d("PenaltyReceivedViewModel", response.toString())
-            } catch (e: Exception) {
-                requestState.value = RequestState.Error
-                Log.d("PenaltyReceivedViewModel", e.toString())
-            }
-        }
     }
 
     fun getPenaltyReceivedById(penaltyReceivedId: String) {
@@ -164,7 +208,7 @@ class PenaltyReceivedViewModel @Inject constructor(
 
                 if (response != null) {
                     requestState.value = RequestState.Success
-                    convertResponseToPenaltyReceived(penaltyReceived = response)
+                    penaltyReceivedUiState.value = combinePenaltyReceivedUiState(penaltyReceived = response)
                 } else {
                     penaltyReceivedUiState.value = PenaltyReceivedUiState()
                 }
@@ -176,7 +220,7 @@ class PenaltyReceivedViewModel @Inject constructor(
         }
     }
 
-    private fun getPenaltyReceivedByPlayerId(playerId: String) {
+    fun getPenaltyReceivedByPlayerId(playerId: String) {
         requestState.value = RequestState.Loading
 
         viewModelScope.launch {
@@ -226,6 +270,14 @@ class PenaltyReceivedViewModel @Inject constructor(
         }
     }
 
+    fun updateLists() {
+        getAllPenaltyReceived()
+        getAllPenalties()
+        getAllPlayers()
+        mergeLists()
+        requestState.value = RequestState.Success
+    }
+
     fun updatePenaltyReceived() {
         requestState.value = RequestState.Loading
 
@@ -244,9 +296,7 @@ class PenaltyReceivedViewModel @Inject constructor(
                         updatePenaltyReceived.value = true
                     }
 
-                    Log.d(
-                        "PenaltyReceivedViewModel",
-                        "${penaltyReceivedUiState.value.id} successfully updated"
+                    Log.d("PenaltyReceivedViewModel", "${penaltyReceivedUiState.value.id} successfully updated"
                     )
                 }
             } catch (e: Exception) {
@@ -281,7 +331,7 @@ class PenaltyReceivedViewModel @Inject constructor(
         }
     }
 
-    fun onPenaltyHistoryUiEvent(event: PenaltyReceivedUiEvent) {
+    fun onPenaltyReceivedUiEvent(event: PenaltyReceivedUiEvent) {
         when (event) {
             is PenaltyReceivedUiEvent.PenaltyIdChanged -> {
                 // Compare id from penalty list with id from event. Only if id's match copy values
@@ -289,6 +339,7 @@ class PenaltyReceivedViewModel @Inject constructor(
                     if (penalty.id == event.penaltyId) {
                         penaltyReceivedUiState.value = penaltyReceivedUiState.value.copy(
                             penaltyId = event.penaltyId,
+                            penaltyName = penalty.name,
                             penaltyValue = penalty.value.toString(),
                             penaltyIsBeer = penalty.isBeer
                         )
@@ -297,9 +348,14 @@ class PenaltyReceivedViewModel @Inject constructor(
             }
 
             is PenaltyReceivedUiEvent.PlayerIdChanged -> {
-                penaltyReceivedUiState.value = penaltyReceivedUiState.value.copy(
-                    playerId = event.playerId
-                )
+                players.value.forEach { player ->
+                    if (player.id == event.playerId) {
+                        penaltyReceivedUiState.value = penaltyReceivedUiState.value.copy(
+                            playerId = event.playerId,
+                            playerName = "${player.lastName}, ${player.firstName}"
+                        )
+                    }
+                }
             }
 
             is PenaltyReceivedUiEvent.TimeOfPenaltyChanged -> {
@@ -310,7 +366,7 @@ class PenaltyReceivedViewModel @Inject constructor(
 
             is PenaltyReceivedUiEvent.PenaltyPaidChanged -> {
                 penaltyReceivedUiState.value = penaltyReceivedUiState.value.copy(
-                    timeOfPenaltyPaid = event.penaltyPaid
+                    timeOfPenaltyPaid = event.timeOfPenaltyPaid
                 )
                 updatePenaltyReceived()
             }
@@ -333,7 +389,7 @@ class PenaltyReceivedViewModel @Inject constructor(
         }
     }
 
-    fun resetPenaltyHistory() {
+    fun resetPenaltyReceived() {
         penaltyReceivedUiState.value = PenaltyReceivedUiState()
     }
 }

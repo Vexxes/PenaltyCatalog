@@ -17,19 +17,19 @@ import de.vexxes.penaltycatalog.navigation.Screen
 import de.vexxes.penaltycatalog.presentation.screen.penaltyReceived.PenaltyReceivedDetailScreen
 import de.vexxes.penaltycatalog.viewmodels.PenaltyReceivedViewModel
 
-fun NavGraphBuilder.penaltyHistoryDetailComposable(
+fun NavGraphBuilder.penaltyReceivedDetailComposable(
     penaltyReceivedViewModel: PenaltyReceivedViewModel,
-    navigateToPenaltyHistoryList: () -> Unit,
+    navigateToPenaltyReceivedList: () -> Unit,
     onEditClicked: (String) -> Unit
 ) {
     composable(
-        route = Screen.PenaltyHistoryDetail.route + Screen.PenaltyHistoryDetail.argument,
+        route = Screen.PenaltyReceivedDetail.route + Screen.PenaltyReceivedDetail.argument,
         arguments = listOf(navArgument("penaltyReceivedId") {
             type = NavType.StringType
         })
     ) { navBackStackEntry ->
 
-        // Get penaltyHistoryId from argument
+        // Get penaltyReceivedId from argument
         val penaltyReceivedId = navBackStackEntry.arguments?.getString("penaltyReceivedId")
         LaunchedEffect(key1 = penaltyReceivedId) {
             if (!penaltyReceivedId.isNullOrEmpty() && penaltyReceivedId != "-1") {
@@ -50,11 +50,11 @@ fun NavGraphBuilder.penaltyHistoryDetailComposable(
             PenaltyReceivedDetailScreen(
                 penaltyReceivedViewModel = penaltyReceivedViewModel,
                 onBackClicked = {
-                    navigateToPenaltyHistoryList()
+                    navigateToPenaltyReceivedList()
                 },
                 onDeleteClicked = {
                     penaltyReceivedViewModel.deletePenaltyReceived()
-                    navigateToPenaltyHistoryList()
+                    navigateToPenaltyReceivedList()
                 },
                 onEditClicked = { onEditClicked(it) }
             )

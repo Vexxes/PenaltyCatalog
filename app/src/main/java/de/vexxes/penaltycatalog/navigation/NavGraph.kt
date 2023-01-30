@@ -14,7 +14,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
-import de.vexxes.penaltycatalog.navigation.navGraph.penaltyHistoryGraph
+import de.vexxes.penaltycatalog.navigation.navGraph.penaltyReceivedGraph
 import de.vexxes.penaltycatalog.navigation.navGraph.penaltyScreensGraph
 import de.vexxes.penaltycatalog.navigation.navGraph.playerScreensGraph
 import de.vexxes.penaltycatalog.ui.theme.Typography
@@ -55,7 +55,7 @@ fun SetupNavGraph(
             playerViewModel = playerViewModel
         )
 
-        penaltyHistoryGraph(
+        penaltyReceivedGraph(
             navController = navController,
             penaltyReceivedViewModel = penaltyReceivedViewModel
         )

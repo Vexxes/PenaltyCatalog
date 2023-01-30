@@ -1,15 +1,10 @@
 package de.vexxes.penaltycatalog.presentation.screen.penaltyReceived
 
 import androidx.compose.animation.core.animateFloatAsState
-import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.width
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowDropDown
 import androidx.compose.material.icons.filled.DateRange
@@ -19,7 +14,6 @@ import androidx.compose.material3.ExposedDropdownMenuBox
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
@@ -27,12 +21,9 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.maxkeppeker.sheets.core.models.base.rememberSheetState
@@ -56,8 +47,8 @@ fun PenaltyReceivedEditContent(
     penaltyReceivedUiState: PenaltyReceivedUiState,
     penaltyList: List<PenaltyType>,
     playerList: List<Player>,
-    onPenaltyChanged: (String) -> Unit,
-    onPlayerChanged: (String) -> Unit,
+    onPenaltyIdChanged: (String) -> Unit,
+    onPlayerIdChanged: (String) -> Unit,
     onTimeOfPenaltyChanged: (LocalDate) -> Unit
 ) {
     Column(
@@ -69,28 +60,29 @@ fun PenaltyReceivedEditContent(
             timeOfPenalty = penaltyReceivedUiState.timeOfPenalty,
             onTimeOfPenaltyChanged = onTimeOfPenaltyChanged
         )
-/*
-        PenaltyHistoryPlayerExposedMenu(
-            text = penaltyHistoryUiState.playerName,
-            error = penaltyHistoryUiState.playerNameError,
+
+        PenaltyReceivedPlayerExposedMenu(
+            text = penaltyReceivedUiState.playerName,
+            error = penaltyReceivedUiState.playerIdError,
             playerList = playerList,
-            onPlayerChanged = onPlayerChanged
+            onPlayerIdChanged = onPlayerIdChanged
         )
 
-        PenaltyHistoryPenaltyExposedMenu(
-            text = penaltyHistoryUiState.penaltyName,
-            error = penaltyHistoryUiState.penaltyNameError,
+
+        PenaltyReceivedPenaltyExposedMenu(
+            text = penaltyReceivedUiState.penaltyName,
+            error = penaltyReceivedUiState.penaltyIdError,
             penaltyList = penaltyList,
-            onPenaltyChanged = onPenaltyChanged
+            onPenaltyIdChanged = onPenaltyIdChanged
         )
-
-        if (penaltyHistoryUiState.penaltyName.isNotEmpty()) {
-            PenaltyHistoryAmount(
-                value = penaltyHistoryUiState.penaltyValue,
-                isBeer = penaltyHistoryUiState.penaltyIsBeer
-            )
-        }
- */
+        /*
+                if (penaltyHistoryUiState.penaltyName.isNotEmpty()) {
+                    PenaltyHistoryAmount(
+                        value = penaltyHistoryUiState.penaltyValue,
+                        isBeer = penaltyHistoryUiState.penaltyIsBeer
+                    )
+                }
+         */
     }
 }
 
@@ -147,7 +139,7 @@ private fun PenaltyReceivedPlayerExposedMenu(
     text: String,
     error: Boolean,
     playerList: List<Player>,
-    onPlayerChanged: (String) -> Unit
+    onPlayerIdChanged: (String) -> Unit
 ) {
     var expanded by remember { mutableStateOf(false) }
     val angle: Float by animateFloatAsState(
@@ -155,7 +147,7 @@ private fun PenaltyReceivedPlayerExposedMenu(
     )
 
     ExposedDropdownMenuBox(
-        modifier = Modifier.padding(top = 8.dp),
+        modifier = Modifier.padding(top = 16.dp),
         expanded = expanded,
         onExpandedChange = { expanded = it }
     ) {
@@ -193,7 +185,7 @@ private fun PenaltyReceivedPlayerExposedMenu(
                 DropdownMenuItem(
                     onClick = {
                         expanded = false
-                        onPlayerChanged("${player.lastName}, ${player.firstName}")
+                        onPlayerIdChanged(player.id)
                     },
                     text = {
                         Text(
@@ -213,7 +205,7 @@ private fun PenaltyReceivedPenaltyExposedMenu(
     text: String,
     error: Boolean,
     penaltyList: List<PenaltyType>,
-    onPenaltyChanged: (String, String) -> Unit
+    onPenaltyIdChanged: (String) -> Unit
 ) {
     var expanded by remember { mutableStateOf(false) }
     val angle: Float by animateFloatAsState(
@@ -221,7 +213,7 @@ private fun PenaltyReceivedPenaltyExposedMenu(
     )
 
     ExposedDropdownMenuBox(
-        modifier = Modifier.padding(top = 8.dp),
+        modifier = Modifier.padding(top = 16.dp),
         expanded = expanded,
         onExpandedChange = { expanded = it }
     ) {
@@ -259,7 +251,7 @@ private fun PenaltyReceivedPenaltyExposedMenu(
                 DropdownMenuItem(
                     onClick = {
                         expanded = false
-                        onPenaltyChanged(penalty.id, penalty.name)
+                        onPenaltyIdChanged(penalty.id)
                     },
                     text = {
                         Text(
@@ -273,64 +265,6 @@ private fun PenaltyReceivedPenaltyExposedMenu(
     }
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
-@Composable
-private fun PenaltyReceivedAmount(
-    value: String,
-    isBeer: Boolean
-) {
-    Column(
-        modifier = Modifier.fillMaxWidth(),
-        horizontalAlignment = Alignment.CenterHorizontally
-    ) {
-        Text(
-            modifier = Modifier
-                .padding(top = 16.dp),
-            text = stringResource(id = R.string.Amount),
-            style = Typography.labelLarge.copy(fontWeight = FontWeight.Bold),
-            color = MaterialTheme.colorScheme.onSurfaceVariant
-        )
-
-        Row(
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.Center
-        ) {
-/*            val visualTransformation = if (isBeer) VisualTransformation.None else CurrencyAmountInputVisualTransformation(
-                fixedCursorAtTheEnd = true
-            )*/
-
-            Text(
-                text = if (isBeer) stringResource(id = R.string.Box) else android.icu.text.NumberFormat.getCurrencyInstance().currency.symbol,
-                style = Typography.titleLarge.copy(textAlign = TextAlign.Right)
-            )
-
-            OutlinedTextField(
-                value = value,
-                onValueChange = { },
-                modifier = Modifier
-                    .width(100.dp)
-                    .border(
-                        1.dp,
-                        MaterialTheme.colorScheme.surface,
-                        TextFieldDefaults.outlinedShape
-                    ),
-                enabled = false,
-                readOnly = true,
-                textStyle = Typography.titleLarge,
-//                visualTransformation = visualTransformation,
-                colors = TextFieldDefaults.outlinedTextFieldColors(
-                    disabledTextColor = MaterialTheme.colorScheme.onSurface,
-                    disabledBorderColor = MaterialTheme.colorScheme.outline,
-                    disabledPlaceholderColor = MaterialTheme.colorScheme.onSurfaceVariant,
-                    disabledLabelColor = MaterialTheme.colorScheme.onSurfaceVariant,
-                    disabledLeadingIconColor = MaterialTheme.colorScheme.onSurfaceVariant,
-                    disabledTrailingIconColor = MaterialTheme.colorScheme.onSurfaceVariant
-                )
-            )
-        }
-    }
-}
-
 @Composable
 @Preview(showBackground = true)
 private fun PenaltyReceivedEditContentPreview1() {
@@ -338,8 +272,8 @@ private fun PenaltyReceivedEditContentPreview1() {
         penaltyReceivedUiState = penaltyReceivedUiStateExample1(),
         penaltyList = emptyList(),
         playerList = emptyList(),
-        onPenaltyChanged = { },
-        onPlayerChanged = { },
+        onPenaltyIdChanged = { },
+        onPlayerIdChanged = { },
         onTimeOfPenaltyChanged = { }
     )
 }
@@ -351,8 +285,8 @@ private fun PenaltyReceivedEditContentPreview2() {
         penaltyReceivedUiState = penaltyReceivedUiStateExample2(),
         penaltyList = emptyList(),
         playerList = emptyList(),
-        onPenaltyChanged = { },
-        onPlayerChanged = { },
+        onPenaltyIdChanged = { },
+        onPlayerIdChanged = { },
         onTimeOfPenaltyChanged = { }
     )
 }
@@ -364,8 +298,8 @@ private fun PenaltyReceivedEditContentPreview3() {
         penaltyReceivedUiState = penaltyReceivedUiStateExample3(),
         penaltyList = emptyList(),
         playerList = emptyList(),
-        onPenaltyChanged = { },
-        onPlayerChanged = { },
+        onPenaltyIdChanged = { },
+        onPlayerIdChanged = { },
         onTimeOfPenaltyChanged = { }
     )
 }

@@ -1,7 +1,7 @@
 package de.vexxes.penaltycatalog.presentation.screen.penaltyReceived
 
 import android.icu.text.NumberFormat
-import androidx.compose.foundation.border
+import android.icu.util.Currency
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -12,42 +12,40 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.foundation.text.BasicTextField
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import de.vexxes.penaltycatalog.R
 import de.vexxes.penaltycatalog.component.EmptyContent
-import de.vexxes.penaltycatalog.domain.model.PenaltyReceived
-import de.vexxes.penaltycatalog.domain.model.penaltyReceivedExample1
-import de.vexxes.penaltycatalog.domain.model.penaltyReceivedExample2
-import de.vexxes.penaltycatalog.domain.model.penaltyReceivedExample3
+import de.vexxes.penaltycatalog.domain.uistate.PenaltyReceivedUiState
+import de.vexxes.penaltycatalog.domain.uistate.penaltyReceivedUiStateExample1
+import de.vexxes.penaltycatalog.domain.uistate.penaltyReceivedUiStateExample2
+import de.vexxes.penaltycatalog.domain.uistate.penaltyReceivedUiStateExample3
+import de.vexxes.penaltycatalog.domain.visualTransformation.NumberCommaTransformation
 import de.vexxes.penaltycatalog.ui.theme.Typography
+import de.vexxes.penaltycatalog.ui.theme.colorSchemeSegButtons
 import de.vexxes.penaltycatalog.util.FilterPaidState
-import kotlinx.datetime.Clock
 import kotlinx.datetime.LocalDate
-import kotlinx.datetime.TimeZone
-import kotlinx.datetime.toLocalDateTime
 
 @Composable
 fun PenaltyReceivedListContent(
-    penaltyReceived: List<PenaltyReceived>,
+    penaltyReceivedUiStateList: List<PenaltyReceivedUiState>,
     filterPaidState: FilterPaidState,
     navigateToPenaltyReceivedDetailScreen: (penaltyHistoryId: String) -> Unit
 ) {
-    if (penaltyReceived.isNotEmpty()) {
+    if (penaltyReceivedUiStateList.isNotEmpty()) {
         DisplayPenaltyReceived(
-            penaltyReceived = penaltyReceived,
+            penaltyReceivedUiStateList = penaltyReceivedUiStateList,
             filterPaidState = filterPaidState,
             navigateToPenaltyReceivedDetailScreen = navigateToPenaltyReceivedDetailScreen
         )
@@ -58,7 +56,7 @@ fun PenaltyReceivedListContent(
 
 @Composable
 private fun DisplayPenaltyReceived(
-    penaltyReceived: List<PenaltyReceived>,
+    penaltyReceivedUiStateList: List<PenaltyReceivedUiState>,
     filterPaidState: FilterPaidState,
     navigateToPenaltyReceivedDetailScreen: (penaltyReceivedId: String) -> Unit
 ) {
@@ -67,37 +65,39 @@ private fun DisplayPenaltyReceived(
         verticalArrangement = Arrangement.spacedBy(4.dp)
     ) {
         items(
-            items = penaltyReceived,
+            items = penaltyReceivedUiStateList,
             key = { penaltyReceivedItem ->
-                penaltyReceivedItem.hashCode()
+                penaltyReceivedItem.id
             }
         ) { penaltyReceivedItem ->
 
-//            val penaltyPaidLocalDate = LocalDate.parse(penaltyReceivedItem.timeOfPenaltyPaid)
-            val penaltyPaidLocalDate = Clock.System.now().toLocalDateTime(TimeZone.UTC).date //penaltyReceivedItem.timeOfPenaltyPaid
-            val currentTime = Clock.System.now().toLocalDateTime(TimeZone.UTC).date
+            val timeOfPenalty = penaltyReceivedItem.timeOfPenalty
+            val timeOfPenaltyPaid = penaltyReceivedItem.timeOfPenaltyPaid ?: LocalDate.parse("1970-01-01")
 
             when (filterPaidState) {
                 FilterPaidState.OFF -> {
                     PenaltyReceivedItem(
                         penaltyReceived = penaltyReceivedItem,
+                        color = if (timeOfPenaltyPaid >= timeOfPenalty) colorSchemeSegButtons().foregroundPaid else colorSchemeSegButtons().foregroundNotPaid,
                         navigateToPenaltyReceivedDetailScreen = navigateToPenaltyReceivedDetailScreen
                     )
                 }
 
-                // TODO: Redo when clear is how to handle penaltyPaid
                 FilterPaidState.PAID -> {
-                    if (currentTime > penaltyPaidLocalDate!!)
+                    if (timeOfPenaltyPaid >= timeOfPenalty) {
                         PenaltyReceivedItem(
                             penaltyReceived = penaltyReceivedItem,
+                            color = colorSchemeSegButtons().foregroundPaid,
                             navigateToPenaltyReceivedDetailScreen = navigateToPenaltyReceivedDetailScreen
                         )
+                    }
                 }
 
                 FilterPaidState.NOT_PAID -> {
-                    if (currentTime < penaltyPaidLocalDate!!) {
+                    if (timeOfPenaltyPaid < timeOfPenalty) {
                         PenaltyReceivedItem(
                             penaltyReceived = penaltyReceivedItem,
+                            color = colorSchemeSegButtons().foregroundNotPaid,
                             navigateToPenaltyReceivedDetailScreen = navigateToPenaltyReceivedDetailScreen
                         )
                     }
@@ -109,7 +109,8 @@ private fun DisplayPenaltyReceived(
 
 @Composable
 private fun PenaltyReceivedItem(
-    penaltyReceived: PenaltyReceived,
+    penaltyReceived: PenaltyReceivedUiState,
+    color: Color = colorSchemeSegButtons().foregroundNotPaid,
     navigateToPenaltyReceivedDetailScreen: (penaltyReceivedId: String) -> Unit
 ) {
     Row(
@@ -118,29 +119,21 @@ private fun PenaltyReceivedItem(
                 navigateToPenaltyReceivedDetailScreen(penaltyReceived.id)
             }
             .fillMaxWidth()
-            .height(72.dp)
-            //TODO: Find a way to get background color
-            /*
-            .background(
-                if (penaltyReceived.penaltyPaid) colorSchemeSegButtons().backgroundPaid else colorSchemeSegButtons().backgroundNotPaid
-            )
-             */
+            .height(72.dp),
     ) {
         Column(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(start = 8.dp, end = 8.dp)
-                .weight(0.6f),
+                .weight(0.8f),
             verticalArrangement = Arrangement.Center
         ) {
             PenaltyReceivedPlayerName(
-                // TODO: Get playerName with playerId
-                text = penaltyReceived.playerId
+                text = penaltyReceived.playerName
             )
 
             PenaltyReceivedSubText(
-                // TODO: Get penaltyName with penaltyId
-                text = penaltyReceived.penaltyTypeId
+                text = penaltyReceived.penaltyName
             )
 
             PenaltyReceivedSubText(
@@ -148,15 +141,21 @@ private fun PenaltyReceivedItem(
             )
         }
 
-        /* TODO: Read penaltyAmount from with penaltyId
-        PenaltyHistoryPenaltyAmount(
+        Column(
             modifier = Modifier
-                .padding(end = 8.dp)
-                .weight(0.4f),
-            value = penaltyReceived.penaltyValue,
-            isBeer = penaltyReceived.penaltyIsBeer,
-            color = if (penaltyReceived.penaltyPaid) colorSchemeSegButtons().backgroundPaid else colorSchemeSegButtons().backgroundNotPaid)
-         */
+                .fillMaxSize()
+                .padding(start = 8.dp, end = 8.dp)
+                .weight(0.3f),
+            verticalArrangement = Arrangement.Center
+        ) {
+            PenaltyReceivedAmount(
+                value = penaltyReceived.penaltyValue,
+                isBeer = penaltyReceived.penaltyIsBeer,
+                color = color
+            )
+        }
+
+
     }
 }
 
@@ -187,53 +186,34 @@ private fun PenaltyReceivedSubText(
     )
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
-private fun PenaltyReceivedPenaltyAmount(
-    modifier: Modifier = Modifier,
+private fun PenaltyReceivedAmount(
     value: String,
     isBeer: Boolean,
     color: Color
 ) {
-    Row(
-        modifier = modifier
-            .fillMaxSize(),
-        verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.End
-    ) {
-/*        val visualTransformation = if (isBeer) VisualTransformation.None else CurrencyAmountInputVisualTransformation(
-            fixedCursorAtTheEnd = true
-        )*/
+    val format = NumberFormat.getCurrencyInstance()
+    format.currency = Currency.getInstance("EUR")
+    format.maximumFractionDigits = 2
 
+    val leadingText = if (isBeer) "${stringResource(id = R.string.Box)} " else "${format.currency.symbol} "
+
+    Row {
         Text(
-            text = if (isBeer) stringResource(id = R.string.Box) else NumberFormat.getCurrencyInstance().currency.symbol,
-            modifier = Modifier
-                .weight(0.4f),
-            style = Typography.titleMedium.copy(textAlign = TextAlign.Right)
+            text = leadingText,
+            style = Typography.titleLarge,
+            color = color
         )
 
-        OutlinedTextField(
+        BasicTextField (
+            modifier = Modifier
+                .padding(end = 8.dp),
             value = value,
             onValueChange = { },
-            modifier = Modifier
-                .weight(0.8f)
-                .border(
-                    width = 1.dp,
-                    color,
-                    TextFieldDefaults.outlinedShape
-                ),
             enabled = false,
-            readOnly = true,
-            textStyle = Typography.titleMedium.copy(textAlign = TextAlign.Right),
-//            visualTransformation = visualTransformation,
-            colors = TextFieldDefaults.outlinedTextFieldColors(
-                disabledTextColor = MaterialTheme.colorScheme.onSurface,
-                disabledBorderColor = MaterialTheme.colorScheme.outline,
-                disabledPlaceholderColor = MaterialTheme.colorScheme.onSurfaceVariant,
-                disabledLabelColor = MaterialTheme.colorScheme.onSurfaceVariant,
-                disabledLeadingIconColor = MaterialTheme.colorScheme.onSurfaceVariant,
-                disabledTrailingIconColor = MaterialTheme.colorScheme.onSurfaceVariant
-            )
+            textStyle = Typography.titleLarge.copy(textAlign = TextAlign.Right, color = color),
+            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+            visualTransformation = NumberCommaTransformation()
         )
     }
 }
@@ -242,7 +222,7 @@ private fun PenaltyReceivedPenaltyAmount(
 @Preview(showBackground = true)
 private fun PenaltyReceivedItemPreview() {
     PenaltyReceivedItem(
-        penaltyReceived = penaltyReceivedExample1(),
+        penaltyReceived = penaltyReceivedUiStateExample1(),
         navigateToPenaltyReceivedDetailScreen = { }
     )
 }
@@ -251,10 +231,10 @@ private fun PenaltyReceivedItemPreview() {
 @Preview(showBackground = true)
 private fun PenaltyReceivedContentPreview1() {
     PenaltyReceivedListContent(
-        penaltyReceived = listOf(
-            penaltyReceivedExample1(),
-            penaltyReceivedExample2(),
-            penaltyReceivedExample3()
+        penaltyReceivedUiStateList = listOf(
+            penaltyReceivedUiStateExample1(),
+            penaltyReceivedUiStateExample2(),
+            penaltyReceivedUiStateExample3()
         ),
         filterPaidState = FilterPaidState.OFF,
         navigateToPenaltyReceivedDetailScreen = { }
@@ -265,10 +245,10 @@ private fun PenaltyReceivedContentPreview1() {
 @Preview(showBackground = true)
 private fun PenaltyReceivedContentPreview2() {
     PenaltyReceivedListContent(
-        penaltyReceived = listOf(
-            penaltyReceivedExample1(),
-            penaltyReceivedExample2(),
-            penaltyReceivedExample3()
+        penaltyReceivedUiStateList = listOf(
+            penaltyReceivedUiStateExample1(),
+            penaltyReceivedUiStateExample2(),
+            penaltyReceivedUiStateExample3()
         ),
         filterPaidState = FilterPaidState.PAID,
         navigateToPenaltyReceivedDetailScreen = { }
@@ -279,10 +259,10 @@ private fun PenaltyReceivedContentPreview2() {
 @Preview(showBackground = true)
 private fun PenaltyReceivedContentPreview3() {
     PenaltyReceivedListContent(
-        penaltyReceived = listOf(
-            penaltyReceivedExample1(),
-            penaltyReceivedExample2(),
-            penaltyReceivedExample3()
+        penaltyReceivedUiStateList = listOf(
+            penaltyReceivedUiStateExample1(),
+            penaltyReceivedUiStateExample2(),
+            penaltyReceivedUiStateExample3()
         ),
         filterPaidState = FilterPaidState.NOT_PAID,
         navigateToPenaltyReceivedDetailScreen = { }
