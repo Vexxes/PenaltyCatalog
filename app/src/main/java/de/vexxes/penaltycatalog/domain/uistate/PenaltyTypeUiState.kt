@@ -6,7 +6,7 @@ data class PenaltyTypeUiState(
     val description: String = "",
     val isBeer: Boolean = false,
     val value: String = "",
-    val valueDeclaredPenalties: String = "0",
+    val valueDeclaredPenalties: Int = 0,
     val nameError: Boolean = false,
     val valueError: Boolean = false
 )
@@ -18,7 +18,7 @@ fun penaltyTypeUiStateExample1(): PenaltyTypeUiState {
         description = "",
         isBeer = false,
         value = "5",
-        valueDeclaredPenalties = "10"
+        valueDeclaredPenalties = 0
     )
 }
 
@@ -29,6 +29,6 @@ fun penaltyTypeUiStateExample2(): PenaltyTypeUiState {
         description = "",
         isBeer = true,
         value = "1",
-        valueDeclaredPenalties = "10"
+        valueDeclaredPenalties = 0
     )
 }

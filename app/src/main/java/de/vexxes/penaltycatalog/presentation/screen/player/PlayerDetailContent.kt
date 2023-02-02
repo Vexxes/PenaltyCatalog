@@ -1,5 +1,6 @@
 package de.vexxes.penaltycatalog.presentation.screen.player
 
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.Row
@@ -7,24 +8,24 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.text.BasicTextField
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.Divider
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import de.vexxes.penaltycatalog.R
 import de.vexxes.penaltycatalog.domain.model.playerExample
 import de.vexxes.penaltycatalog.domain.uistate.PlayerUiState
-import de.vexxes.penaltycatalog.ui.theme.Green40
-import de.vexxes.penaltycatalog.ui.theme.Red80
+import de.vexxes.penaltycatalog.domain.visualTransformation.NumberCommaTransformation
 import de.vexxes.penaltycatalog.ui.theme.Typography
-import java.text.NumberFormat
-import java.util.Currency
-import java.util.Locale
+import de.vexxes.penaltycatalog.ui.theme.colorSchemeSegButtons
 
 @Composable
 fun PlayerDetailContent(
@@ -37,7 +38,7 @@ fun PlayerDetailContent(
         RowHeader(number = playerUiState.number, firstName = playerUiState.firstName, lastName = playerUiState.lastName)
         RowBirthday(birthday = playerUiState.birthday)
         RowAddress(street = playerUiState.street, zipcode = playerUiState.zipcode, city = playerUiState.city)
-        RowOpenPenalties(10f) /*TODO Insert real open penalties*/
+        RowOpenPenalties(openPenalties = playerUiState.sumPenalties)
         PlayerStats(
             playedGames = playerUiState.playedGames,
             goals = playerUiState.goals,
@@ -172,13 +173,14 @@ private fun RowAddress(
     )
 }
 
+/* TODO: Add clickable function, then go to penaltyReceived with automatic filter for the player*/
 @Composable
 private fun RowOpenPenalties(
-    openPenalties: Float
+    openPenalties: Double
 ) {
-    val format = NumberFormat.getCurrencyInstance()
-    format.maximumFractionDigits = 0
-    format.currency = Currency.getInstance(Locale.getDefault())
+    val color = if (openPenalties > 0) colorSchemeSegButtons().foregroundNotPaid else colorSchemeSegButtons().foregroundPaid
+    val format = android.icu.text.NumberFormat.getCurrencyInstance()
+    format.currency = android.icu.util.Currency.getInstance("EUR")
 
     Row(
         modifier = Modifier
@@ -194,15 +196,29 @@ private fun RowOpenPenalties(
             style = Typography.bodyLarge
         )
 
-        Text(
+        Row(
             modifier = Modifier
-                .fillMaxWidth()
-                .padding(start = 8.dp, end = 8.dp),
-            text = format.format(openPenalties),
-            style = Typography.bodyLarge,
-            textAlign = TextAlign.Right,
-            color = if (openPenalties > 0) Red80 else Green40
-        )
+                .fillMaxSize(),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.End
+        ) {
+            Text(
+                text = format.currency.symbol,
+                style = Typography.bodyLarge,
+                color = color
+            )
+
+            BasicTextField(
+                modifier = Modifier
+                    .padding(end = 8.dp),
+                value = openPenalties.toInt().toString(),
+                onValueChange = { },
+                enabled = false,
+                textStyle = Typography.bodyLarge.copy(textAlign = TextAlign.Right, color = color),
+                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+                visualTransformation = NumberCommaTransformation()
+            )
+        }
     }
 
     Divider(
@@ -269,7 +285,7 @@ private fun PlayerStats(
             listValues.forEach { value ->
                 TableColumn(
                     text = value.ifEmpty { "0" },
-                    textAlign = TextAlign.Center
+                    textAlign = TextAlign.Right
                 )
             }
         }

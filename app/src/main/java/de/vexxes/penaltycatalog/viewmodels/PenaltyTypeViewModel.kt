@@ -8,6 +8,7 @@ import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
 import de.vexxes.penaltycatalog.domain.model.PenaltyType
 import de.vexxes.penaltycatalog.domain.model.convertToPenaltyTypeUiState
+import de.vexxes.penaltycatalog.domain.repository.PenaltyReceivedRepository
 import de.vexxes.penaltycatalog.domain.repository.PenaltyTypeRepository
 import de.vexxes.penaltycatalog.domain.uievent.PenaltyTypeUiEvent
 import de.vexxes.penaltycatalog.domain.uievent.SearchUiEvent
@@ -21,7 +22,8 @@ import javax.inject.Inject
 
 @HiltViewModel
 class PenaltyTypeViewModel @Inject constructor(
-    private val penaltyTypeRepository: PenaltyTypeRepository
+    private val penaltyTypeRepository: PenaltyTypeRepository,
+    private val penaltyReceivedRepository: PenaltyReceivedRepository
 ): ViewModel() {
     var penalties: MutableState<List<PenaltyType>> = mutableStateOf(emptyList())
         private set
@@ -53,6 +55,34 @@ class PenaltyTypeViewModel @Inject constructor(
             isBeer = penaltyTypeUiState.value.isBeer,
             value = penaltyTypeUiState.value.value.toDouble()
         )
+    }
+
+    private fun getDeclaredPenalties() {
+        var sum = 0
+
+        viewModelScope.launch {
+            try {
+                val response = withContext(Dispatchers.IO) {
+                    penaltyReceivedRepository.getAllPenaltyReceived()
+                }
+
+                if (response.isNotEmpty()) {
+                    response.forEach { penaltyReceived ->
+                        sum += if (penaltyTypeUiState.value.id == penaltyReceived.penaltyTypeId) 1 else 0
+                    }
+                }
+
+                penaltyTypeUiState.value = penaltyTypeUiState.value.copy(
+                    valueDeclaredPenalties = sum
+                )
+
+                Log.d("PenaltyTypeViewModel", response.toString())
+            }
+            catch (e: Exception) {
+                requestState.value = RequestState.Error
+                Log.d("PenaltyTypeViewModel", e.toString())
+            }
+        }
     }
 
     private fun verifyPenaltyType(): Boolean {
@@ -103,6 +133,7 @@ class PenaltyTypeViewModel @Inject constructor(
                 if (response != null) {
                     requestState.value = RequestState.Success
                     convertResponseToPenaltyType(penaltyType = response)
+                    getDeclaredPenalties()
                 } else {
                     penaltyTypeUiState.value = PenaltyTypeUiState()
                 }

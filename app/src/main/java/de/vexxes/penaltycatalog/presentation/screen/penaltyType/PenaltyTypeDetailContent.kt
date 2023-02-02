@@ -37,7 +37,7 @@ fun PenaltyTypeDetailContent(
         PenaltyTypeHeader(text = penaltyTypeUiState.name)
         if(penaltyTypeUiState.description.isNotEmpty()) { PenaltyTypeDescription(text = penaltyTypeUiState.description) }
         PenaltyTypeAmount(value = penaltyTypeUiState.value, isBeer = penaltyTypeUiState.isBeer)
-        DeclaredPenalties(text = penaltyTypeUiState.valueDeclaredPenalties)
+        DeclaredPenalties(text = penaltyTypeUiState.valueDeclaredPenalties.toString())
     }
 }
 

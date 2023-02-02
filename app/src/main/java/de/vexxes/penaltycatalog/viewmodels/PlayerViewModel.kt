@@ -7,6 +7,8 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
 import de.vexxes.penaltycatalog.domain.model.Player
+import de.vexxes.penaltycatalog.domain.repository.PenaltyReceivedRepository
+import de.vexxes.penaltycatalog.domain.repository.PenaltyTypeRepository
 import de.vexxes.penaltycatalog.domain.repository.PlayerRepository
 import de.vexxes.penaltycatalog.domain.uievent.PlayerUiEvent
 import de.vexxes.penaltycatalog.domain.uievent.SearchUiEvent
@@ -20,7 +22,9 @@ import javax.inject.Inject
 
 @HiltViewModel
 class PlayerViewModel @Inject constructor(
-    private val playerRepository: PlayerRepository
+    private val playerRepository: PlayerRepository,
+    private val penaltyTypeRepository: PenaltyTypeRepository,
+    private val penaltyReceivedRepository: PenaltyReceivedRepository
 ): ViewModel() {
 
     var players: MutableState<List<Player>> = mutableStateOf(emptyList())
@@ -77,6 +81,38 @@ class PlayerViewModel @Inject constructor(
         )
     }
 
+    private fun getPenaltyReceivedByPlayerId() {
+        var sumPenalties = 0.0
+
+        viewModelScope.launch {
+            try {
+                val response = withContext(Dispatchers.IO) {
+                    penaltyReceivedRepository.getPenaltyReceivedByPlayerId(playerId = playerUiState.value.id)
+                }
+
+                response?.forEach { penaltyReceived ->
+                    if (penaltyReceived.timeOfPenaltyPaid == null) {
+                        val penaltyType = penaltyTypeRepository.getPenaltyTypeById(penaltyTypeId =  penaltyReceived.penaltyTypeId)
+
+                        if (!penaltyType!!.isBeer) {
+                            sumPenalties += penaltyType.value
+                        }
+                    }
+                }
+
+                playerUiState.value = playerUiState.value.copy(
+                    sumPenalties = sumPenalties
+                )
+
+                Log.d("PlayerViewModel", response.toString())
+            }
+            catch (e: Exception) {
+                requestState.value = RequestState.Error
+                Log.d("PlayerViewModel", e.toString())
+            }
+        }
+    }
+
     private fun verifyPlayer(): Boolean {
         val numberResult = playerUiState.value.number.isEmpty()
         val firstNameResult = playerUiState.value.firstName.isEmpty()
@@ -129,6 +165,7 @@ class PlayerViewModel @Inject constructor(
                 if (response != null) {
                     requestState.value = RequestState.Success
                     convertResponseToPlayer(player = response)
+                    getPenaltyReceivedByPlayerId()
                 } else {
                     playerUiState.value = PlayerUiState()
                 }

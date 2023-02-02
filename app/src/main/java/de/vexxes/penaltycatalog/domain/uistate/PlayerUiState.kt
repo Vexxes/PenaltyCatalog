@@ -14,6 +14,7 @@ data class PlayerUiState(
     val yellowCards: String = "",
     val twoMinutes: String = "",
     val redCards: String = "",
+    val sumPenalties: Double = 0.0,
     val numberError: Boolean = false,
     val firstNameError: Boolean = false,
     val lastNameError: Boolean = false
