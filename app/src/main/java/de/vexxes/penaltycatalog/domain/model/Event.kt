@@ -1,16 +1,18 @@
 package de.vexxes.penaltycatalog.domain.model
 
-import kotlinx.serialization.Contextual
+import kotlinx.datetime.Clock
+import kotlinx.datetime.LocalDateTime
+import kotlinx.datetime.TimeZone
+import kotlinx.datetime.toLocalDateTime
 import kotlinx.serialization.Serializable
-import java.time.LocalDateTime
-import java.time.LocalTime
+
 
 @Serializable
 data class Event(
     val id: String = "",
     val title: String = "",
-    @Contextual val dateTime: LocalDateTime = LocalDateTime.now(),
-    @Contextual val meetingTime: LocalTime = LocalTime.now(),
+    val dateTime: LocalDateTime = Clock.System.now().toLocalDateTime(TimeZone.UTC),
+    val meetingTime: LocalDateTime = Clock.System.now().toLocalDateTime(TimeZone.UTC),
     val address: String = "",
     val description: String = ""
 )

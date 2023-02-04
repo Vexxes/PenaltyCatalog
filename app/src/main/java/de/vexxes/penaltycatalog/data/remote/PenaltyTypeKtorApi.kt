@@ -28,7 +28,4 @@ interface PenaltyTypeKtorApi {
 
     @DELETE("/penalty-type/{penaltyTypeId}")
     suspend fun deletePenaltyType(@Path("penaltyTypeId") penaltyTypeId: String): Boolean
-
-    // TODO: Create a function to get the number of penalties awarded
-    // GetDeclaredPenalties = "/get_penalty_declared"
 }
