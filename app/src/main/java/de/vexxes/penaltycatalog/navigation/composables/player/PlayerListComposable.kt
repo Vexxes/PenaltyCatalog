@@ -3,7 +3,7 @@ package de.vexxes.penaltycatalog.navigation.composables.player
 import androidx.compose.runtime.LaunchedEffect
 import de.vexxes.penaltycatalog.navigation.ScreenNavigation
 import de.vexxes.penaltycatalog.presentation.screen.player.PlayerListScreen
-import de.vexxes.penaltycatalog.util.SearchAppBarState
+import de.vexxes.penaltycatalog.domain.enums.SearchAppBarState
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.compose.composable
 import de.vexxes.penaltycatalog.domain.uievent.SearchUiEvent

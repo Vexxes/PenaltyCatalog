@@ -1,7 +1,6 @@
 package de.vexxes.penaltycatalog.domain.uistate
 
-import de.vexxes.penaltycatalog.domain.enums.SortOrder
-import de.vexxes.penaltycatalog.util.SearchAppBarState
+import de.vexxes.penaltycatalog.domain.enums.SearchAppBarState
 
 data class SearchUiState(
     val searchAppBarState: SearchAppBarState = SearchAppBarState.CLOSED,

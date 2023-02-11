@@ -2,7 +2,6 @@ package de.vexxes.penaltycatalog.presentation.screen.penaltyReceived
 
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -14,7 +13,6 @@ import androidx.compose.material.Chip
 import androidx.compose.material.ChipColors
 import androidx.compose.material.ChipDefaults
 import androidx.compose.material.ExperimentalMaterialApi
-import androidx.compose.material3.Scaffold
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.AttachMoney
@@ -26,10 +24,9 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Snackbar
+import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -42,8 +39,9 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import de.vexxes.penaltycatalog.R
 import de.vexxes.penaltycatalog.component.GeneralTopBar
-import de.vexxes.penaltycatalog.domain.model.ApiResponse
-import de.vexxes.penaltycatalog.domain.enums.SortOrder
+import de.vexxes.penaltycatalog.domain.enums.FilterPaidState
+import de.vexxes.penaltycatalog.domain.enums.PlayerSort
+import de.vexxes.penaltycatalog.domain.enums.SearchAppBarState
 import de.vexxes.penaltycatalog.domain.uievent.SearchUiEvent
 import de.vexxes.penaltycatalog.domain.uistate.PenaltyReceivedUiState
 import de.vexxes.penaltycatalog.domain.uistate.SearchUiState
@@ -52,11 +50,8 @@ import de.vexxes.penaltycatalog.domain.uistate.penaltyReceivedUiStateExample2
 import de.vexxes.penaltycatalog.domain.uistate.penaltyReceivedUiStateExample3
 import de.vexxes.penaltycatalog.ui.theme.Typography
 import de.vexxes.penaltycatalog.ui.theme.colorSchemeSegButtons
-import de.vexxes.penaltycatalog.util.FilterPaidState
 import de.vexxes.penaltycatalog.util.RequestState
-import de.vexxes.penaltycatalog.util.SearchAppBarState
 import de.vexxes.penaltycatalog.viewmodels.PenaltyReceivedViewModel
-import kotlinx.coroutines.delay
 
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
@@ -70,12 +65,8 @@ fun PenaltyReceivedListScreen(
     val searchUiState by penaltyReceivedViewModel.searchUiState
     
     val refreshPenaltyReceived = { penaltyReceivedViewModel.updateLists() }
-    val refreshing = penaltyReceivedViewModel.requestState.value is RequestState.Loading
+    val refreshing = requestState is RequestState.Loading
     val pullRefreshState = rememberPullRefreshState(refreshing = refreshing, onRefresh = { refreshPenaltyReceived() })
-
-/*    LaunchedEffect(key1 = true) {
-        refreshPenaltyReceived()
-    }*/
 
     Box(modifier = Modifier.pullRefresh(pullRefreshState)) {
         PenaltyReceivedListScaffold(
@@ -88,7 +79,6 @@ fun PenaltyReceivedListScreen(
                 penaltyReceivedViewModel.onSearchUiEvent(SearchUiEvent.SearchTextChanged(""))
             },
             penaltyReceivedUiStateList = penaltyReceivedUiStateList,
-            requestState = requestState,
             navigateToPenaltyReceivedDetailScreen = navigateToPenaltyReceivedDetailScreen,
             navigateToPenaltyReceivedEditScreen = navigateToPenaltyReceivedEditScreen
         )
@@ -99,14 +89,13 @@ fun PenaltyReceivedListScreen(
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun PenaltyReceivedListScaffold(
+private fun PenaltyReceivedListScaffold(
     searchUiState: SearchUiState,
     onSearchTextChanged: (String) -> Unit,
     onDefaultSearchClicked: () -> Unit,
-    onSortClicked: (SortOrder) -> Unit,
+    onSortClicked: (PlayerSort) -> Unit,
     onCloseClicked: () -> Unit,
     penaltyReceivedUiStateList: List<PenaltyReceivedUiState>,
-    requestState: RequestState,
     navigateToPenaltyReceivedDetailScreen: (String) -> Unit,
     navigateToPenaltyReceivedEditScreen: (String) -> Unit
 ) {
@@ -119,7 +108,6 @@ fun PenaltyReceivedListScaffold(
                 searchAppBarState = searchUiState.searchAppBarState,
                 searchTextState = searchUiState.searchText,
                 onDefaultSearchClicked = onDefaultSearchClicked,
-                onSortClicked = onSortClicked,
                 onSearchTextChanged = onSearchTextChanged,
                 onCloseClicked = onCloseClicked
             )
@@ -147,20 +135,13 @@ fun PenaltyReceivedListScaffold(
 
         floatingActionButton = {
             PenaltyReceivedFab(navigateToPenaltyReceivedEditScreen = navigateToPenaltyReceivedEditScreen)
-        },
-
-/*        snackbarHost = {
-            PenaltyHistoryListSnackbar(
-                apiResponse = apiResponse,
-                resetApiResponse = resetApiResponse
-            )
-        }*/
+        }
     )
 }
 
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
-fun PenaltyReceivedChips(
+private fun PenaltyReceivedChips(
     filterPaidState: FilterPaidState,
     onFilterStateChanged: (FilterPaidState) -> Unit
 ) {
@@ -240,7 +221,7 @@ private fun PenaltyReceivedChip(
 }
 
 @Composable
-fun PenaltyReceivedFab(
+private fun PenaltyReceivedFab(
     navigateToPenaltyReceivedEditScreen: (String) -> Unit
 ) {
     FloatingActionButton(
@@ -251,37 +232,6 @@ fun PenaltyReceivedFab(
             imageVector = Icons.Default.Add,
             contentDescription = stringResource(id = R.string.AddPenalty)
         )
-    }
-}
-
-@Composable
-fun PenaltyReceivedListSnackbar(
-    apiResponse: ApiResponse,
-    resetApiResponse: () -> Unit
-) {
-    /*TODO Other approach possible?*/
-    // Reset snackbar after 3 seconds
-    LaunchedEffect(key1 = true) {
-        delay(3000)
-        resetApiResponse()
-    }
-
-    if(apiResponse.hashCode() != ApiResponse().hashCode()) {
-        Snackbar(
-            modifier = Modifier
-                .padding(8.dp),
-            action = {
-                Text(
-                    modifier = Modifier
-                        .clickable { resetApiResponse() },
-                    text = stringResource(id = R.string.Ok)
-                )
-            }
-        ) {
-            Text(
-                text = if(!apiResponse.message.isNullOrEmpty()) apiResponse.message else ""
-            )
-        }
     }
 }
 
@@ -299,7 +249,6 @@ private fun PenaltyReceivedListScreenPreview() {
             penaltyReceivedUiStateExample2(),
             penaltyReceivedUiStateExample3()
         ),
-        requestState = RequestState.Success,
         navigateToPenaltyReceivedDetailScreen = { },
         navigateToPenaltyReceivedEditScreen = { }
     )
@@ -307,7 +256,7 @@ private fun PenaltyReceivedListScreenPreview() {
 
 @Composable
 @Preview
-fun PenaltyReceivedFabPreview() {
+private fun PenaltyReceivedFabPreview() {
     PenaltyReceivedFab(
         navigateToPenaltyReceivedEditScreen = { }
     )

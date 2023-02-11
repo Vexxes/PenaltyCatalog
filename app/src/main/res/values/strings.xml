@@ -11,6 +11,7 @@
     <string name="AddPenalty">Add Penalty</string>
 
     <string name="SearchTopBar">Search</string>
+    <string name="SortTopBar">Sort</string>
     <string name="FilterListTopBar">Filter List</string>
     <string name="SearchPlaceholder">Search..</string>
     <string name="CloseTopBar">Close</string>
@@ -24,7 +25,7 @@
     <string name="CancelCapital">@android:string/cancel</string>
     <string name="ConfirmCapital">CONFIRM</string>
 
-    <string name="Number">player number</string>
+    <string name="Number">number</string>
     <string name="FirstName">first name</string>
     <string name="LastName">last name</string>
     <string name="Birthday">birthday</string>

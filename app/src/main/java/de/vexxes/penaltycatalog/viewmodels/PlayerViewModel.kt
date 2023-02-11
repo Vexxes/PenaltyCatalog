@@ -6,6 +6,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
+import de.vexxes.penaltycatalog.domain.enums.PlayerSort
 import de.vexxes.penaltycatalog.domain.model.Player
 import de.vexxes.penaltycatalog.domain.repository.PenaltyReceivedRepository
 import de.vexxes.penaltycatalog.domain.repository.PenaltyTypeRepository
@@ -35,6 +36,8 @@ class PlayerViewModel @Inject constructor(
 
     var searchUiState: MutableState<SearchUiState> = mutableStateOf(SearchUiState())
         private set
+
+    private var playerSort: MutableState<PlayerSort> = mutableStateOf(PlayerSort.NUMBER_ASCENDING)
 
     var requestState: MutableState<RequestState> = mutableStateOf(RequestState.Idle)
 
@@ -140,6 +143,7 @@ class PlayerViewModel @Inject constructor(
                     requestState.value = RequestState.Success
                     players.value = response
                     players.value = players.value.sortedBy { it.number }
+                    onSortEvent(playerSort.value)
                 } else {
                     requestState.value = RequestState.Idle
                 }
@@ -369,6 +373,19 @@ class PlayerViewModel @Inject constructor(
                 )
                 getPlayersBySearch()
             }
+        }
+    }
+
+    fun onSortEvent(playerSort: PlayerSort) {
+        this.playerSort.value = playerSort
+
+        when (playerSort) {
+            PlayerSort.NAME_ASCENDING -> players.value = players.value.sortedBy { it.lastName }
+            PlayerSort.NAME_DESCENDING -> players.value = players.value.sortedByDescending { it.lastName }
+            PlayerSort.NUMBER_ASCENDING -> players.value = players.value.sortedBy { it.number }
+            PlayerSort.NUMBER_DESCENDING -> players.value = players.value.sortedByDescending { it.number }
+            PlayerSort.GOALS_ASCENDING -> players.value = players.value.sortedBy { it.goals }
+            PlayerSort.GOALS_DESCENDING -> players.value = players.value.sortedByDescending { it.goals }
         }
     }
 }

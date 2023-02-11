@@ -34,7 +34,7 @@ import de.vexxes.penaltycatalog.domain.uistate.penaltyReceivedUiStateExample3
 import de.vexxes.penaltycatalog.domain.visualTransformation.NumberCommaTransformation
 import de.vexxes.penaltycatalog.ui.theme.Typography
 import de.vexxes.penaltycatalog.ui.theme.colorSchemeSegButtons
-import de.vexxes.penaltycatalog.util.FilterPaidState
+import de.vexxes.penaltycatalog.domain.enums.FilterPaidState
 import kotlinx.datetime.LocalDate
 
 @Composable

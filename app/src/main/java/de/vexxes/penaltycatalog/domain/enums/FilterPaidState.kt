@@ -1,4 +1,4 @@
-package de.vexxes.penaltycatalog.util
+package de.vexxes.penaltycatalog.domain.enums
 
 enum class FilterPaidState {
     OFF,

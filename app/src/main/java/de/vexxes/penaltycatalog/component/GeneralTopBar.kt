@@ -1,12 +1,11 @@
 package de.vexxes.penaltycatalog.component
 
+import android.content.res.Configuration.UI_MODE_NIGHT_YES
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Close
-import androidx.compose.material.icons.filled.FilterList
 import androidx.compose.material.icons.filled.Search
-import androidx.compose.material3.DropdownMenu
-import androidx.compose.material3.DropdownMenuItem
+import androidx.compose.material.icons.filled.Sort
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -18,7 +17,6 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
@@ -27,8 +25,8 @@ import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import de.vexxes.penaltycatalog.R
-import de.vexxes.penaltycatalog.domain.enums.SortOrder
-import de.vexxes.penaltycatalog.util.SearchAppBarState
+import de.vexxes.penaltycatalog.domain.enums.SearchAppBarState
+import de.vexxes.penaltycatalog.ui.theme.PenaltyCatalogTheme
 import kotlinx.coroutines.delay
 
 @Composable
@@ -36,18 +34,16 @@ fun GeneralTopBar(
     searchAppBarState: SearchAppBarState,
     searchTextState: String,
     onDefaultSearchClicked: () -> Unit,
-    onSortClicked: (SortOrder) -> Unit,
     onSearchTextChanged: (String) -> Unit,
     onCloseClicked: () -> Unit,
-    showSortIcon: Boolean = true
+    sortIcon: @Composable () -> Unit = {},
 ) {
 
     when(searchAppBarState) {
         SearchAppBarState.CLOSED -> {
             DefaultTopBar(
                 onSearchClicked = onDefaultSearchClicked,
-                onSortClicked = onSortClicked,
-                showSortIcon = showSortIcon
+                sortIcon = sortIcon
             )
         }
 
@@ -63,17 +59,16 @@ fun GeneralTopBar(
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun DefaultTopBar(
+private fun DefaultTopBar(
     onSearchClicked: () -> Unit,
-    onSortClicked: (SortOrder) -> Unit,
-    showSortIcon: Boolean = true
+    sortIcon: @Composable () -> Unit = {}
 ) {
     TopAppBar(
         title = { },
 
         actions = {
             SearchIcon(onSearchClicked = onSearchClicked)
-            if (showSortIcon) SortIcon(onSortClicked = onSortClicked)
+            sortIcon()
         }
     )
 }
@@ -94,36 +89,20 @@ private fun SearchIcon(
 }
 
 @Composable
-private fun SortIcon(
-    onSortClicked: (SortOrder) -> Unit
-) {
-    var expanded by remember { mutableStateOf(false) }
-
-    SortDropDownMenu(
-        expanded = expanded,
-        onDismiss = {
-            expanded = false
-        },
-        onSortClicked = { sortOrder ->
-            expanded = false
-            onSortClicked(sortOrder)
-        }
-    )
-
+private fun DummySortIcon() {
     IconButton(
-        onClick = {
-            expanded = true
-        }) {
+        onClick = { }
+    ) {
         Icon(
-            imageVector = Icons.Default.FilterList,
-            contentDescription = stringResource(id = R.string.FilterListTopBar)
+            imageVector = Icons.Default.Sort,
+            contentDescription = stringResource(id = R.string.SortTopBar)
         )
     }
 }
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalComposeUiApi::class)
 @Composable
-fun SearchTopBar(
+private fun SearchTopBar(
     text: String,
     onSearchTextChanged: (String) -> Unit,
     onCloseClicked: () -> Unit
@@ -166,57 +145,36 @@ fun SearchTopBar(
     }
 }
 
-@Composable
-private fun SortDropDownMenu(
-    expanded: Boolean,
-    onDismiss: () -> Unit,
-    onSortClicked: (SortOrder) -> Unit
-) {
-    DropdownMenu(
-        expanded = expanded,
-        onDismissRequest = {
-            onDismiss()
-        }
-    ) {
-        SortOrder.values().forEach { sortOrder ->
-            DropdownMenuItem(
-                onClick = { onSortClicked(sortOrder) },
-                leadingIcon = { Icon(imageVector = sortOrder.imageVector, contentDescription = "")},
-                text = { Text(text = sortOrder.name) }
-            )
-        }
+@Preview(name = "Light Theme", showBackground = true)
+@Preview(name = "Dark Theme", showBackground = true, uiMode = UI_MODE_NIGHT_YES)@Composable
+fun DefaultTopBarPreview() {
+    PenaltyCatalogTheme {
+        DefaultTopBar(
+            onSearchClicked = { },
+            sortIcon = { }
+        )
     }
 }
 
-@Preview(showBackground = true)
-@Composable
-fun DefaultTopBarPreview(
-
-) {
-    DefaultTopBar(
-        onSearchClicked = { },
-        onSortClicked = { },
-    )
+@Preview(name = "Light Theme", showBackground = true)
+@Preview(name = "Dark Theme", showBackground = true, uiMode = UI_MODE_NIGHT_YES)@Composable
+fun SearchAndSortTopBarPreview() {
+    PenaltyCatalogTheme {
+        DefaultTopBar(
+            onSearchClicked = { },
+            sortIcon = { DummySortIcon() }
+        )
+    }
 }
 
-@Preview(showBackground = true)
-@Composable
-fun SearchTopBarPreview(
-
-) {
-    SearchTopBar(
-        text = "",
-        onSearchTextChanged = { },
-        onCloseClicked = { }
-    )
-}
-
-@Preview(showBackground = true)
-@Composable
-fun SortDropDownMenuPreview() {
-    SortDropDownMenu(
-        expanded = true,
-        onDismiss = { },
-        onSortClicked = { }
-    )
+@Preview(name = "Light Theme", showBackground = true)
+@Preview(name = "Dark Theme", showBackground = true, uiMode = UI_MODE_NIGHT_YES)@Composable
+fun SearchTopBarPreview() {
+    PenaltyCatalogTheme {
+        SearchTopBar(
+            text = "",
+            onSearchTextChanged = { },
+            onCloseClicked = { }
+        )
+    }
 }
