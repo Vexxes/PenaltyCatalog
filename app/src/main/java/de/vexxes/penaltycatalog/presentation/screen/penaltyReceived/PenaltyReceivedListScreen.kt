@@ -1,5 +1,6 @@
 package de.vexxes.penaltycatalog.presentation.screen.penaltyReceived
 
+import android.content.res.Configuration.UI_MODE_NIGHT_YES
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -17,12 +18,16 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.AttachMoney
 import androidx.compose.material.icons.filled.MoneyOff
+import androidx.compose.material.icons.filled.Sort
 import androidx.compose.material.pullrefresh.PullRefreshIndicator
 import androidx.compose.material.pullrefresh.pullRefresh
 import androidx.compose.material.pullrefresh.rememberPullRefreshState
+import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
@@ -40,7 +45,7 @@ import androidx.compose.ui.unit.dp
 import de.vexxes.penaltycatalog.R
 import de.vexxes.penaltycatalog.component.GeneralTopBar
 import de.vexxes.penaltycatalog.domain.enums.FilterPaidState
-import de.vexxes.penaltycatalog.domain.enums.PlayerSort
+import de.vexxes.penaltycatalog.domain.enums.PenaltyReceivedSort
 import de.vexxes.penaltycatalog.domain.enums.SearchAppBarState
 import de.vexxes.penaltycatalog.domain.uievent.SearchUiEvent
 import de.vexxes.penaltycatalog.domain.uistate.PenaltyReceivedUiState
@@ -48,6 +53,7 @@ import de.vexxes.penaltycatalog.domain.uistate.SearchUiState
 import de.vexxes.penaltycatalog.domain.uistate.penaltyReceivedUiStateExample1
 import de.vexxes.penaltycatalog.domain.uistate.penaltyReceivedUiStateExample2
 import de.vexxes.penaltycatalog.domain.uistate.penaltyReceivedUiStateExample3
+import de.vexxes.penaltycatalog.ui.theme.PenaltyCatalogTheme
 import de.vexxes.penaltycatalog.ui.theme.Typography
 import de.vexxes.penaltycatalog.ui.theme.colorSchemeSegButtons
 import de.vexxes.penaltycatalog.util.RequestState
@@ -73,10 +79,12 @@ fun PenaltyReceivedListScreen(
             searchUiState = searchUiState,
             onSearchTextChanged = { penaltyReceivedViewModel.onSearchUiEvent(SearchUiEvent.SearchTextChanged(it)) },
             onDefaultSearchClicked = { penaltyReceivedViewModel.onSearchUiEvent(SearchUiEvent.SearchAppBarStateChanged(SearchAppBarState.OPENED)) },
-            onSortClicked = { /*TODO Implement order function with different sort orders like date, name, etc...*/},
             onCloseClicked = {
                 penaltyReceivedViewModel.onSearchUiEvent(SearchUiEvent.SearchAppBarStateChanged(SearchAppBarState.CLOSED))
                 penaltyReceivedViewModel.onSearchUiEvent(SearchUiEvent.SearchTextChanged(""))
+            },
+            onSortClicked = {
+                penaltyReceivedViewModel.onSortEvent(it)
             },
             penaltyReceivedUiStateList = penaltyReceivedUiStateList,
             navigateToPenaltyReceivedDetailScreen = navigateToPenaltyReceivedDetailScreen,
@@ -93,7 +101,7 @@ private fun PenaltyReceivedListScaffold(
     searchUiState: SearchUiState,
     onSearchTextChanged: (String) -> Unit,
     onDefaultSearchClicked: () -> Unit,
-    onSortClicked: (PlayerSort) -> Unit,
+    onSortClicked: (PenaltyReceivedSort) -> Unit,
     onCloseClicked: () -> Unit,
     penaltyReceivedUiStateList: List<PenaltyReceivedUiState>,
     navigateToPenaltyReceivedDetailScreen: (String) -> Unit,
@@ -109,12 +117,14 @@ private fun PenaltyReceivedListScaffold(
                 searchTextState = searchUiState.searchText,
                 onDefaultSearchClicked = onDefaultSearchClicked,
                 onSearchTextChanged = onSearchTextChanged,
-                onCloseClicked = onCloseClicked
+                onCloseClicked = onCloseClicked,
+                sortIcon = {
+                    PenaltyReceivedSortIcon(onSortClicked = onSortClicked)
+                }
             )
         },
 
         content = {
-
             Box(modifier = Modifier.padding(it)) {
                 Column {
                     PenaltyReceivedChips(
@@ -129,7 +139,6 @@ private fun PenaltyReceivedListScaffold(
                         navigateToPenaltyReceivedDetailScreen = navigateToPenaltyReceivedDetailScreen
                     )
                 }
-
             }
         },
 
@@ -159,8 +168,9 @@ private fun PenaltyReceivedChips(
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .background(MaterialTheme.colorScheme.surface
-        ),
+            .background(
+                MaterialTheme.colorScheme.surface
+            ),
         horizontalArrangement = Arrangement.Center,
     ) {
         PenaltyReceivedChip(
@@ -221,6 +231,35 @@ private fun PenaltyReceivedChip(
 }
 
 @Composable
+private fun PenaltyReceivedSortIcon(
+    onSortClicked: (PenaltyReceivedSort) -> Unit
+) {
+    var expanded by remember { mutableStateOf(false) }
+
+    DropdownMenu(
+        expanded = expanded,
+        onDismissRequest = { expanded = false }
+    ) {
+        PenaltyReceivedSort.values().forEach { penaltyReceivedSort ->
+            DropdownMenuItem(
+                onClick = { onSortClicked(penaltyReceivedSort) },
+                leadingIcon = { Icon(imageVector = penaltyReceivedSort.image, contentDescription = "")},
+                text = { Text(text = stringResource(id = penaltyReceivedSort.nameId)) }
+            )
+        }
+    }
+
+    IconButton(
+        onClick = { expanded = true }
+    ) {
+        Icon(
+            imageVector = Icons.Default.Sort,
+            contentDescription = stringResource(id = R.string.SortTopBar)
+        )
+    }
+}
+
+@Composable
 private fun PenaltyReceivedFab(
     navigateToPenaltyReceivedEditScreen: (String) -> Unit
 ) {
@@ -236,49 +275,58 @@ private fun PenaltyReceivedFab(
 }
 
 @Composable
-@Preview(showBackground = true)
+@Preview(name = "Light Theme", showBackground = true)
+@Preview(name = "Dark Theme", showBackground = true, uiMode = UI_MODE_NIGHT_YES)
 private fun PenaltyReceivedListScreenPreview() {
-    PenaltyReceivedListScaffold(
-        searchUiState = SearchUiState(),
-        onSearchTextChanged = { },
-        onDefaultSearchClicked = { },
-        onSortClicked = { },
-        onCloseClicked = { },
-        penaltyReceivedUiStateList = listOf(
-            penaltyReceivedUiStateExample1(),
-            penaltyReceivedUiStateExample2(),
-            penaltyReceivedUiStateExample3()
-        ),
-        navigateToPenaltyReceivedDetailScreen = { },
-        navigateToPenaltyReceivedEditScreen = { }
-    )
+    PenaltyCatalogTheme {
+        PenaltyReceivedListScaffold(
+            searchUiState = SearchUiState(),
+            onSearchTextChanged = { },
+            onDefaultSearchClicked = { },
+            onSortClicked = { },
+            onCloseClicked = { },
+            penaltyReceivedUiStateList = listOf(
+                penaltyReceivedUiStateExample1(),
+                penaltyReceivedUiStateExample2(),
+                penaltyReceivedUiStateExample3()
+            ),
+            navigateToPenaltyReceivedDetailScreen = { },
+            navigateToPenaltyReceivedEditScreen = { }
+        )
+    }
 }
 
 @Composable
-@Preview
+@Preview(name = "Light Theme", showBackground = true)
+@Preview(name = "Dark Theme", showBackground = true, uiMode = UI_MODE_NIGHT_YES)
 private fun PenaltyReceivedFabPreview() {
-    PenaltyReceivedFab(
-        navigateToPenaltyReceivedEditScreen = { }
-    )
+    PenaltyCatalogTheme {
+        PenaltyReceivedFab(
+            navigateToPenaltyReceivedEditScreen = { }
+        )
+    }
 }
 
 @Composable
-@Preview(showBackground = true)
+@Preview(name = "Light Theme", showBackground = true)
+@Preview(name = "Dark Theme", showBackground = true, uiMode = UI_MODE_NIGHT_YES)
 private fun PenaltyReceivedChipsPreview() {
-    Column {
-        PenaltyReceivedChips(
-            filterPaidState = FilterPaidState.OFF,
-            onFilterStateChanged = { }
-        )
+    PenaltyCatalogTheme {
+        Column {
+            PenaltyReceivedChips(
+                filterPaidState = FilterPaidState.OFF,
+                onFilterStateChanged = { }
+            )
 
-        PenaltyReceivedChips(
-            filterPaidState = FilterPaidState.PAID,
-            onFilterStateChanged = { }
-        )
+            PenaltyReceivedChips(
+                filterPaidState = FilterPaidState.PAID,
+                onFilterStateChanged = { }
+            )
 
-        PenaltyReceivedChips(
-            filterPaidState = FilterPaidState.NOT_PAID,
-            onFilterStateChanged = { }
-        )
+            PenaltyReceivedChips(
+                filterPaidState = FilterPaidState.NOT_PAID,
+                onFilterStateChanged = { }
+            )
+        }
     }
 }

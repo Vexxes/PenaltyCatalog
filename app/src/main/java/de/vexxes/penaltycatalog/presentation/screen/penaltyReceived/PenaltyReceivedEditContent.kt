@@ -112,7 +112,7 @@ private fun PenaltyReceivedDatePicker(
         readOnly = true,
         text = timeOfPenalty.toString(),
         onTextChanged = { },
-        label = stringResource(id = R.string.DateOfPenalty),
+        label = stringResource(id = R.string.TimeOfPenalty),
         trailingIcon = {
             IconButton(
                 onClick = { calendarSheetState.show() }) {

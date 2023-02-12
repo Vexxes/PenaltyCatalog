@@ -143,7 +143,7 @@ private fun PenaltyReceivedAmount(
 private fun PenaltyReceivedTimeOfPenalty(
     timeOfPenalty: LocalDate
 ) {
-    LabelHeader(text = stringResource(id = R.string.DateOfPenalty))
+    LabelHeader(text = stringResource(id = R.string.TimeOfPenalty))
 
     Text(
         modifier = Modifier
@@ -157,7 +157,7 @@ private fun PenaltyReceivedTimeOfPenalty(
 private fun PenaltyReceivedTimeOfPenaltyPaid(
     timeOfPenaltyPaid: LocalDate
 ) {
-    LabelHeader(text = stringResource(id = R.string.DateOfPenaltyPaid))
+    LabelHeader(text = stringResource(id = R.string.TimeOfPenaltyPaid))
 
     Text(
         modifier = Modifier

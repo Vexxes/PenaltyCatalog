@@ -32,7 +32,7 @@ fun NavGraphBuilder.penaltyHistoryEditComposable(
         val penaltyReceivedId = navBackStackEntry.arguments?.getString("penaltyReceivedId")
         LaunchedEffect(key1 = penaltyReceivedId) {
             if (penaltyReceivedId == "-1")
-                penaltyReceivedViewModel.resetPenaltyReceived()
+                penaltyReceivedViewModel.resetPenaltyReceivedUiState()
         }
 
         var visible by remember { mutableStateOf(false) }

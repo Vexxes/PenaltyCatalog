@@ -7,6 +7,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
+import de.vexxes.penaltycatalog.domain.enums.PenaltyReceivedSort
 import de.vexxes.penaltycatalog.domain.model.PenaltyType
 import de.vexxes.penaltycatalog.domain.model.PenaltyReceived
 import de.vexxes.penaltycatalog.domain.model.Player
@@ -41,6 +42,8 @@ class PenaltyReceivedViewModel @Inject constructor(
 
     var searchUiState: MutableState<SearchUiState> = mutableStateOf(SearchUiState())
         private set
+
+    private var penaltyReceivedSort: MutableState<PenaltyReceivedSort> = mutableStateOf(PenaltyReceivedSort.TIME_OF_PENALTY_DESCENDING)
 
     var requestState: MutableState<RequestState> = mutableStateOf(RequestState.Idle)
 
@@ -220,6 +223,7 @@ class PenaltyReceivedViewModel @Inject constructor(
         }
     }
 
+    /* TODO: Navigate from PlayerDetail Screen to filtered history */
     fun getPenaltyReceivedByPlayerId(playerId: String) {
         requestState.value = RequestState.Loading
 
@@ -331,6 +335,10 @@ class PenaltyReceivedViewModel @Inject constructor(
         }
     }
 
+    fun resetPenaltyReceivedUiState() {
+        penaltyReceivedUiState.value = PenaltyReceivedUiState()
+    }
+
     fun onPenaltyReceivedUiEvent(event: PenaltyReceivedUiEvent) {
         when (event) {
             is PenaltyReceivedUiEvent.PenaltyIdChanged -> {
@@ -389,7 +397,14 @@ class PenaltyReceivedViewModel @Inject constructor(
         }
     }
 
-    fun resetPenaltyReceived() {
-        penaltyReceivedUiState.value = PenaltyReceivedUiState()
+    fun onSortEvent(penaltyReceivedSort: PenaltyReceivedSort) {
+        this.penaltyReceivedSort.value = penaltyReceivedSort
+
+        when(penaltyReceivedSort) {
+            PenaltyReceivedSort.TIME_OF_PENALTY_ASCENDING -> penaltyReceivedUiStateList.value = penaltyReceivedUiStateList.value.sortedBy { it.timeOfPenalty }
+            PenaltyReceivedSort.TIME_OF_PENALTY_DESCENDING -> penaltyReceivedUiStateList.value = penaltyReceivedUiStateList.value.sortedByDescending { it.timeOfPenalty }
+            PenaltyReceivedSort.NAME_ASCENDING -> penaltyReceivedUiStateList.value = penaltyReceivedUiStateList.value.sortedWith(compareBy({ it.playerName }, { it.timeOfPenalty } ))
+            PenaltyReceivedSort.NAME_DESCENDING -> penaltyReceivedUiStateList.value = penaltyReceivedUiStateList.value.sortedWith(compareByDescending<PenaltyReceivedUiState>{ it.playerName }.thenByDescending { it.timeOfPenalty })
+        }
     }
 }

@@ -110,9 +110,7 @@ private fun PlayerListScaffold(
                 onSearchTextChanged = onSearchTextChanged,
                 onCloseClicked = onCloseClicked,
                 sortIcon = {
-                    PlayerSortIcon(
-                        onSortClicked = onSortClicked
-                    )
+                    PlayerSortIcon(onSortClicked = onSortClicked)
                 }
             )
         },
@@ -169,9 +167,8 @@ private fun PlayerSortIcon(
     }
 
     IconButton(
-        onClick = {
-            expanded = true
-        }) {
+        onClick = { expanded = true }
+    ) {
         Icon(
             imageVector = Icons.Default.Sort,
             contentDescription = stringResource(id = R.string.SortTopBar)
