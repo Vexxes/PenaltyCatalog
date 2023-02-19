@@ -21,7 +21,6 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import de.vexxes.penaltycatalog.R
 import de.vexxes.penaltycatalog.component.GeneralTopBar
-import de.vexxes.penaltycatalog.domain.enums.EventSort
 import de.vexxes.penaltycatalog.domain.enums.SearchAppBarState
 import de.vexxes.penaltycatalog.domain.model.Event
 import de.vexxes.penaltycatalog.domain.model.eventExample1
@@ -57,9 +56,6 @@ fun EventListScreen(
                 eventViewModel.onSearchUiEvent(SearchUiEvent.SearchAppBarStateChanged(SearchAppBarState.CLOSED))
                 eventViewModel.onSearchUiEvent(SearchUiEvent.SearchTextChanged(""))
             },
-            onSortClicked = {
-                eventViewModel.onSortEvent(it)
-            },
             events = events,
             navigateToEventDetailScreen = navigateToEventDetailScreen,
             navigateToEventEditScreen = navigateToEventEditScreen
@@ -76,7 +72,6 @@ private fun EventListScaffold(
     searchUiState: SearchUiState,
     onSearchTextChanged: (String) -> Unit,
     onDefaultSearchClicked: () -> Unit,
-    onSortClicked: (EventSort) -> Unit,
     onCloseClicked: () -> Unit,
     events: List<Event>,
     navigateToEventDetailScreen: (String) -> Unit,
@@ -131,7 +126,6 @@ private fun EventListScreenPreview() {
             searchUiState = SearchUiState(),
             onSearchTextChanged = { },
             onDefaultSearchClicked = { },
-            onSortClicked = { },
             onCloseClicked = { },
             events = listOf(
                 eventExample1(),

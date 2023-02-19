@@ -65,5 +65,10 @@
     <string name="NotPaid">Not Paid</string>
     <string name="StartOfMeeting">Start of meeting</string>
     <string name="StartOfEvent">Start of event</string>
+    <string name="Type">Event type</string>
+    <string name="Training">Training</string>
+    <string name="Game">Game</string>
+    <string name="TestGame">Test game</string>
+    <string name="Miscellaneous">Miscellaneous</string>
 
 </resources>

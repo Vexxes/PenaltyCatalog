@@ -18,6 +18,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import de.vexxes.penaltycatalog.R
+import de.vexxes.penaltycatalog.domain.enums.EventType
 import de.vexxes.penaltycatalog.domain.uistate.EventUiState
 import de.vexxes.penaltycatalog.domain.uistate.eventUiStateExample1
 import de.vexxes.penaltycatalog.domain.uistate.eventUiStateExample2
@@ -38,6 +39,7 @@ fun EventDetailContent(
             .padding(8.dp)
     ) {
         EventHeader(text = eventUiState.title)
+        EventType(type = eventUiState.type)
         EventStartOfEvent(dateTime = eventUiState.startOfEvent)
         EventStartOfMeeting(dateTime = eventUiState.startOfMeeting)
         EventAddress(address = eventUiState.address, onMapsClicked = onMapsClicked)
@@ -53,6 +55,14 @@ private fun EventHeader(
         text = text,
         style = Typography.headlineMedium
     )
+}
+
+@Composable
+private fun EventType(
+    type: EventType
+) {
+    LabelHeader(text = stringResource(id = R.string.Type))
+    TextValue(text = stringResource(id = type.nameId))
 }
 
 @Composable

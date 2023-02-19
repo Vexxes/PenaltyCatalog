@@ -142,7 +142,6 @@ class PlayerViewModel @Inject constructor(
                 if(response.isNotEmpty()) {
                     requestState.value = RequestState.Success
                     players.value = response
-                    players.value = players.value.sortedBy { it.number }
                     onSortEvent(playerSort.value)
                 } else {
                     requestState.value = RequestState.Idle

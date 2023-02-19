@@ -25,6 +25,6 @@ interface EventKtorApi {
     @PUT("event-player/{eventId}")
     suspend fun playerEvent(@Path("eventId") eventId: String, @Body playerAvailability: PlayerState): Boolean
 
-    @DELETE("event/{eventId")
+    @DELETE("event/{eventId}")
     suspend fun deleteEvent(@Path("eventId") eventId: String): Boolean
 }

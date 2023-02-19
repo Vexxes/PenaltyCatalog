@@ -6,7 +6,6 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
-import de.vexxes.penaltycatalog.domain.enums.EventSort
 import de.vexxes.penaltycatalog.domain.model.Event
 import de.vexxes.penaltycatalog.domain.repository.EventRepository
 import de.vexxes.penaltycatalog.domain.uievent.EventUiEvent
@@ -33,7 +32,6 @@ class EventViewModel @Inject constructor(
     var searchUiState: MutableState<SearchUiState> = mutableStateOf(SearchUiState())
         private set
 
-    private var eventSort: MutableState<EventSort> = mutableStateOf(EventSort.START_OF_EVENT_DESCENDING)
     var requestState: MutableState<RequestState> = mutableStateOf(RequestState.Idle)
 
     var postEvent: MutableState<Boolean> = mutableStateOf(false)
@@ -51,7 +49,8 @@ class EventViewModel @Inject constructor(
             startOfMeeting = event.startOfMeeting,
             address = event.address,
             description = event.description,
-            players = event.players
+            players = event.players,
+            type = event.type
         )
     }
 
@@ -63,8 +62,19 @@ class EventViewModel @Inject constructor(
             startOfMeeting = eventUiState.value.startOfMeeting,
             address = eventUiState.value.address,
             description = eventUiState.value.description,
-            players = eventUiState.value.players
+            players = eventUiState.value.players,
+            type = eventUiState.value.type
         )
+    }
+
+    private fun verifyEvent(): Boolean {
+        val titleResult = eventUiState.value.title.isEmpty()
+
+        eventUiState.value = eventUiState.value.copy(
+            titleError = titleResult
+        )
+
+        return !(titleResult)
     }
 
     fun getAllEvents() {
@@ -79,6 +89,7 @@ class EventViewModel @Inject constructor(
                 if (response.isNotEmpty()) {
                     requestState.value = RequestState.Success
                     events.value = response
+                    events.value = events.value.sortedBy { it.startOfEvent }
                 } else {
                     requestState.value = RequestState.Idle
                 }
@@ -88,16 +99,6 @@ class EventViewModel @Inject constructor(
                 Log.d("EventViewModel", e.toString())
             }
         }
-    }
-
-    private fun verifyEvent(): Boolean {
-        val titleResult = eventUiState.value.title.isEmpty()
-
-        eventUiState.value = eventUiState.value.copy(
-            titleError = titleResult
-        )
-
-        return !(titleResult)
     }
 
     fun getEventById(eventId: String) {
@@ -242,7 +243,7 @@ class EventViewModel @Inject constructor(
         }
     }
     fun onSearchUiEvent(event: SearchUiEvent) {
-        when(event) {
+        when (event) {
             is SearchUiEvent.SearchAppBarStateChanged -> {
                 searchUiState.value = searchUiState.value.copy(
                     searchAppBarState = event.searchAppBarState
@@ -256,15 +257,6 @@ class EventViewModel @Inject constructor(
                 /* TODO: Add search feature */
             }
 
-        }
-    }
-
-    fun onSortEvent(event: EventSort) {
-        this.eventSort.value = event
-
-        when(event) {
-            EventSort.START_OF_EVENT_DESCENDING -> TODO()
-            EventSort.START_OF_EVENT_ASCENDING -> TODO()
         }
     }
 }
