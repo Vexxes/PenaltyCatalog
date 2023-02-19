@@ -5,6 +5,7 @@ import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
+import de.vexxes.penaltycatalog.data.remote.EventKtorApi
 import de.vexxes.penaltycatalog.data.remote.PenaltyReceivedKtorApi
 import de.vexxes.penaltycatalog.data.remote.PenaltyTypeKtorApi
 import de.vexxes.penaltycatalog.data.remote.PlayerKtorApi
@@ -70,8 +71,14 @@ object NetworkModule {
 
     @Provides
     @Singleton
-    fun providePenaltyReceived(retrofit: Retrofit): PenaltyReceivedKtorApi {
+    fun providePenaltyReceivedKtorApi(retrofit: Retrofit): PenaltyReceivedKtorApi {
         return retrofit.create(PenaltyReceivedKtorApi::class.java)
+    }
+
+    @Provides
+    @Singleton
+    fun provideEventKtorApi(retrofit: Retrofit): EventKtorApi {
+        return retrofit.create(EventKtorApi::class.java)
     }
 
 }

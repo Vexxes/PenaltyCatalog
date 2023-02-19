@@ -23,7 +23,7 @@ interface PlayerKtorApi {
     suspend fun postPlayer(@Body player: Player): String?
 
     @PUT("player/{playerId}")
-    suspend fun updatePlayer(@Path("playerId") id: String, @Body player: Player): Boolean
+    suspend fun updatePlayer(@Path("playerId") playerId: String, @Body player: Player): Boolean
 
     @DELETE("player/{playerId}")
     suspend fun deletePlayer(@Path("playerId") playerId: String): Boolean

@@ -9,6 +9,7 @@
 
     <string name="AddPlayer">Add Player</string>
     <string name="AddPenalty">Add Penalty</string>
+    <string name="AddEvent">Add Event</string>
 
     <string name="SearchTopBar">Search</string>
     <string name="SortTopBar">Sort</string>
@@ -62,5 +63,7 @@
     <string name="Box">Box</string>
     <string name="Paid">Paid</string>
     <string name="NotPaid">Not Paid</string>
+    <string name="StartOfMeeting">Start of meeting</string>
+    <string name="StartOfEvent">Start of event</string>
 
 </resources>

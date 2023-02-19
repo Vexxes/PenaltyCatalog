@@ -1,7 +1,6 @@
 package de.vexxes.penaltycatalog.domain.repository
 
 import de.vexxes.penaltycatalog.domain.model.PenaltyReceived
-import de.vexxes.penaltycatalog.domain.model.PenaltyType
 
 interface PenaltyReceivedRepository {
     suspend fun getAllPenaltyReceived(): List<PenaltyReceived>

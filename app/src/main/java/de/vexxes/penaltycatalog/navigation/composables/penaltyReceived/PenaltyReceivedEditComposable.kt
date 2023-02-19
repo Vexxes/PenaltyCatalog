@@ -17,7 +17,7 @@ import de.vexxes.penaltycatalog.navigation.Screen
 import de.vexxes.penaltycatalog.presentation.screen.penaltyReceived.PenaltyReceivedEditScreen
 import de.vexxes.penaltycatalog.viewmodels.PenaltyReceivedViewModel
 
-fun NavGraphBuilder.penaltyHistoryEditComposable(
+fun NavGraphBuilder.penaltyReceivedEditComposable(
     penaltyReceivedViewModel: PenaltyReceivedViewModel,
     navigateBack: () -> Unit
 ) {

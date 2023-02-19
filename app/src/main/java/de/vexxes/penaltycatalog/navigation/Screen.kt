@@ -22,21 +22,21 @@ sealed class ScreenNavigation(val route: String, var name: String, val iconSelec
     )
 
     object PenaltyReceived : ScreenNavigation(
-        route = "penalty_history_screen",
+        route = "penalty_received_screen",
         name = "",
         iconSelected = Icons.Filled.History,
         iconUnselected = Icons.Outlined.History
     )
 
     object Cancellations : ScreenNavigation(
-        route = "cancellations_screen",
+        route = "cancellation_screen",
         name = "",
         iconSelected = Icons.Filled.EventBusy,
         iconUnselected = Icons.Outlined.EventBusy
     )
 
     object Events : ScreenNavigation(
-        route = "events_screen",
+        route = "event_screen",
         name = "",
         iconSelected = Icons.Filled.CalendarMonth,
         iconUnselected = Icons.Outlined.CalendarMonth
@@ -64,11 +64,21 @@ sealed class Screen(val route: String, val argument: String = "") {
     )
 
     object PenaltyReceivedDetail: Screen(
-        route = "penaltyHistory_detail_screen",
+        route = "penaltyReceived_detail_screen",
         argument = "/{penaltyReceivedId}"
     )
     object PenaltyReceivedEdit: Screen(
-        route = "penaltyHistory_edit_screen",
+        route = "penaltyReceived_edit_screen",
         argument = "/{penaltyReceivedId}"
+    )
+
+    object EventDetail: Screen(
+        route = "event_detail_screen",
+        argument = "/{eventId}"
+    )
+
+    object EventEdit: Screen(
+        route = "event_edit_screen",
+        argument = "/{eventId}"
     )
 }

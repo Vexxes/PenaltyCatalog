@@ -219,7 +219,7 @@ private fun PenaltyReceivedAmount(
 }
 
 @Composable
-@Preview(showBackground = true)
+@Preview(name = "Light Theme", showBackground = true)
 private fun PenaltyReceivedItemPreview() {
     PenaltyReceivedItem(
         penaltyReceived = penaltyReceivedUiStateExample1(),

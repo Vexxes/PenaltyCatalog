@@ -50,7 +50,7 @@ private fun DisplayPlayers(
 ) {
     LazyColumn(
         modifier = Modifier.fillMaxSize(),
-        verticalArrangement = Arrangement.spacedBy(8.dp)
+        verticalArrangement = Arrangement.spacedBy(4.dp)
     ) {
         items(
             items = players,
@@ -77,7 +77,7 @@ private fun PlayerItem(
                 navigateToPlayerDetailScreen(player.id)
             }
             .fillMaxWidth()
-            .height(60.dp)
+            .height(56.dp)
     ) {
         PlayerItemNumber(
             modifier = Modifier

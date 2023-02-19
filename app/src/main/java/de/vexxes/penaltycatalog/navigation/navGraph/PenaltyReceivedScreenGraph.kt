@@ -7,17 +7,17 @@ import de.vexxes.penaltycatalog.navigation.Graph
 import de.vexxes.penaltycatalog.navigation.Screen
 import de.vexxes.penaltycatalog.navigation.ScreenNavigation
 import de.vexxes.penaltycatalog.navigation.composables.penaltyReceived.penaltyReceivedDetailComposable
-import de.vexxes.penaltycatalog.navigation.composables.penaltyReceived.penaltyHistoryEditComposable
+import de.vexxes.penaltycatalog.navigation.composables.penaltyReceived.penaltyReceivedEditComposable
 import de.vexxes.penaltycatalog.navigation.composables.penaltyReceived.penaltyReceivedListComposable
 import de.vexxes.penaltycatalog.viewmodels.PenaltyReceivedViewModel
 
-fun NavGraphBuilder.penaltyReceivedGraph(
+fun NavGraphBuilder.penaltyReceivedScreensGraph(
     navController: NavController,
     penaltyReceivedViewModel: PenaltyReceivedViewModel
 ) {
     navigation(
         startDestination = ScreenNavigation.PenaltyReceived.route,
-        route = Graph.HISTORY
+        route = Graph.PENALTY_RECEIVED
     ) {
         penaltyReceivedListComposable(
             penaltyReceivedViewModel = penaltyReceivedViewModel,
@@ -39,7 +39,7 @@ fun NavGraphBuilder.penaltyReceivedGraph(
             }
         )
 
-        penaltyHistoryEditComposable(
+        penaltyReceivedEditComposable(
             penaltyReceivedViewModel = penaltyReceivedViewModel,
             navigateBack = { navController.popBackStack() }
         )

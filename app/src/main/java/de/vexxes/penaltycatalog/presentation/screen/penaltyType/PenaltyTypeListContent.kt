@@ -59,7 +59,8 @@ private fun DisplayPenalties(
     navigateToPenaltyDetailScreen: (penaltyId: String) -> Unit
 ) {
     LazyColumn(
-        modifier = Modifier.fillMaxSize()
+        modifier = Modifier.fillMaxSize(),
+        verticalArrangement = Arrangement.spacedBy(4.dp)
     ) {
         items(
             items = penalties,

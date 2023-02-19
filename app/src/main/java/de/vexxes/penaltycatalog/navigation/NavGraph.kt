@@ -14,10 +14,12 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
-import de.vexxes.penaltycatalog.navigation.navGraph.penaltyReceivedGraph
+import de.vexxes.penaltycatalog.navigation.navGraph.eventScreensGraph
+import de.vexxes.penaltycatalog.navigation.navGraph.penaltyReceivedScreensGraph
 import de.vexxes.penaltycatalog.navigation.navGraph.penaltyScreensGraph
 import de.vexxes.penaltycatalog.navigation.navGraph.playerScreensGraph
 import de.vexxes.penaltycatalog.ui.theme.Typography
+import de.vexxes.penaltycatalog.viewmodels.EventViewModel
 import de.vexxes.penaltycatalog.viewmodels.PenaltyReceivedViewModel
 import de.vexxes.penaltycatalog.viewmodels.PenaltyTypeViewModel
 import de.vexxes.penaltycatalog.viewmodels.PlayerViewModel
@@ -26,9 +28,9 @@ object Graph {
     const val ROOT = "root_graph"
     const val PENALTY = "penalty_graph"
     const val PLAYER = "player_graph"
-    const val HISTORY = "history_graph"
-    const val CANCELLATIONS = "cancellations_graph"
-    const val EVENTS = "events_graph"
+    const val PENALTY_RECEIVED = "penalty_received_graph"
+    const val CANCELLATIONS = "cancellation_graph"
+    const val EVENTS = "event_graph"
 }
 
 @Composable
@@ -37,7 +39,8 @@ fun SetupNavGraph(
     navController: NavHostController,
     playerViewModel: PlayerViewModel,
     penaltyTypeViewModel: PenaltyTypeViewModel,
-    penaltyReceivedViewModel: PenaltyReceivedViewModel
+    penaltyReceivedViewModel: PenaltyReceivedViewModel,
+    eventViewModel: EventViewModel
 ) {
     NavHost(
         modifier = Modifier.padding(paddingValues),
@@ -55,7 +58,7 @@ fun SetupNavGraph(
             playerViewModel = playerViewModel
         )
 
-        penaltyReceivedGraph(
+        penaltyReceivedScreensGraph(
             navController = navController,
             penaltyReceivedViewModel = penaltyReceivedViewModel
         )
@@ -65,10 +68,11 @@ fun SetupNavGraph(
             ScreenText(text = ScreenNavigation.Cancellations.name)
         }
 
-        composable(route = ScreenNavigation.Events.route) {
-            // TODO Call events screen
-            ScreenText(text = ScreenNavigation.Events.name)
-        }
+        eventScreensGraph(
+            navController = navController,
+            eventViewModel = eventViewModel
+        )
+
     }
 }
 
@@ -78,7 +82,8 @@ fun MainScreen(
     navController: NavHostController,
     playerViewModel: PlayerViewModel,
     penaltyTypeViewModel: PenaltyTypeViewModel,
-    penaltyReceivedViewModel: PenaltyReceivedViewModel
+    penaltyReceivedViewModel: PenaltyReceivedViewModel,
+    eventViewModel: EventViewModel
 ) {
     Scaffold(
         bottomBar = { BottomBar(navController = navController) }
@@ -88,7 +93,8 @@ fun MainScreen(
             navController = navController,
             playerViewModel = playerViewModel,
             penaltyTypeViewModel = penaltyTypeViewModel,
-            penaltyReceivedViewModel = penaltyReceivedViewModel
+            penaltyReceivedViewModel = penaltyReceivedViewModel,
+            eventViewModel = eventViewModel
         )
     }
 }

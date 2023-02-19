@@ -21,9 +21,9 @@ class PlayerRepositoryImpl @Inject constructor(
         }
     }
 
-    override suspend fun getPlayerById(id: String): Player? {
+    override suspend fun getPlayerById(playerId: String): Player? {
         return try {
-            playerKtorApi.getPlayerById(playerId = id)
+            playerKtorApi.getPlayerById(playerId = playerId)
         } catch (e: Exception) {
             Log.d("PlayerRepositoryImpl", e.toString())
             null
@@ -48,18 +48,18 @@ class PlayerRepositoryImpl @Inject constructor(
         }
     }
 
-    override suspend fun updatePlayer(id: String, player: Player): Boolean {
+    override suspend fun updatePlayer(playerId: String, player: Player): Boolean {
         return try {
-            playerKtorApi.updatePlayer(id = id, player = player)
+            playerKtorApi.updatePlayer(playerId = playerId, player = player)
         } catch (e: Exception) {
             Log.d("PlayerRepositoryImpl", e.toString())
             false
         }
     }
 
-    override suspend fun deletePlayer(id: String): Boolean {
+    override suspend fun deletePlayer(playerId: String): Boolean {
         return try {
-            playerKtorApi.deletePlayer(playerId = id)
+            playerKtorApi.deletePlayer(playerId = playerId)
         } catch (e: Exception) {
             Log.d("PlayerRepositoryImpl", e.toString())
             false

@@ -163,7 +163,7 @@ class PlayerViewModel @Inject constructor(
         viewModelScope.launch {
             try {
                 val response = withContext(Dispatchers.IO) {
-                    playerRepository.getPlayerById(id = playerId)
+                    playerRepository.getPlayerById(playerId = playerId)
                 }
 
                 if (response != null) {
@@ -238,7 +238,7 @@ class PlayerViewModel @Inject constructor(
                 if (verifyPlayer()) {
                     val response = withContext(Dispatchers.IO) {
                         playerRepository.updatePlayer(
-                            id = playerUiState.value.id,
+                            playerId = playerUiState.value.id,
                             player = createPlayer()
                         )
                     }
@@ -263,7 +263,7 @@ class PlayerViewModel @Inject constructor(
             try {
                 val response = withContext(Dispatchers.IO) {
                     playerRepository.deletePlayer(
-                        id = playerUiState.value.id
+                        playerId = playerUiState.value.id
                     )
                 }
 
