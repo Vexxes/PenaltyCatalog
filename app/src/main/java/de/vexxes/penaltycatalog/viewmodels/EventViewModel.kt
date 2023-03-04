@@ -6,8 +6,12 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
+import de.vexxes.penaltycatalog.domain.enums.PlayerState
 import de.vexxes.penaltycatalog.domain.model.Event
+import de.vexxes.penaltycatalog.domain.model.EventPlayerAvailability
+import de.vexxes.penaltycatalog.domain.model.Player
 import de.vexxes.penaltycatalog.domain.repository.EventRepository
+import de.vexxes.penaltycatalog.domain.repository.PlayerRepository
 import de.vexxes.penaltycatalog.domain.uievent.EventUiEvent
 import de.vexxes.penaltycatalog.domain.uievent.SearchUiEvent
 import de.vexxes.penaltycatalog.domain.uistate.EventUiState
@@ -20,11 +24,13 @@ import javax.inject.Inject
 
 @HiltViewModel
 class EventViewModel @Inject constructor(
-    private val eventRepository: EventRepository
+    private val eventRepository: EventRepository,
+    private val playerRepository: PlayerRepository
 ): ViewModel() {
 
-
+    // TODO: Puzzle all players corresponding to players together, so not every player is shown in the detail view
     val events: MutableState<List<Event>> = mutableStateOf(emptyList())
+    private val allAvailablePlayers: MutableState<List<Player>> = mutableStateOf(emptyList())
 
     var eventUiState: MutableState<EventUiState> = mutableStateOf(EventUiState())
         private set
@@ -39,9 +45,18 @@ class EventViewModel @Inject constructor(
 
     init {
         getAllEvents()
+        getAllPlayers()
     }
 
     private fun convertResponseToEvent(event: Event) {
+        val eventAvailablePlayers: MutableList<Player> = mutableListOf()
+
+        event.players.forEach { player ->
+            allAvailablePlayers.value.find { player.playerId == it.id }?.let {
+                eventAvailablePlayers.add(it)
+            }
+        }
+
         eventUiState.value = eventUiState.value.copy(
             id = event.id,
             title = event.title,
@@ -49,12 +64,29 @@ class EventViewModel @Inject constructor(
             startOfMeeting = event.startOfMeeting,
             address = event.address,
             description = event.description,
-            players = event.players,
+            eventAvailablePlayers = eventAvailablePlayers.sortedWith(compareBy({ it.lastName }, { it.firstName } )),
+            playerAvailability = event.players,
             type = event.type
         )
     }
 
     private fun createEvent(): Event {
+        // Create a list with all players, that exist at the moment of creation
+        val playerAvailability: MutableList<EventPlayerAvailability> = mutableListOf()
+        allAvailablePlayers.value.forEach { player ->
+            playerAvailability.add(
+                EventPlayerAvailability(
+                    playerId = player.id
+                )
+            )
+        }
+
+        // Copy the playerAvailabilityList
+            eventUiState.value = eventUiState.value.copy(
+            playerAvailability = playerAvailability
+        )
+
+        // Create a event, that will be returned
         return Event(
             id = eventUiState.value.id,
             title = eventUiState.value.title,
@@ -62,9 +94,33 @@ class EventViewModel @Inject constructor(
             startOfMeeting = eventUiState.value.startOfMeeting,
             address = eventUiState.value.address,
             description = eventUiState.value.description,
-            players = eventUiState.value.players,
+            players = eventUiState.value.playerAvailability,
             type = eventUiState.value.type
         )
+    }
+
+    private fun getAllPlayers() {
+        requestState.value = RequestState.Loading
+
+        viewModelScope.launch {
+            try {
+                val response = withContext(Dispatchers.IO) {
+                    playerRepository.getAllPlayers()
+                }
+
+                if (response.isNotEmpty()) {
+                    requestState.value = RequestState.Success
+                    allAvailablePlayers.value = response
+                    allAvailablePlayers.value = allAvailablePlayers.value.sortedBy { it.lastName }
+                } else {
+                    requestState.value = RequestState.Idle
+                }
+                Log.d("EventViewModel", response.toString())
+            } catch (e: Exception) {
+                requestState.value = RequestState.Error
+                Log.d("EventViewModel", e.toString())
+            }
+        }
     }
 
     private fun verifyEvent(): Boolean {
@@ -92,8 +148,9 @@ class EventViewModel @Inject constructor(
                     events.value = events.value.sortedBy { it.startOfEvent }
                 } else {
                     requestState.value = RequestState.Idle
+                    events.value = emptyList()
                 }
-                Log.d("EventViewModel", response.toString())
+                Log.d("EventViewModel", "$response")
             } catch (e: Exception) {
                 requestState.value = RequestState.Error
                 Log.d("EventViewModel", e.toString())
@@ -133,6 +190,7 @@ class EventViewModel @Inject constructor(
             try {
                 if (verifyEvent()) {
                     val response = withContext(Dispatchers.IO) {
+                        Log.d("EventViewModel", createEvent().toString())
                         eventRepository.postEvent(
                             event = createEvent()
                         )
@@ -170,6 +228,35 @@ class EventViewModel @Inject constructor(
                     }
                     Log.d("EventViewModel", "${eventUiState.value.id} ${eventUiState.value.titleError} successfully updated")
                 }
+            } catch (e: Exception) {
+                requestState.value = RequestState.Error
+                Log.d("EventViewModel", e.toString())
+            }
+        }
+    }
+
+    private fun updatePlayerAvailability(eventId: String, playerAvailability: EventPlayerAvailability) {
+        requestState.value = RequestState.Loading
+
+        viewModelScope.launch {
+            try {
+                val response = withContext(Dispatchers.IO) {
+                    eventRepository.playerEvent(
+                        eventId = eventId,
+                        playerAvailability = playerAvailability
+                    )
+                }
+
+                if (response) {
+                    requestState.value = RequestState.Success
+                    updateEvent.value = true
+                    getEventById(eventId = eventUiState.value.id)
+                }
+
+                Log.d(
+                    "EventViewModel",
+                    "${eventUiState.value.id} ${playerAvailability.playerId} -> ${playerAvailability.playerState} successfully updated"
+                )
             } catch (e: Exception) {
                 requestState.value = RequestState.Error
                 Log.d("EventViewModel", e.toString())
@@ -235,13 +322,19 @@ class EventViewModel @Inject constructor(
                     description = event.description
                 )
             }
-            is EventUiEvent.PlayersChanged -> {
+            is EventUiEvent.PlayerAvailabilityChanged -> {
                 eventUiState.value = eventUiState.value.copy(
-                    players = event.players
+                    playerAvailability = event.players
+                )
+            }
+            is EventUiEvent.TypeChanged -> {
+                eventUiState.value = eventUiState.value.copy(
+                    type = event.type
                 )
             }
         }
     }
+
     fun onSearchUiEvent(event: SearchUiEvent) {
         when (event) {
             is SearchUiEvent.SearchAppBarStateChanged -> {
@@ -256,7 +349,27 @@ class EventViewModel @Inject constructor(
                 )
                 /* TODO: Add search feature */
             }
-
         }
+    }
+
+    // Cycle to all possible playerStates  in following order:
+    // UNDEFINED -> PRESENT -> CANCELED -> PAID_BEER -> NOT_PRESENT
+    fun changePlayerAvailability(playerId: String) {
+        val newPlayerState = when(eventUiState.value.playerAvailability.find { it.playerId == playerId }?.playerState) {
+            PlayerState.UNDEFINED -> PlayerState.PRESENT
+            PlayerState.PRESENT -> PlayerState.CANCELED
+            PlayerState.CANCELED -> PlayerState.PAID_BEER
+            PlayerState.PAID_BEER -> PlayerState.NOT_PRESENT
+            PlayerState.NOT_PRESENT -> PlayerState.UNDEFINED
+            null -> TODO()
+        }
+
+        updatePlayerAvailability(
+            eventId = eventUiState.value.id,
+            playerAvailability = EventPlayerAvailability(
+                playerId = playerId,
+                playerState = newPlayerState
+            )
+        )
     }
 }

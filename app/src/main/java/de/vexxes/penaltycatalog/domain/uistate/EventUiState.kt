@@ -2,6 +2,7 @@ package de.vexxes.penaltycatalog.domain.uistate
 
 import de.vexxes.penaltycatalog.domain.enums.EventType
 import de.vexxes.penaltycatalog.domain.model.EventPlayerAvailability
+import de.vexxes.penaltycatalog.domain.model.Player
 import kotlinx.datetime.Clock
 import kotlinx.datetime.LocalDateTime
 import kotlinx.datetime.TimeZone
@@ -14,7 +15,8 @@ data class EventUiState(
     val startOfMeeting: LocalDateTime = Clock.System.now().toLocalDateTime(TimeZone.UTC),
     val address: String = "",
     val description: String = "",
-    val players: List<EventPlayerAvailability> = emptyList(),
+    val eventAvailablePlayers: List<Player> = emptyList(),
+    val playerAvailability: List<EventPlayerAvailability> = emptyList(),
     val type: EventType = EventType.TRAINING,
     val titleError: Boolean = false
 )

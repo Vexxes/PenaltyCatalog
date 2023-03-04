@@ -1,5 +1,6 @@
 package de.vexxes.penaltycatalog.presentation.screen.penaltyReceived
 
+import android.content.res.Configuration
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.padding
@@ -19,6 +20,7 @@ import de.vexxes.penaltycatalog.domain.model.playerExample
 import de.vexxes.penaltycatalog.domain.uievent.PenaltyReceivedUiEvent
 import de.vexxes.penaltycatalog.domain.uistate.PenaltyReceivedUiState
 import de.vexxes.penaltycatalog.domain.uistate.penaltyReceivedUiStateExample1
+import de.vexxes.penaltycatalog.ui.theme.PenaltyCatalogTheme
 import de.vexxes.penaltycatalog.viewmodels.PenaltyReceivedViewModel
 import kotlinx.datetime.LocalDate
 
@@ -91,7 +93,8 @@ private fun PenaltyReceivedEditScaffold(
 }
 
 @Composable
-@Preview(showBackground = true)
+@Preview(name = "Light Theme", showBackground = true)
+@Preview(name = "Dark Theme", showBackground = true, uiMode = Configuration.UI_MODE_NIGHT_YES)
 private fun PenaltyReceivedEditScreenPreview() {
     val penalties = listOf(
         penaltyExample1(),
@@ -105,14 +108,16 @@ private fun PenaltyReceivedEditScreenPreview() {
         playerExample()
     )
 
-    PenaltyReceivedEditScaffold(
-        penaltyReceivedUiState = penaltyReceivedUiStateExample1(),
-        penalties = penalties,
-        players = players,
-        onPenaltyIdChanged = { },
-        onPlayerIdChanged = { },
-        onTimeOfPenaltyChanged = { },
-        onBackClicked = { },
-        onSaveClicked = { }
-    )
+    PenaltyCatalogTheme {
+        PenaltyReceivedEditScaffold(
+            penaltyReceivedUiState = penaltyReceivedUiStateExample1(),
+            penalties = penalties,
+            players = players,
+            onPenaltyIdChanged = { },
+            onPlayerIdChanged = { },
+            onTimeOfPenaltyChanged = { },
+            onBackClicked = { },
+            onSaveClicked = { }
+        )
+    }
 }

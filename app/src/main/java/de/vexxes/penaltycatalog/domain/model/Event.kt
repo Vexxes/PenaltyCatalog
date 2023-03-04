@@ -12,7 +12,7 @@ data class Event(
     val startOfMeeting: LocalDateTime,
     val address: String = "",
     val description: String = "",
-    val players: List<EventPlayerAvailability> = emptyList(),
+    val players: List<EventPlayerAvailability>,
     val type: EventType
 )
 
@@ -22,6 +22,7 @@ fun eventExample1(): Event {
         startOfEvent = LocalDateTime.parse("2023-03-12T16:30"),
         startOfMeeting = LocalDateTime.parse("2023-03-12T15:30"),
         address = "Schulstraße, 49661 Cloppenburg",
+        players = emptyList(),
         type = EventType.GAME
     )
 }
@@ -39,6 +40,7 @@ fun eventExample2(): Event {
                 "Gast: TuS FRISIA Goldenstedt\n" +
                 "Halle: Garrel, SZ (809115)\n" +
                 "Adresse: St.-Johannes-Straße, 49681 Garrel",
+        players = emptyList(),
         type = EventType.GAME
     )
 }
@@ -49,6 +51,7 @@ fun eventExample3(): Event {
         startOfEvent = LocalDateTime.parse("2023-04-28T20:30"),
         startOfMeeting = LocalDateTime.parse("2023-04-28T20:15"),
         address = "An der Marienschule, 49424 Goldenstedt",
+        players = emptyList(),
         type = EventType.TRAINING
     )
 }

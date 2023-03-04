@@ -1,6 +1,7 @@
 package de.vexxes.penaltycatalog.presentation.screen.events
 
 import android.content.Intent
+import android.content.res.Configuration.UI_MODE_NIGHT_YES
 import android.net.Uri
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.layout.Box
@@ -14,9 +15,12 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.tooling.preview.Preview
 import de.vexxes.penaltycatalog.component.BackDeleteEditTopBar
 import de.vexxes.penaltycatalog.component.DeleteAlertDialog
 import de.vexxes.penaltycatalog.domain.uistate.EventUiState
+import de.vexxes.penaltycatalog.domain.uistate.eventUiStateExample1
+import de.vexxes.penaltycatalog.ui.theme.PenaltyCatalogTheme
 import de.vexxes.penaltycatalog.viewmodels.EventViewModel
 
 @Composable
@@ -57,7 +61,8 @@ fun EventDetailScreen(
             val mapIntent = Intent(Intent.ACTION_VIEW, gmmIntentUri)
             mapIntent.setPackage("com.google.android.apps.maps")
             context.startActivity(mapIntent)
-        }
+        },
+        onAvailabilityChanged = { eventViewModel.changePlayerAvailability(it) }
     )
 }
 
@@ -68,7 +73,8 @@ private fun EventDetailScreen(
     onBackClicked: () -> Unit,
     onDeleteClicked: () -> Unit,
     onEditClicked: () -> Unit,
-    onMapsClicked: () -> Unit
+    onMapsClicked: () -> Unit,
+    onAvailabilityChanged: (String) -> Unit
 ) {
     Scaffold(
         topBar = {
@@ -83,9 +89,26 @@ private fun EventDetailScreen(
             Box(modifier = Modifier.padding(it)) {
                 EventDetailContent(
                     eventUiState = eventUiState,
-                    onMapsClicked = onMapsClicked
+                    onMapsClicked = onMapsClicked,
+                    onAvailabilityChanged = onAvailabilityChanged
                 )
             }
         }
     )
+}
+
+@Composable
+@Preview(name = "Light Theme", showBackground = true)
+@Preview(name = "Dark Theme", showBackground = true, uiMode = UI_MODE_NIGHT_YES)
+private fun EventDetailScreenPreview() {
+    PenaltyCatalogTheme {
+        EventDetailScreen(
+            eventUiState = eventUiStateExample1(),
+            onBackClicked = { },
+            onDeleteClicked = { },
+            onEditClicked = { },
+            onMapsClicked = { },
+            onAvailabilityChanged = {  }
+        )
+    }
 }

@@ -31,7 +31,7 @@ class PenaltyReceivedViewModel @Inject constructor(
     private val playerRepository: PlayerRepository
 ) : ViewModel() {
 
-    val penaltyReceivedUiStateList: MutableState<List<PenaltyReceivedUiState>> = mutableStateOf(emptyList())
+    val penaltyReceivedUiStates: MutableState<List<PenaltyReceivedUiState>> = mutableStateOf(emptyList())
     val penaltyReceived: MutableState<List<PenaltyReceived>> = mutableStateOf(emptyList())
     val penalties: MutableState<List<PenaltyType>> = mutableStateOf(emptyList())
     val players: MutableState<List<Player>> = mutableStateOf(emptyList())
@@ -183,7 +183,7 @@ class PenaltyReceivedViewModel @Inject constructor(
             }
         }
 
-        penaltyReceivedUiStateList.value = tempList.sortedByDescending { it.timeOfPenalty }
+        penaltyReceivedUiStates.value = tempList.sortedByDescending { it.timeOfPenalty }
 
         Log.d("PenaltyReceivedViewModel", "${tempList.toList()}")
     }
@@ -401,10 +401,10 @@ class PenaltyReceivedViewModel @Inject constructor(
         this.penaltyReceivedSort.value = penaltyReceivedSort
 
         when(penaltyReceivedSort) {
-            PenaltyReceivedSort.TIME_OF_PENALTY_ASCENDING -> penaltyReceivedUiStateList.value = penaltyReceivedUiStateList.value.sortedBy { it.timeOfPenalty }
-            PenaltyReceivedSort.TIME_OF_PENALTY_DESCENDING -> penaltyReceivedUiStateList.value = penaltyReceivedUiStateList.value.sortedByDescending { it.timeOfPenalty }
-            PenaltyReceivedSort.NAME_ASCENDING -> penaltyReceivedUiStateList.value = penaltyReceivedUiStateList.value.sortedWith(compareBy({ it.playerName }, { it.timeOfPenalty } ))
-            PenaltyReceivedSort.NAME_DESCENDING -> penaltyReceivedUiStateList.value = penaltyReceivedUiStateList.value.sortedWith(compareByDescending<PenaltyReceivedUiState>{ it.playerName }.thenByDescending { it.timeOfPenalty })
+            PenaltyReceivedSort.TIME_OF_PENALTY_ASCENDING -> penaltyReceivedUiStates.value = penaltyReceivedUiStates.value.sortedBy { it.timeOfPenalty }
+            PenaltyReceivedSort.TIME_OF_PENALTY_DESCENDING -> penaltyReceivedUiStates.value = penaltyReceivedUiStates.value.sortedByDescending { it.timeOfPenalty }
+            PenaltyReceivedSort.NAME_ASCENDING -> penaltyReceivedUiStates.value = penaltyReceivedUiStates.value.sortedWith(compareBy({ it.playerName }, { it.timeOfPenalty } ))
+            PenaltyReceivedSort.NAME_DESCENDING -> penaltyReceivedUiStates.value = penaltyReceivedUiStates.value.sortedWith(compareByDescending<PenaltyReceivedUiState>{ it.playerName }.thenByDescending { it.timeOfPenalty })
         }
     }
 }

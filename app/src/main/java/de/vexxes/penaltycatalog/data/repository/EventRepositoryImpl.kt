@@ -2,8 +2,8 @@ package de.vexxes.penaltycatalog.data.repository
 
 import android.util.Log
 import de.vexxes.penaltycatalog.data.remote.EventKtorApi
-import de.vexxes.penaltycatalog.domain.enums.PlayerState
 import de.vexxes.penaltycatalog.domain.model.Event
+import de.vexxes.penaltycatalog.domain.model.EventPlayerAvailability
 import de.vexxes.penaltycatalog.domain.repository.EventRepository
 import javax.inject.Inject
 
@@ -46,7 +46,7 @@ class EventRepositoryImpl @Inject constructor(
         }
     }
 
-    override suspend fun playerEvent(eventId: String, playerAvailability: PlayerState): Boolean {
+    override suspend fun playerEvent(eventId: String, playerAvailability: EventPlayerAvailability): Boolean {
         return try {
             eventKtorApi.playerEvent(eventId = eventId, playerAvailability = playerAvailability)
         } catch (e: Exception) {

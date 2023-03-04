@@ -1,9 +1,15 @@
 package de.vexxes.penaltycatalog.presentation.screen.events
 
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Map
 import androidx.compose.material3.Icon
@@ -15,10 +21,14 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import de.vexxes.penaltycatalog.R
 import de.vexxes.penaltycatalog.domain.enums.EventType
+import de.vexxes.penaltycatalog.domain.enums.PlayerState
+import de.vexxes.penaltycatalog.domain.model.EventPlayerAvailability
+import de.vexxes.penaltycatalog.domain.model.Player
 import de.vexxes.penaltycatalog.domain.uistate.EventUiState
 import de.vexxes.penaltycatalog.domain.uistate.eventUiStateExample1
 import de.vexxes.penaltycatalog.domain.uistate.eventUiStateExample2
@@ -31,19 +41,28 @@ import java.time.format.DateTimeFormatter
 @Composable
 fun EventDetailContent(
     eventUiState: EventUiState,
-    onMapsClicked: () -> Unit
+    onMapsClicked: () -> Unit,
+    onAvailabilityChanged: (String) -> Unit
 ) {
     Column(
         modifier = Modifier
             .fillMaxSize()
             .padding(8.dp)
+            .verticalScroll(rememberScrollState())
     ) {
         EventHeader(text = eventUiState.title)
         EventType(type = eventUiState.type)
         EventStartOfEvent(dateTime = eventUiState.startOfEvent)
         EventStartOfMeeting(dateTime = eventUiState.startOfMeeting)
-        EventAddress(address = eventUiState.address, onMapsClicked = onMapsClicked)
+
+        if (eventUiState.address.isNotEmpty()) EventAddress(address = eventUiState.address, onMapsClicked = onMapsClicked)
         if (eventUiState.description.isNotEmpty()) EventDescription(description = eventUiState.description)
+
+        PlayerAvailabilityList(
+            players = eventUiState.eventAvailablePlayers,
+            playerAvailabilities = eventUiState.playerAvailability,
+            onAvailabilityChanged = onAvailabilityChanged
+        )
     }
 }
 
@@ -53,7 +72,7 @@ private fun EventHeader(
 ) {
     Text(
         text = text,
-        style = Typography.headlineMedium
+        style = Typography.titleLarge
     )
 }
 
@@ -61,7 +80,10 @@ private fun EventHeader(
 private fun EventType(
     type: EventType
 ) {
-    LabelHeader(text = stringResource(id = R.string.Type))
+    LabelHeader(
+        modifier = Modifier.padding(top = 32.dp),
+        text = stringResource(id = R.string.Type)
+    )
     TextValue(text = stringResource(id = type.nameId))
 }
 
@@ -73,7 +95,10 @@ private fun EventStartOfEvent(
         .ofPattern("eeee, dd. MMMM y HH:mm:ss")
         .format(dateTime.toJavaLocalDateTime())
 
-    LabelHeader(text = stringResource(id = R.string.StartOfEvent))
+    LabelHeader(
+        modifier = Modifier.padding(top = 32.dp),
+        text = stringResource(id = R.string.StartOfEvent)
+    )
     TextValue(text = output)
 }
 
@@ -85,7 +110,10 @@ private fun EventStartOfMeeting(
         .ofPattern("HH:mm")
         .format(dateTime.toJavaLocalDateTime())
 
-    LabelHeader(text = stringResource(id = R.string.StartOfMeeting))
+    LabelHeader(
+        modifier = Modifier.padding(top = 32.dp),
+        text = stringResource(id = R.string.StartOfMeeting)
+    )
     TextValue(text = output)
 }
 
@@ -94,21 +122,28 @@ private fun EventAddress(
     address: String,
     onMapsClicked: () -> Unit
 ) {
-    LabelHeader(text = stringResource(id = R.string.Address))
-
     Row(
+        modifier = Modifier
+            .padding(top = 32.dp)
+            .fillMaxWidth(),
         verticalAlignment = Alignment.CenterVertically
     ) {
-        TextValue(text = address)
+        Column {
+            LabelHeader(text = stringResource(id = R.string.Address))
+            TextValue(text = address)
+        }
 
-        IconButton(
-            onClick = { onMapsClicked() }
-        ) {
-            Icon(
-                modifier = Modifier.padding(8.dp),
-                imageVector = Icons.Outlined.Map,
-                contentDescription = ""
-            )
+        Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.End) {
+            IconButton(
+                onClick = { onMapsClicked() }
+            ) {
+                Icon(
+                    modifier = Modifier
+                        .padding(8.dp),
+                    imageVector = Icons.Outlined.Map,
+                    contentDescription = ""
+                )
+            }
         }
     }
 }
@@ -117,19 +152,86 @@ private fun EventAddress(
 private fun EventDescription(
     description: String
 ) {
-    LabelHeader(text = stringResource(id = R.string.Description))
+    LabelHeader(
+        modifier = Modifier.padding(top = 32.dp),
+        text = stringResource(id = R.string.Description)
+    )
     TextValue(text = description)
 }
+
+@Composable
+private fun PlayerAvailabilityList(
+    players: List<Player>,
+    playerAvailabilities: List<EventPlayerAvailability>,
+    onAvailabilityChanged: (String) -> Unit
+) {
+    val playerCount = players.count()
+    val availablePlayerCount = playerAvailabilities.count {
+        it.playerState == PlayerState.PRESENT ||
+                it.playerState == PlayerState.PAID_BEER
+    }
+    val percentageAvailability = availablePlayerCount.toDouble() / playerCount.toDouble() * 100.0
+
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+    ) {
+        LabelHeader(
+            modifier = Modifier.padding(top = 32.dp),
+            text = stringResource(id = R.string.PlayerAvailbility)
+        )
+
+        LabelHeader(
+            modifier = Modifier
+                .padding(top = 32.dp)
+                .fillMaxWidth(),
+            text = "$availablePlayerCount / $playerCount, $percentageAvailability %",
+            textAlign = TextAlign.End
+        )
+    }
+
+    players.forEach { player ->
+        var playerState = playerAvailabilities.find { it.playerId ==  player.id }?.playerState
+        if (playerState == null) playerState = PlayerState.UNDEFINED
+
+        PlayerAvailabilityItem(
+            player = player,
+            playerState = playerState,
+            onAvailabilityChanged = onAvailabilityChanged
+        )
+    }
+}
+
+@Composable
+private fun PlayerAvailabilityItem(
+    player: Player,
+    playerState: PlayerState,
+    onAvailabilityChanged: (String) -> Unit
+) {
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .height(40.dp)
+            .clickable { onAvailabilityChanged(player.id) },
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        PlayerStateIcon(playerState = playerState)
+        TextValue(text = "${player.lastName}, ${player.firstName}")
+    }
+}
+
 @Composable
 private fun LabelHeader(
-    text: String
+    modifier: Modifier = Modifier,
+    text: String,
+    textAlign: TextAlign? = null
 ) {
     Text(
-        modifier = Modifier
-            .padding(top = 32.dp),
+        modifier = modifier,
         text = text,
-        style = Typography.labelLarge.copy(fontWeight = FontWeight.Bold),
-        color = MaterialTheme.colorScheme.onSurfaceVariant
+        style = Typography.labelMedium.copy(fontWeight = FontWeight.Bold),
+        color = MaterialTheme.colorScheme.onSurfaceVariant,
+        textAlign = textAlign
     )
 }
 
@@ -138,10 +240,21 @@ private fun TextValue(
     text: String
 ) {
     Text(
-        modifier = Modifier,
-//            .fillMaxWidth(),
         text = text,
-        style = Typography.titleLarge
+        style = Typography.bodyLarge
+    )
+}
+
+@Composable
+private fun PlayerStateIcon(
+    playerState: PlayerState
+) {
+    Icon(
+        modifier = Modifier
+            .padding(end = 8.dp),
+        imageVector = playerState.icon,
+        contentDescription = "",
+        tint = playerState.tintColor
     )
 }
 
@@ -150,7 +263,8 @@ private fun TextValue(
 private fun EventDetailContentPreview1() {
     EventDetailContent(
         eventUiState = eventUiStateExample1(),
-        onMapsClicked = { }
+        onMapsClicked = { },
+        onAvailabilityChanged = { }
     )
 }
 
@@ -159,7 +273,8 @@ private fun EventDetailContentPreview1() {
 private fun EventDetailContentPreview2() {
     EventDetailContent(
         eventUiState = eventUiStateExample2(),
-        onMapsClicked = { }
+        onMapsClicked = { },
+        onAvailabilityChanged = { }
     )
 }
 
@@ -168,6 +283,19 @@ private fun EventDetailContentPreview2() {
 private fun EventDetailContentPreview3() {
     EventDetailContent(
         eventUiState = eventUiStateExample3(),
-        onMapsClicked = { }
+        onMapsClicked = { },
+        onAvailabilityChanged = { }
     )
+}
+
+@Composable
+@Preview(showBackground = true)
+private fun PlayerStateIconPreview() {
+    Row {
+        PlayerStateIcon(playerState = PlayerState.PAID_BEER)
+        PlayerStateIcon(playerState = PlayerState.PRESENT)
+        PlayerStateIcon(playerState = PlayerState.CANCELED)
+        PlayerStateIcon(playerState = PlayerState.NOT_PRESENT)
+        PlayerStateIcon(playerState = PlayerState.UNDEFINED)
+    }
 }

@@ -1,7 +1,7 @@
 package de.vexxes.penaltycatalog.data.remote
 
-import de.vexxes.penaltycatalog.domain.enums.PlayerState
 import de.vexxes.penaltycatalog.domain.model.Event
+import de.vexxes.penaltycatalog.domain.model.EventPlayerAvailability
 import retrofit2.http.Body
 import retrofit2.http.DELETE
 import retrofit2.http.GET
@@ -23,7 +23,7 @@ interface EventKtorApi {
     suspend fun updateEvent(@Path("eventId") eventId: String, @Body event: Event): Boolean
 
     @PUT("event-player/{eventId}")
-    suspend fun playerEvent(@Path("eventId") eventId: String, @Body playerAvailability: PlayerState): Boolean
+    suspend fun playerEvent(@Path("eventId") eventId: String, @Body playerAvailability: EventPlayerAvailability): Boolean
 
     @DELETE("event/{eventId}")
     suspend fun deleteEvent(@Path("eventId") eventId: String): Boolean

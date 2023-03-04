@@ -37,6 +37,7 @@ fun PlayerEditContent(
     Column(
         modifier = Modifier
             .fillMaxSize()
+            .padding(8.dp)
             .verticalScroll(rememberScrollState())
     ) {
         PlayerNumber(
@@ -129,7 +130,7 @@ private fun PlayerNumber(
 ) {
     InputOutlinedField(
         modifier = Modifier
-            .padding(8.dp),
+            .padding(top = 8.dp),
         text = number,
         onTextChanged = onNumberChanged,
         isError = numberError,
@@ -151,7 +152,7 @@ private fun PlayerName(
     Column {
         InputOutlinedField(
             modifier = Modifier
-                .padding(8.dp),
+                .padding(top = 8.dp),
             text = firstName,
             onTextChanged = onFirstNameChanged,
             isError = firstNameError,
@@ -160,7 +161,7 @@ private fun PlayerName(
         )
         InputOutlinedField(
             modifier = Modifier
-                .padding(8.dp),
+                .padding(top = 8.dp),
             text = lastName,
             onTextChanged = onLastNameChanged,
             isError = lastNameError,
@@ -177,7 +178,7 @@ private fun PlayerBirthday(
 ) {
     InputOutlinedField(
         modifier = Modifier
-            .padding(8.dp),
+            .padding(top = 8.dp),
         text = birthday,
         onTextChanged = onBirthdayChanged,
         label = stringResource(id = R.string.Birthday)
@@ -196,7 +197,7 @@ private fun PlayerAddress(
     Column {
         InputOutlinedField(
             modifier = Modifier
-                .padding(8.dp),
+                .padding(top = 8.dp),
             text = street,
             onTextChanged = onStreetChanged,
             label = stringResource(id = R.string.Street)
@@ -204,7 +205,7 @@ private fun PlayerAddress(
         Row {
             InputOutlinedField(
                 modifier = Modifier
-                    .padding(8.dp)
+                    .padding(top = 8.dp, end = 8.dp)
                     .weight(0.5f),
                 text = zipcode,
                 onTextChanged = onZipcodeChanged,
@@ -213,7 +214,7 @@ private fun PlayerAddress(
             )
             InputOutlinedField(
                 modifier = Modifier
-                    .padding(8.dp)
+                    .padding(top = 8.dp, start = 8.dp)
                     .weight(0.5f),
                 text = city,
                 onTextChanged = onCityChanged,
@@ -240,7 +241,7 @@ private fun PlayerStats(
         Row {
             InputOutlinedField(
                 modifier = Modifier
-                    .padding(8.dp)
+                    .padding(top = 8.dp, end = 8.dp)
                     .weight(0.5f),
                 text = playedGames,
                 onTextChanged = onPlayedGamesChanged,
@@ -249,7 +250,7 @@ private fun PlayerStats(
             )
             InputOutlinedField(
                 modifier = Modifier
-                    .padding(8.dp)
+                    .padding(top = 8.dp, start = 8.dp)
                     .weight(0.5f),
                 text = goals,
                 onTextChanged = onGoalsChanged,
@@ -260,7 +261,7 @@ private fun PlayerStats(
         Row {
             InputOutlinedField(
                 modifier = Modifier
-                    .padding(8.dp)
+                    .padding(top = 8.dp, end = 8.dp)
                     .weight(0.33f),
                 text = yellowCards,
                 onTextChanged = onYellowCardsChanged,
@@ -269,7 +270,7 @@ private fun PlayerStats(
             )
             InputOutlinedField(
                 modifier = Modifier
-                    .padding(8.dp)
+                    .padding(top = 8.dp, start = 8.dp)
                     .weight(0.33f),
                 text = twoMinutes,
                 onTextChanged = onTwoMinutesChanged,
@@ -278,7 +279,7 @@ private fun PlayerStats(
             )
             InputOutlinedField(
                 modifier = Modifier
-                    .padding(8.dp)
+                    .padding(top = 8.dp, start = 8.dp)
                     .weight(0.33f),
                 text = redCards,
                 onTextChanged = onRedCardsChanged,

@@ -5,6 +5,6 @@ import kotlinx.serialization.Serializable
 
 @Serializable
 data class EventPlayerAvailability(
-    val playerId: String,
-    val playerState: PlayerState
+    val playerId: String = "",
+    val playerState: PlayerState = PlayerState.UNDEFINED
 )

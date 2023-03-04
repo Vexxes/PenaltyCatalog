@@ -7,6 +7,7 @@ import de.vexxes.penaltycatalog.navigation.Graph
 import de.vexxes.penaltycatalog.navigation.Screen
 import de.vexxes.penaltycatalog.navigation.ScreenNavigation
 import de.vexxes.penaltycatalog.navigation.composables.event.eventDetailComposable
+import de.vexxes.penaltycatalog.navigation.composables.event.eventEditComposable
 import de.vexxes.penaltycatalog.navigation.composables.event.eventListComposable
 import de.vexxes.penaltycatalog.viewmodels.EventViewModel
 
@@ -38,7 +39,10 @@ fun NavGraphBuilder.eventScreensGraph(
             }
         )
 
-        /* TODO Call all composable screens */
+        eventEditComposable(
+            eventViewModel = eventViewModel,
+            navigateBack = { navController.popBackStack() }
+        )
 
     }
 }

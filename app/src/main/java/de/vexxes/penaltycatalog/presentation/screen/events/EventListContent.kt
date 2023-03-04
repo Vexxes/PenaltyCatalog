@@ -76,12 +76,12 @@ private fun EventItem(
             .clickable { navigateToEventDetailScreen(event.id) }
             .fillMaxWidth()
             .padding(start = 8.dp, end = 8.dp)
-            .height(88.dp),
+            .height(72.dp),
         verticalArrangement = Arrangement.Center
     ) {
         EventTitle(text = event.title)
         EventStart(dateTime = event.startOfEvent)
-        EventSubText(text = event.address)
+//        EventSubText(text = event.address)
     }
 
     Divider()
@@ -112,20 +112,6 @@ private fun EventStart(
         modifier = Modifier
             .fillMaxWidth(),
         text = output,
-        color = MaterialTheme.colorScheme.onSurfaceVariant,
-        style = Typography.bodyMedium,
-        textAlign = TextAlign.Left
-    )
-}
-
-@Composable
-private fun EventSubText(
-    text: String
-) {
-    Text(
-        modifier = Modifier
-            .fillMaxWidth(),
-        text = text,
         color = MaterialTheme.colorScheme.onSurfaceVariant,
         style = Typography.bodyMedium,
         textAlign = TextAlign.Left

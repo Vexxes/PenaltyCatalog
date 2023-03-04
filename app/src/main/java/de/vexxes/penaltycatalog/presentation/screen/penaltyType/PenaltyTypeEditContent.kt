@@ -5,7 +5,9 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowDropDown
 import androidx.compose.material3.DropdownMenuItem
@@ -46,6 +48,8 @@ fun PenaltyTypeEditContent(
     Column(
         modifier = Modifier
             .fillMaxSize()
+            .padding(8.dp)
+            .verticalScroll(rememberScrollState())
     ) {
         PenaltyTypeName(
             text = penaltyTypeUiState.name,
@@ -78,8 +82,6 @@ private fun PenaltyTypeName(
     onTextChanged: (String) -> Unit
 ) {
     InputOutlinedField(
-        modifier = Modifier
-            .padding(8.dp),
         text = text,
         onTextChanged = onTextChanged,
         label = stringResource(id = R.string.PenaltyName),
@@ -101,8 +103,7 @@ private fun PenaltyType(
 
     ExposedDropdownMenuBox(
         modifier = Modifier
-            .fillMaxWidth()
-            .padding(8.dp),
+            .fillMaxWidth(),
         expanded = expanded,
         onExpandedChange = { expanded = !expanded }
     ) {
@@ -128,8 +129,6 @@ private fun PenaltyType(
 
         /*TODO Why does the width of dropdownmenu item not match to the parent container*/
         ExposedDropdownMenu(
-            modifier = Modifier
-                .padding(8.dp),
             expanded = expanded,
             onDismissRequest = { expanded = false }
         ) {
@@ -158,8 +157,7 @@ private fun PenaltyTypeDescription(
 ) {
     InputOutlinedField(
         modifier = Modifier
-            .fillMaxSize()
-            .padding(8.dp),
+            .fillMaxSize(),
         text = text,
         onTextChanged = onTextChanged,
         label = stringResource(id = R.string.PenaltyDescription)
@@ -175,8 +173,6 @@ private fun PenaltyTypeAmount(
     var text by remember { mutableStateOf(value) }
 
     InputOutlinedField(
-        modifier = Modifier
-            .padding(8.dp),
         text = text,
         onTextChanged = { newText: String ->
             if (newText.length <= Long.MAX_VALUE.toString().length && newText.isDigitsOnly()) {

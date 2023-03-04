@@ -66,7 +66,7 @@ fun PenaltyReceivedListScreen(
     navigateToPenaltyReceivedDetailScreen: (penaltyHistoryId: String) -> Unit,
     navigateToPenaltyReceivedEditScreen: (penaltyHistoryId: String) -> Unit
 ) {
-    val penaltyReceivedUiStateList by penaltyReceivedViewModel.penaltyReceivedUiStateList
+    val penaltyReceivedUiStates by penaltyReceivedViewModel.penaltyReceivedUiStates
     val requestState by penaltyReceivedViewModel.requestState
     val searchUiState by penaltyReceivedViewModel.searchUiState
     
@@ -86,7 +86,7 @@ fun PenaltyReceivedListScreen(
             onSortClicked = {
                 penaltyReceivedViewModel.onSortEvent(it)
             },
-            penaltyReceivedUiStateList = penaltyReceivedUiStateList,
+            penaltyReceivedUiStateList = penaltyReceivedUiStates,
             navigateToPenaltyReceivedDetailScreen = navigateToPenaltyReceivedDetailScreen,
             navigateToPenaltyReceivedEditScreen = navigateToPenaltyReceivedEditScreen
         )
