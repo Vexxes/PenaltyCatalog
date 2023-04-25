@@ -37,6 +37,8 @@ import de.vexxes.penaltycatalog.ui.theme.Typography
 import de.vexxes.penaltycatalog.ui.theme.colorSchemeSegButtons
 import de.vexxes.penaltycatalog.domain.enums.FilterPaidState
 import kotlinx.datetime.LocalDate
+import kotlinx.datetime.toJavaLocalDate
+import java.time.format.DateTimeFormatter
 
 @Composable
 fun PenaltyReceivedListContent(
@@ -114,6 +116,10 @@ private fun PenaltyReceivedItem(
     color: Color = colorSchemeSegButtons().foregroundNotPaid,
     navigateToPenaltyReceivedDetailScreen: (penaltyReceivedId: String) -> Unit
 ) {
+    val formattedTimeOfPenalty = DateTimeFormatter
+        .ofPattern("eeee, dd. MMMM y")
+        .format(penaltyReceived.timeOfPenalty.toJavaLocalDate())
+
     Row(
         modifier = Modifier
             .clickable {
@@ -138,7 +144,7 @@ private fun PenaltyReceivedItem(
             )
 
             PenaltyReceivedSubText(
-                text = penaltyReceived.timeOfPenalty.toString()
+                text = formattedTimeOfPenalty
             )
         }
 

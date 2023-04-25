@@ -16,8 +16,8 @@ import androidx.compose.material3.ExposedDropdownMenuBox
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -28,7 +28,7 @@ import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.maxkeppeker.sheets.core.models.base.rememberSheetState
+import com.maxkeppeker.sheets.core.models.base.rememberUseCaseState
 import com.maxkeppeler.sheets.calendar.CalendarDialog
 import com.maxkeppeler.sheets.calendar.models.CalendarConfig
 import com.maxkeppeler.sheets.calendar.models.CalendarSelection
@@ -43,6 +43,8 @@ import de.vexxes.penaltycatalog.domain.uistate.penaltyReceivedUiStateExample2
 import de.vexxes.penaltycatalog.domain.uistate.penaltyReceivedUiStateExample3
 import de.vexxes.penaltycatalog.ui.theme.Typography
 import kotlinx.datetime.LocalDate
+import kotlinx.datetime.toJavaLocalDate
+import java.time.format.DateTimeFormatter
 
 @Composable
 fun PenaltyReceivedEditContent(
@@ -87,7 +89,11 @@ private fun PenaltyReceivedDatePicker(
     timeOfPenalty: LocalDate,
     onTimeOfPenaltyChanged: (LocalDate) -> Unit
 ) {
-    val calendarSheetState = rememberSheetState()
+    val calendarSheetState = rememberUseCaseState()
+
+    val output = DateTimeFormatter
+        .ofPattern("eeee, dd. MMMM y")
+        .format(timeOfPenalty.toJavaLocalDate())
 
     CalendarDialog(
         state = calendarSheetState,
@@ -105,7 +111,7 @@ private fun PenaltyReceivedDatePicker(
         modifier = Modifier.clickable { calendarSheetState.show() },
         enabled = false,
         readOnly = true,
-        text = timeOfPenalty.toString(),
+        text = output,
         onTextChanged = { },
         label = stringResource(id = R.string.TimeOfPenalty),
         trailingIcon = {
@@ -117,13 +123,13 @@ private fun PenaltyReceivedDatePicker(
                 )
             }
         },
-        colors = TextFieldDefaults.outlinedTextFieldColors(
+        colors = OutlinedTextFieldDefaults.colors(
             disabledTextColor = MaterialTheme.colorScheme.onSurface,
             disabledBorderColor = MaterialTheme.colorScheme.outline,
-            disabledPlaceholderColor = MaterialTheme.colorScheme.onSurfaceVariant,
-            disabledLabelColor = MaterialTheme.colorScheme.onSurfaceVariant,
             disabledLeadingIconColor = MaterialTheme.colorScheme.onSurfaceVariant,
-            disabledTrailingIconColor = MaterialTheme.colorScheme.onSurfaceVariant
+            disabledTrailingIconColor = MaterialTheme.colorScheme.onSurfaceVariant,
+            disabledLabelColor = MaterialTheme.colorScheme.onSurfaceVariant,
+            disabledPlaceholderColor = MaterialTheme.colorScheme.onSurfaceVariant,
         )
     )
 }
@@ -303,7 +309,7 @@ private fun PenaltyReceivedEditContentPreview3() {
 @Composable
 @Preview(showBackground = true)
 private fun CalendarPreview() {
-    val calendarSheetState = rememberSheetState()
+    val calendarSheetState = rememberUseCaseState()
     calendarSheetState.show()
 
     CalendarDialog(

@@ -81,4 +81,14 @@ sealed class Screen(val route: String, val argument: String = "") {
         route = "event_edit_screen",
         argument = "/{eventId}"
     )
+
+    object CancellationDetail: Screen(
+        route = "cancellation_detail_screen",
+        argument = "/{cancellationId}"
+    )
+
+    object CancellationEdit: Screen(
+        route = "cancellation_edit_screen",
+        argument = "/{cancellationId}"
+    )
 }

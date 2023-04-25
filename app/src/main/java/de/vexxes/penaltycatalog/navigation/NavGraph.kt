@@ -1,24 +1,18 @@
 package de.vexxes.penaltycatalog.navigation
 
 import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.wrapContentHeight
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.text.style.TextAlign
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
-import androidx.navigation.compose.composable
+import de.vexxes.penaltycatalog.navigation.navGraph.cancellationScreensGraph
 import de.vexxes.penaltycatalog.navigation.navGraph.eventScreensGraph
 import de.vexxes.penaltycatalog.navigation.navGraph.penaltyReceivedScreensGraph
 import de.vexxes.penaltycatalog.navigation.navGraph.penaltyScreensGraph
 import de.vexxes.penaltycatalog.navigation.navGraph.playerScreensGraph
-import de.vexxes.penaltycatalog.ui.theme.Typography
+import de.vexxes.penaltycatalog.viewmodels.CancellationViewModel
 import de.vexxes.penaltycatalog.viewmodels.EventViewModel
 import de.vexxes.penaltycatalog.viewmodels.PenaltyReceivedViewModel
 import de.vexxes.penaltycatalog.viewmodels.PenaltyTypeViewModel
@@ -40,7 +34,8 @@ fun SetupNavGraph(
     playerViewModel: PlayerViewModel,
     penaltyTypeViewModel: PenaltyTypeViewModel,
     penaltyReceivedViewModel: PenaltyReceivedViewModel,
-    eventViewModel: EventViewModel
+    eventViewModel: EventViewModel,
+    cancellationViewModel: CancellationViewModel
 ) {
     NavHost(
         modifier = Modifier.padding(paddingValues),
@@ -63,10 +58,10 @@ fun SetupNavGraph(
             penaltyReceivedViewModel = penaltyReceivedViewModel
         )
 
-        composable(route = ScreenNavigation.Cancellations.route) {
-            // TODO Call cancellations screen
-            ScreenText(text = ScreenNavigation.Cancellations.name)
-        }
+        cancellationScreensGraph(
+            navController = navController,
+            cancellationViewModel = cancellationViewModel
+        )
 
         eventScreensGraph(
             navController = navController,
@@ -76,14 +71,14 @@ fun SetupNavGraph(
     }
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun MainScreen(
     navController: NavHostController,
     playerViewModel: PlayerViewModel,
     penaltyTypeViewModel: PenaltyTypeViewModel,
     penaltyReceivedViewModel: PenaltyReceivedViewModel,
-    eventViewModel: EventViewModel
+    eventViewModel: EventViewModel,
+    cancellationViewModel: CancellationViewModel
 ) {
     Scaffold(
         bottomBar = { BottomBar(navController = navController) }
@@ -94,20 +89,8 @@ fun MainScreen(
             playerViewModel = playerViewModel,
             penaltyTypeViewModel = penaltyTypeViewModel,
             penaltyReceivedViewModel = penaltyReceivedViewModel,
-            eventViewModel = eventViewModel
+            eventViewModel = eventViewModel,
+            cancellationViewModel = cancellationViewModel
         )
     }
-}
-
-// TODO: Remove later
-@Composable
-fun ScreenText(text: String) {
-    Text(
-        modifier = Modifier
-            .fillMaxSize()
-            .wrapContentHeight(Alignment.CenterVertically),
-        text = text,
-        textAlign = TextAlign.Center,
-        style = Typography.headlineLarge
-    )
 }

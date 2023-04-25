@@ -24,18 +24,24 @@ import de.vexxes.penaltycatalog.domain.model.eventExample2
 import de.vexxes.penaltycatalog.domain.model.eventExample3
 import de.vexxes.penaltycatalog.ui.theme.PenaltyCatalogTheme
 import de.vexxes.penaltycatalog.ui.theme.Typography
+import kotlinx.datetime.Clock
 import kotlinx.datetime.LocalDateTime
+import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toJavaLocalDateTime
+import kotlinx.datetime.toLocalDateTime
 import java.time.format.DateTimeFormatter
 
 @Composable
 fun EventListContent(
     events: List<Event>,
+    showPastEvents: Boolean,
     navigateToEventDetailScreen: (eventId: String) -> Unit
 ) {
-    if (events.isNotEmpty()) {
+    val filteredEvents = if (!showPastEvents) events.filter { it.startOfEvent.date > Clock.System.now().toLocalDateTime(TimeZone.UTC).date } else events
+
+    if (filteredEvents.isNotEmpty()) {
         DisplayEvents(
-            events = events,
+            events = filteredEvents,
             navigateToEventDetailScreen = navigateToEventDetailScreen
         )
     } else {
@@ -81,7 +87,6 @@ private fun EventItem(
     ) {
         EventTitle(text = event.title)
         EventStart(dateTime = event.startOfEvent)
-//        EventSubText(text = event.address)
     }
 
     Divider()
@@ -105,7 +110,7 @@ private fun EventStart(
     dateTime: LocalDateTime
 ) {
     val output = DateTimeFormatter
-        .ofPattern("eeee, dd. MMMM y HH:mm:ss")
+        .ofPattern("eeee, dd. MMMM y HH:mm")
         .format(dateTime.toJavaLocalDateTime())
 
     Text(
@@ -139,6 +144,7 @@ private fun EventListContentPreview() {
                 eventExample2(),
                 eventExample3()
             ),
+            showPastEvents = false,
             navigateToEventDetailScreen = { }
         )
     }

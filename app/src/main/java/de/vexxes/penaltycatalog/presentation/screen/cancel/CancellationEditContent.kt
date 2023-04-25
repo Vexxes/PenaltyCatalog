@@ -1,10 +1,9 @@
-package de.vexxes.penaltycatalog.presentation.screen.events
+package de.vexxes.penaltycatalog.presentation.screen.cancel
 
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
@@ -34,88 +33,62 @@ import com.maxkeppeler.sheets.date_time.DateTimeDialog
 import com.maxkeppeler.sheets.date_time.models.DateTimeSelection
 import de.vexxes.penaltycatalog.R
 import de.vexxes.penaltycatalog.component.InputOutlinedField
-import de.vexxes.penaltycatalog.domain.enums.EventType
-import de.vexxes.penaltycatalog.domain.uistate.EventUiState
-import de.vexxes.penaltycatalog.domain.uistate.eventUiStateExample1
-import de.vexxes.penaltycatalog.domain.uistate.eventUiStateExample2
-import de.vexxes.penaltycatalog.domain.uistate.eventUiStateExample3
+import de.vexxes.penaltycatalog.domain.model.Event
+import de.vexxes.penaltycatalog.domain.model.Player
+import de.vexxes.penaltycatalog.domain.uistate.CancellationUiState
+import de.vexxes.penaltycatalog.domain.uistate.cancellationUiStateExample1
 import de.vexxes.penaltycatalog.ui.theme.Typography
+import kotlinx.datetime.Clock
 import kotlinx.datetime.LocalDateTime
+import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toJavaLocalDateTime
 import kotlinx.datetime.toKotlinLocalDateTime
+import kotlinx.datetime.toLocalDateTime
 import java.time.format.DateTimeFormatter
 
 @Composable
-fun EventEditContent(
-    eventUiState: EventUiState,
-    onEventTitleChanged: (String) -> Unit,
-    onEventTypeChanged: (EventType) -> Unit,
-    onStartOfEventChanged: (LocalDateTime) -> Unit,
-    onStartOfMeetingChanged: (LocalDateTime) -> Unit,
-    onAddressChanged: (String) -> Unit,
-    onDescriptionChanged: (String) -> Unit
+fun CancellationEditContent(
+    cancellationUiState: CancellationUiState,
+    players: List<Player>,
+    events: List<Event>,
+    onPlayerIdChanged: (String) -> Unit,
+    onTimeOfCancellationChanged: (LocalDateTime) -> Unit,
+    onEventIdChanged: (String) -> Unit
 ) {
     Column(
         modifier = Modifier
-            .padding(8.dp)
             .fillMaxSize()
+            .padding(8.dp)
             .verticalScroll(rememberScrollState())
     ) {
-        EventTitle(
-            text = eventUiState.title,
-            error = eventUiState.titleError,
-            onTextChanged = onEventTitleChanged
+        CancellationPlayerExposedMenu(
+            text = cancellationUiState.playerName,
+            error = cancellationUiState.playerIdError,
+            playerList = players,
+            onPlayerIdChanged = onPlayerIdChanged
         )
 
-        EventTypeExposedMenu(
-            eventType = eventUiState.type,
-            onEventTypeChanged = onEventTypeChanged
+        CancellationEventExposedMenu(
+            text = cancellationUiState.eventTitle,
+            error = cancellationUiState.eventIdError,
+            eventList = events,
+            onEventIdChanged = onEventIdChanged
         )
 
-        EventDatePicker(
-            dateTime = eventUiState.startOfEvent,
-            onDateTimeChanged = onStartOfEventChanged
-        )
-
-        EventDatePicker(
-            dateTime = eventUiState.startOfMeeting,
-            onDateTimeChanged = onStartOfMeetingChanged
-        )
-
-        EventAddress(
-            text = eventUiState.address,
-            onTextChanged = onAddressChanged
-        )
-
-        EventDescription(
-            text = eventUiState.description,
-            onTextChanged = onDescriptionChanged
+        CancellationDatePicker(
+            dateTime = cancellationUiState.timeOfCancellation,
+            onDateTimeChanged = onTimeOfCancellationChanged
         )
     }
 }
 
-@Composable
-private fun EventTitle(
-    text: String,
-    error: Boolean,
-    onTextChanged: (String) -> Unit
-) {
-    InputOutlinedField(
-        modifier = Modifier
-            .height(90.dp),
-        text = text,
-        onTextChanged = onTextChanged,
-        label = stringResource(id = R.string.EventTitle),
-        required = true,
-        isError = error
-    )
-}
-
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-private fun EventTypeExposedMenu(
-    eventType: EventType,
-    onEventTypeChanged: (EventType) -> Unit
+private fun CancellationPlayerExposedMenu(
+    text: String,
+    error: Boolean,
+    playerList: List<Player>,
+    onPlayerIdChanged: (String) -> Unit
 ) {
     var expanded by remember { mutableStateOf(false) }
     val angle: Float by animateFloatAsState(
@@ -134,9 +107,9 @@ private fun EventTypeExposedMenu(
                     expanded = true
                 },
             readOnly = true,
-            text = stringResource(id = eventType.nameId),
+            text = text,
             onTextChanged = { },
-            label = stringResource(id = R.string.Type),
+            label = stringResource(id = R.string.Player),
             required = true,
             trailingIcon = {
                 IconButton(
@@ -148,22 +121,23 @@ private fun EventTypeExposedMenu(
                         contentDescription = ""
                     )
                 }
-            }
+            },
+            isError = error
         )
 
         ExposedDropdownMenu(
             expanded = expanded,
             onDismissRequest = { expanded = false },
         ) {
-            EventType.values().forEach { eventType ->
+            playerList.sortedWith(compareBy { it.lastName }).forEach { player ->
                 DropdownMenuItem(
                     onClick = {
                         expanded = false
-                        onEventTypeChanged(eventType)
+                        onPlayerIdChanged(player.id)
                     },
                     text = {
                         Text(
-                            text = stringResource(id = eventType.nameId),
+                            text = "${player.lastName}, ${player.firstName}",
                             style = Typography.bodyLarge
                         )
                     }
@@ -173,13 +147,86 @@ private fun EventTypeExposedMenu(
     }
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
-private fun EventDatePicker(
+private fun CancellationEventExposedMenu(
+    text: String,
+    error: Boolean,
+    eventList: List<Event>,
+    onEventIdChanged: (String) -> Unit
+) {
+    var expanded by remember { mutableStateOf(false) }
+    val angle: Float by animateFloatAsState(
+        targetValue = if (expanded) 180f else 0f, label = "Animate expanded icon"
+    )
+
+    ExposedDropdownMenuBox(
+        modifier = Modifier.padding(top = 16.dp),
+        expanded = expanded,
+        onExpandedChange = { expanded = it }
+    ) {
+        InputOutlinedField(
+            modifier = Modifier
+                .menuAnchor()
+                .clickable {
+                    expanded = true
+                },
+            readOnly = true,
+            text = text,
+            onTextChanged = { },
+            label = stringResource(id = R.string.Events),
+            required = true,
+            trailingIcon = {
+                IconButton(
+                    modifier = Modifier
+                        .rotate(angle),
+                    onClick = { expanded = true }) {
+                    Icon(
+                        imageVector = Icons.Default.ArrowDropDown,
+                        contentDescription = ""
+                    )
+                }
+            },
+            isError = error
+        )
+
+        ExposedDropdownMenu(
+            expanded = expanded,
+            onDismissRequest = { expanded = false },
+        ) {
+            eventList.sortedWith(compareBy { it.startOfEvent.date }).forEach { event ->
+
+                // Show only future events
+                if (Clock.System.now().toLocalDateTime(TimeZone.UTC).date < event.startOfEvent.date) {
+                    val output = DateTimeFormatter
+                        .ofPattern("eeee, dd. MMMM y")
+                        .format(event.startOfEvent.toJavaLocalDateTime())
+
+                    DropdownMenuItem(
+                        onClick = {
+                            expanded = false
+                            onEventIdChanged(event.id)
+                        },
+                        text = {
+                            Text(
+                                text = output,
+                                style = Typography.bodyLarge
+                            )
+                        }
+                    )
+                }
+            }
+        }
+    }
+}
+
+@Composable
+private fun CancellationDatePicker(
     dateTime: LocalDateTime,
     onDateTimeChanged: (LocalDateTime) -> Unit
 ) {
     val output = DateTimeFormatter
-        .ofPattern("eeee, dd. MMMM y HH:mm")
+        .ofPattern("eeee, dd. MMMM y HH:mm:ss")
         .format(dateTime.toJavaLocalDateTime())
 
     val dateTimeSheetState = rememberUseCaseState()
@@ -189,6 +236,9 @@ private fun EventDatePicker(
     DateTimeDialog(
         state = dateTimeSheetState,
         selection = DateTimeSelection.DateTime { newDateTime ->
+            println(newDateTime)
+            println(java.time.LocalDateTime.now())
+
             onDateTimeChanged(newDateTime.toKotlinLocalDateTime())
         }
     )
@@ -201,7 +251,7 @@ private fun EventDatePicker(
         readOnly = true,
         text = output,
         onTextChanged = { },
-        label = stringResource(id = R.string.StartOfEvent),
+        label = stringResource(id = R.string.TimeOfCancellation),
         trailingIcon = {
             IconButton(
                 onClick = { openDateTimeDialog() }) {
@@ -223,73 +273,14 @@ private fun EventDatePicker(
 }
 
 @Composable
-private fun EventAddress(
-    text: String,
-    onTextChanged: (String) -> Unit
-) {
-    InputOutlinedField(
-        modifier = Modifier
-            .padding(top = 16.dp),
-        text = text,
-        onTextChanged = onTextChanged,
-        label = stringResource(id = R.string.Address)
-    )
-}
-
-@Composable
-private fun EventDescription(
-    text: String,
-    onTextChanged: (String) -> Unit
-) {
-    InputOutlinedField(
-        modifier = Modifier
-            .padding(top = 16.dp)
-            .fillMaxSize()
-            .height(210.dp),
-        text = text,
-        onTextChanged = onTextChanged,
-        label = stringResource(id = R.string.EventDescription)
-    )
-}
-
-@Composable
 @Preview(showBackground = true)
-private fun EventEditContentPreview1() {
-    EventEditContent(
-        eventUiState = eventUiStateExample1(),
-        onEventTitleChanged = { },
-        onEventTypeChanged = { },
-        onStartOfEventChanged = { },
-        onStartOfMeetingChanged = { },
-        onAddressChanged = { },
-        onDescriptionChanged = { }
-    )
-}
-
-@Composable
-@Preview(showBackground = true)
-private fun EventEditContentPreview2() {
-    EventEditContent(
-        eventUiState = eventUiStateExample2(),
-        onEventTitleChanged = { },
-        onEventTypeChanged = { },
-        onStartOfEventChanged = { },
-        onStartOfMeetingChanged = { },
-        onAddressChanged = { },
-        onDescriptionChanged = { }
-    )
-}
-
-@Composable
-@Preview(showBackground = true)
-private fun EventEditContentPreview3() {
-    EventEditContent(
-        eventUiState = eventUiStateExample3(),
-        onEventTitleChanged = { },
-        onEventTypeChanged = { },
-        onStartOfEventChanged = { },
-        onStartOfMeetingChanged = { },
-        onAddressChanged = { },
-        onDescriptionChanged = { }
+private fun CancellationEditContentPreview1() {
+    CancellationEditContent(
+        cancellationUiState = cancellationUiStateExample1(),
+        players = emptyList(),
+        events = emptyList(),
+        onPlayerIdChanged = { },
+        onTimeOfCancellationChanged = { },
+        onEventIdChanged = { }
     )
 }

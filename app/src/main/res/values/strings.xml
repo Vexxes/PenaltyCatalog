@@ -10,9 +10,13 @@
     <string name="AddPlayer">Add Player</string>
     <string name="AddPenalty">Add Penalty</string>
     <string name="AddEvent">Add Event</string>
+    <string name="AddCancellation">Add Cancellation</string>
+
 
     <string name="SearchTopBar">Search</string>
     <string name="SortTopBar">Sort</string>
+    <string name="MoreVertTopBar">More</string>
+    <string name="ShowPastEvents">Show past events</string>
     <string name="FilterListTopBar">Filter List</string>
     <string name="SearchPlaceholder">Search..</string>
     <string name="CloseTopBar">Close</string>
@@ -50,6 +54,7 @@
     <string name="FieldEmpty">field can\'t be empty</string>
     <string name="Category">Category</string>
     <string name="Player">Player</string>
+    <string name="TimeOfCancellation">Time of cancellation</string>
     <string name="TimeOfPenalty">Time of penalty</string>
     <string name="TimeOfPenaltyPaid">Time of penalty paid</string>
     <string name="PenaltyName">penalty name</string>
@@ -73,5 +78,7 @@
     <string name="EventTitle">event title</string>
     <string name="EventDescription">event description</string>
     <string name="PlayerAvailbility">player availability</string>
+    <string name="Today">Today</string>
+    <string name="CancelledFor">Cancelled for:</string>
 
 </resources>

@@ -1,8 +1,6 @@
-package de.vexxes.penaltycatalog.presentation.screen.events
+package de.vexxes.penaltycatalog.presentation.screen.cancel
 
-import android.content.Intent
-import android.content.res.Configuration.UI_MODE_NIGHT_YES
-import android.net.Uri
+import android.content.res.Configuration
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.padding
@@ -13,25 +11,23 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
 import de.vexxes.penaltycatalog.component.BackDeleteEditTopBar
 import de.vexxes.penaltycatalog.component.DeleteAlertDialog
-import de.vexxes.penaltycatalog.domain.uistate.EventUiState
-import de.vexxes.penaltycatalog.domain.uistate.eventUiStateExample1
+import de.vexxes.penaltycatalog.domain.uistate.CancellationUiState
+import de.vexxes.penaltycatalog.domain.uistate.cancellationUiStateExample1
 import de.vexxes.penaltycatalog.ui.theme.PenaltyCatalogTheme
-import de.vexxes.penaltycatalog.viewmodels.EventViewModel
+import de.vexxes.penaltycatalog.viewmodels.CancellationViewModel
 
 @Composable
-fun EventDetailScreen(
-    eventViewModel: EventViewModel,
+fun CancellationDetailScreen(
+    cancellationViewModel: CancellationViewModel,
     onBackClicked: () -> Unit,
     onDeleteClicked: (String) -> Unit,
     onEditClicked: (String) -> Unit
 ) {
-    val eventUiState by eventViewModel.eventUiState
+    val cancellationUiState by cancellationViewModel.cancellationUiState
     var showAlertDialog by remember { mutableStateOf(false) }
-    val context = LocalContext.current
 
     BackHandler {
         onBackClicked()
@@ -40,39 +36,31 @@ fun EventDetailScreen(
     if (showAlertDialog) {
         DeleteAlertDialog(
             title = "Permanently delete?",
-            text = "Event will be deleted permanently and can't be restored",
+            text = "Cancellation will be deleted permanently and can't be restored",
             onDismissRequest = { showAlertDialog = false },
             onConfirmClicked = {
                 showAlertDialog = false
-                onDeleteClicked(eventUiState.id)
+                onDeleteClicked(cancellationUiState.id)
             },
             onDismissButton = { showAlertDialog = false}
         )
     }
 
-    EventDetailScreen(
-        eventUiState = eventUiState,
+    CancellationDetailScreen(
+        cancellationUiState = cancellationUiState,
         onBackClicked = onBackClicked,
         onDeleteClicked = { showAlertDialog = true },
-        onEditClicked = { onEditClicked(eventUiState.id) },
-        onMapsClicked = {
-            val gmmIntentUri = Uri.parse("geo:0,0?q=" + Uri.encode(eventUiState.address))
-            val mapIntent = Intent(Intent.ACTION_VIEW, gmmIntentUri)
-            mapIntent.setPackage("com.google.android.apps.maps")
-            context.startActivity(mapIntent)
-        },
-        onAvailabilityChanged = { eventViewModel.changePlayerAvailability(it) }
+        onEditClicked = { onEditClicked(cancellationUiState.id) }
     )
+
 }
 
 @Composable
-private fun EventDetailScreen(
-    eventUiState: EventUiState,
+private fun CancellationDetailScreen(
+    cancellationUiState: CancellationUiState,
     onBackClicked: () -> Unit,
     onDeleteClicked: () -> Unit,
-    onEditClicked: () -> Unit,
-    onMapsClicked: () -> Unit,
-    onAvailabilityChanged: (String) -> Unit
+    onEditClicked: () -> Unit
 ) {
     Scaffold(
         topBar = {
@@ -85,10 +73,8 @@ private fun EventDetailScreen(
 
         content = {
             Box(modifier = Modifier.padding(it)) {
-                EventDetailContent(
-                    eventUiState = eventUiState,
-                    onMapsClicked = onMapsClicked,
-                    onAvailabilityChanged = onAvailabilityChanged
+                CancellationDetailContent(
+                    cancellationUiState = cancellationUiState
                 )
             }
         }
@@ -97,16 +83,14 @@ private fun EventDetailScreen(
 
 @Composable
 @Preview(name = "Light Theme", showBackground = true)
-@Preview(name = "Dark Theme", showBackground = true, uiMode = UI_MODE_NIGHT_YES)
+@Preview(name = "Dark Theme", showBackground = true, uiMode = Configuration.UI_MODE_NIGHT_YES)
 private fun EventDetailScreenPreview() {
     PenaltyCatalogTheme {
-        EventDetailScreen(
-            eventUiState = eventUiStateExample1(),
+        CancellationDetailScreen(
+            cancellationUiState = cancellationUiStateExample1(),
             onBackClicked = { },
             onDeleteClicked = { },
-            onEditClicked = { },
-            onMapsClicked = { },
-            onAvailabilityChanged = {  }
+            onEditClicked = { }
         )
     }
 }

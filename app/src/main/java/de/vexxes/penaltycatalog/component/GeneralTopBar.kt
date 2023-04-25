@@ -4,6 +4,7 @@ import android.content.res.Configuration.UI_MODE_NIGHT_YES
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Close
+import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material.icons.filled.Sort
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -37,13 +38,15 @@ fun GeneralTopBar(
     onSearchTextChanged: (String) -> Unit,
     onCloseClicked: () -> Unit,
     sortIcon: @Composable () -> Unit = {},
+    moreVertIcon: @Composable () -> Unit = {}
 ) {
 
     when(searchAppBarState) {
         SearchAppBarState.CLOSED -> {
             DefaultTopBar(
                 onSearchClicked = onDefaultSearchClicked,
-                sortIcon = sortIcon
+                sortIcon = sortIcon,
+                moreVertIcon = moreVertIcon
             )
         }
 
@@ -61,7 +64,8 @@ fun GeneralTopBar(
 @Composable
 private fun DefaultTopBar(
     onSearchClicked: () -> Unit,
-    sortIcon: @Composable () -> Unit = {}
+    sortIcon: @Composable () -> Unit = {},
+    moreVertIcon: @Composable () -> Unit = {}
 ) {
     TopAppBar(
         title = { },
@@ -69,6 +73,7 @@ private fun DefaultTopBar(
         actions = {
             SearchIcon(onSearchClicked = onSearchClicked)
             sortIcon()
+            moreVertIcon()
         }
     )
 }
@@ -100,7 +105,19 @@ private fun DummySortIcon() {
     }
 }
 
-@OptIn(ExperimentalMaterial3Api::class, ExperimentalComposeUiApi::class)
+@Composable
+private fun DummyMoreVertIcon() {
+    IconButton(
+        onClick = { }
+    ) {
+        Icon(
+            imageVector = Icons.Default.MoreVert,
+            contentDescription = stringResource(id = R.string.MoreVertTopBar)
+        )
+    }
+}
+
+@OptIn(ExperimentalComposeUiApi::class)
 @Composable
 private fun SearchTopBar(
     text: String,
@@ -175,6 +192,17 @@ fun SearchTopBarPreview() {
             text = "",
             onSearchTextChanged = { },
             onCloseClicked = { }
+        )
+    }
+}
+
+@Preview(name = "Light Theme", showBackground = true)
+@Preview(name = "Dark Theme", showBackground = true, uiMode = UI_MODE_NIGHT_YES)@Composable
+fun SearchAndMoreVertTopBarPreview() {
+    PenaltyCatalogTheme {
+        DefaultTopBar(
+            onSearchClicked = { },
+            moreVertIcon = { DummyMoreVertIcon() }
         )
     }
 }
