@@ -4,14 +4,17 @@ import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
+import de.vexxes.penaltycatalog.data.remote.CancellationKtorApi
 import de.vexxes.penaltycatalog.data.remote.EventKtorApi
 import de.vexxes.penaltycatalog.data.remote.PenaltyReceivedKtorApi
 import de.vexxes.penaltycatalog.data.remote.PenaltyTypeKtorApi
 import de.vexxes.penaltycatalog.data.remote.PlayerKtorApi
+import de.vexxes.penaltycatalog.data.repository.CancellationRepositoryImpl
 import de.vexxes.penaltycatalog.data.repository.EventRepositoryImpl
 import de.vexxes.penaltycatalog.data.repository.PenaltyReceivedRepositoryImpl
 import de.vexxes.penaltycatalog.data.repository.PenaltyTypeRepositoryImpl
 import de.vexxes.penaltycatalog.data.repository.PlayerRepositoryImpl
+import de.vexxes.penaltycatalog.domain.repository.CancellationRepository
 import de.vexxes.penaltycatalog.domain.repository.EventRepository
 import de.vexxes.penaltycatalog.domain.repository.PenaltyReceivedRepository
 import de.vexxes.penaltycatalog.domain.repository.PenaltyTypeRepository
@@ -62,4 +65,13 @@ object RepositoryModule {
         )
     }
 
+    @Provides
+    @Singleton
+    fun provideCancellationRepository(
+        cancellationKtorApi: CancellationKtorApi
+    ): CancellationRepository {
+        return CancellationRepositoryImpl(
+            cancellationKtorApi = cancellationKtorApi
+        )
+    }
 }

@@ -92,7 +92,7 @@ private fun EventStartOfEvent(
     dateTime: LocalDateTime
 ) {
     val output = DateTimeFormatter
-        .ofPattern("eeee, dd. MMMM y HH:mm:ss")
+        .ofPattern("eeee, dd. MMMM y HH:mm")
         .format(dateTime.toJavaLocalDateTime())
 
     LabelHeader(

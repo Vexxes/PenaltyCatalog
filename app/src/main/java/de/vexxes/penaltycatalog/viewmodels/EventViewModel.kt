@@ -6,6 +6,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
+import de.vexxes.penaltycatalog.domain.enums.EventType
 import de.vexxes.penaltycatalog.domain.enums.PlayerState
 import de.vexxes.penaltycatalog.domain.model.Event
 import de.vexxes.penaltycatalog.domain.model.EventPlayerAvailability
@@ -20,6 +21,8 @@ import de.vexxes.penaltycatalog.util.RequestState
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import kotlinx.datetime.toJavaLocalDateTime
+import kotlinx.datetime.toKotlinLocalDateTime
 import javax.inject.Inject
 
 @HiltViewModel
@@ -300,8 +303,12 @@ class EventViewModel @Inject constructor(
             }
 
             is EventUiEvent.StartOfEventChanged -> {
+                // If event type is "Training", subtract 15 minutes from startOfMeeting, cause that's a fixed time. For other type a individual dateTime has to be set
+                val startOfMeeting = if (eventUiState.value.type == EventType.TRAINING) event.startOfEvent.toJavaLocalDateTime().minusMinutes(15).toKotlinLocalDateTime() else eventUiState.value.startOfMeeting
+
                 eventUiState.value = eventUiState.value.copy(
-                    startOfEvent = event.startOfEvent
+                    startOfEvent = event.startOfEvent,
+                    startOfMeeting = startOfMeeting
                 )
             }
 
@@ -361,7 +368,7 @@ class EventViewModel @Inject constructor(
             PlayerState.CANCELED -> PlayerState.PAID_BEER
             PlayerState.PAID_BEER -> PlayerState.NOT_PRESENT
             PlayerState.NOT_PRESENT -> PlayerState.UNDEFINED
-            null -> TODO()
+            null -> PlayerState.UNDEFINED
         }
 
         updatePlayerAvailability(

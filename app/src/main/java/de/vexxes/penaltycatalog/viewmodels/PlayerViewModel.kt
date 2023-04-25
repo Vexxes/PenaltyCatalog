@@ -127,7 +127,7 @@ class PlayerViewModel @Inject constructor(
             lastNameError = lastNameResult
         )
 
-        return (!(numberResult || firstNameResult || lastNameResult))
+        return !(numberResult || firstNameResult || lastNameResult)
     }
 
     fun getAllPlayers() {
