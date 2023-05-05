@@ -15,6 +15,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
 import de.vexxes.penaltycatalog.navigation.Screen
 import de.vexxes.penaltycatalog.presentation.screen.cancel.CancellationEditScreen
+import de.vexxes.penaltycatalog.util.CANCELLATION_ID
 import de.vexxes.penaltycatalog.viewmodels.CancellationViewModel
 
 fun NavGraphBuilder.cancellationEditComposable(
@@ -22,16 +23,18 @@ fun NavGraphBuilder.cancellationEditComposable(
     navigateBack: () -> Unit
 ) {
     composable(
-        route = Screen.CancellationEdit.route + Screen.CancellationEdit.argument,
-        arguments = listOf(navArgument("cancellationId") {
+        route = Screen.CancellationEdit.route,
+        arguments = listOf(navArgument(CANCELLATION_ID) {
             type = NavType.StringType
+            nullable = true
+            defaultValue = ""
         })
     ) { navBackStackEntry ->
 
         // Get cancellationId from argument
-        val cancellationId = navBackStackEntry.arguments?.getString("cancellationId")
+        val cancellationId = navBackStackEntry.arguments?.getString(CANCELLATION_ID)
         LaunchedEffect(key1 = cancellationId) {
-            if (cancellationId == "-1")
+            if (cancellationId == "")
                 cancellationViewModel.resetCancellationUiState()
         }
 

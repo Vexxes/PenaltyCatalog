@@ -1,9 +1,8 @@
 package de.vexxes.penaltycatalog.presentation.screen.penaltyType
 
-import androidx.activity.compose.BackHandler
+import android.content.res.Configuration.UI_MODE_NIGHT_YES
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -16,6 +15,7 @@ import de.vexxes.penaltycatalog.component.BackDeleteEditTopBar
 import de.vexxes.penaltycatalog.component.DeleteAlertDialog
 import de.vexxes.penaltycatalog.domain.uistate.PenaltyTypeUiState
 import de.vexxes.penaltycatalog.domain.uistate.penaltyTypeUiStateExample1
+import de.vexxes.penaltycatalog.ui.theme.PenaltyCatalogTheme
 import de.vexxes.penaltycatalog.viewmodels.PenaltyTypeViewModel
 
 @Composable
@@ -28,11 +28,7 @@ fun PenaltyTypeDetailScreen(
     val penaltyUiState by penaltyTypeViewModel.penaltyTypeUiState
     var showAlertDialog by remember { mutableStateOf(false) }
 
-    BackHandler {
-        onBackClicked()
-    }
-
-    if(showAlertDialog) {
+    if (showAlertDialog) {
         DeleteAlertDialog(
             title = "Permanently delete?",
             text = "Penalty will be deleted permanently and can't be restored",
@@ -55,7 +51,6 @@ fun PenaltyTypeDetailScreen(
     )
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun PenaltyTypeDetailScreen(
     penaltyTypeUiState: PenaltyTypeUiState,
@@ -82,13 +77,16 @@ private fun PenaltyTypeDetailScreen(
     )
 }
 
-@Preview(showBackground = true)
+@Preview(name = "Light Theme", showBackground = true)
+@Preview(name = "Dark Theme", showBackground = true, uiMode = UI_MODE_NIGHT_YES)
 @Composable
 private fun PenaltyTypeDetailScreenPreview() {
-    PenaltyTypeDetailScreen(
-        penaltyTypeUiState = penaltyTypeUiStateExample1(),
-        onBackClicked = { },
-        onDeleteClicked = { },
-        onEditClicked = { }
-    )
+    PenaltyCatalogTheme {
+        PenaltyTypeDetailScreen(
+            penaltyTypeUiState = penaltyTypeUiStateExample1(),
+            onBackClicked = { },
+            onDeleteClicked = { },
+            onEditClicked = { }
+        )
+    }
 }

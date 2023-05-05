@@ -48,7 +48,9 @@ import de.vexxes.penaltycatalog.ui.theme.colorSchemeSegButtons
 import kotlinx.datetime.Clock
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.TimeZone
+import kotlinx.datetime.toJavaLocalDate
 import kotlinx.datetime.toLocalDateTime
+import java.time.format.DateTimeFormatter
 
 @Composable
 fun PenaltyReceivedDetailContent(
@@ -76,9 +78,9 @@ fun PenaltyReceivedDetailContent(
             value = penaltyReceivedUiState.penaltyValue,
             isBeer = penaltyReceivedUiState.penaltyIsBeer)
 
-        PenaltyReceivedTimeOfPenalty(timeOfPenalty = penaltyReceivedUiState.timeOfPenalty)
+        PenaltyReceivedTime(date = penaltyReceivedUiState.timeOfPenalty, R.string.TimeOfPenalty)
 
-        if (penaltyReceivedUiState.timeOfPenaltyPaid != null) PenaltyReceivedTimeOfPenaltyPaid(timeOfPenaltyPaid = penaltyReceivedUiState.timeOfPenaltyPaid)
+        if (penaltyReceivedUiState.timeOfPenaltyPaid != null) PenaltyReceivedTime(date = penaltyReceivedUiState.timeOfPenaltyPaid, labelId = R.string.TimeOfPenaltyPaid)
     }
 }
 
@@ -140,29 +142,20 @@ private fun PenaltyReceivedAmount(
 }
 
 @Composable
-private fun PenaltyReceivedTimeOfPenalty(
-    timeOfPenalty: LocalDate
+private fun PenaltyReceivedTime(
+    date: LocalDate,
+    labelId: Int
 ) {
-    LabelHeader(text = stringResource(id = R.string.TimeOfPenalty))
+    val output = DateTimeFormatter
+        .ofPattern("eeee, dd. MMMM y")
+        .format(date.toJavaLocalDate())
+
+    LabelHeader(text = stringResource(id = labelId))
 
     Text(
         modifier = Modifier
             .fillMaxWidth(),
-        text = timeOfPenalty.toString(),
-        style = Typography.titleLarge
-    )
-}
-
-@Composable
-private fun PenaltyReceivedTimeOfPenaltyPaid(
-    timeOfPenaltyPaid: LocalDate
-) {
-    LabelHeader(text = stringResource(id = R.string.TimeOfPenaltyPaid))
-
-    Text(
-        modifier = Modifier
-            .fillMaxWidth(),
-        text = timeOfPenaltyPaid.toString(),
+        text = output,
         style = Typography.titleLarge
     )
 }
@@ -212,7 +205,8 @@ private fun ChipBox(
             1f
         } else {
             0f
-        }
+        },
+        label = "alpha-value"
     )
 
     Box(

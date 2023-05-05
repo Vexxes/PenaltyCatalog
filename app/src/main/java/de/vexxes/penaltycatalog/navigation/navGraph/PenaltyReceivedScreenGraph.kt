@@ -5,7 +5,6 @@ import androidx.navigation.NavGraphBuilder
 import androidx.navigation.navigation
 import de.vexxes.penaltycatalog.navigation.Graph
 import de.vexxes.penaltycatalog.navigation.Screen
-import de.vexxes.penaltycatalog.navigation.ScreenNavigation
 import de.vexxes.penaltycatalog.navigation.composables.penaltyReceived.penaltyReceivedDetailComposable
 import de.vexxes.penaltycatalog.navigation.composables.penaltyReceived.penaltyReceivedEditComposable
 import de.vexxes.penaltycatalog.navigation.composables.penaltyReceived.penaltyReceivedListComposable
@@ -16,26 +15,26 @@ fun NavGraphBuilder.penaltyReceivedScreensGraph(
     penaltyReceivedViewModel: PenaltyReceivedViewModel
 ) {
     navigation(
-        startDestination = ScreenNavigation.PenaltyReceived.route,
+        startDestination = Screen.PenaltyReceived.route,
         route = Graph.PENALTY_RECEIVED
     ) {
         penaltyReceivedListComposable(
             penaltyReceivedViewModel = penaltyReceivedViewModel,
-            navigateToPenaltyReceivedDetailScreen = { penaltyReceivedId ->
-                navController.navigate(route = Screen.PenaltyReceivedDetail.route + "/$penaltyReceivedId")
+            navigateToPenaltyReceivedDetailScreen = {
+                navController.navigate(route = Screen.PenaltyReceivedDetail.passPenaltyReceivedId(it))
             },
-            navigateToPenaltyReceivedEditScreen = { penaltyReceivedId ->
-                navController.navigate(route = Screen.PenaltyReceivedEdit.route + "/$penaltyReceivedId")
+            navigateToPenaltyReceivedEditScreen = {
+                navController.navigate(route = Screen.PenaltyReceivedEdit.passPenaltyReceivedId(it))
             }
         )
 
         penaltyReceivedDetailComposable(
             penaltyReceivedViewModel = penaltyReceivedViewModel,
             navigateToPenaltyReceivedList = {
-                navController.navigate(ScreenNavigation.PenaltyReceived.route)
+                navController.popBackStack()
             },
-            onEditClicked = { penaltyReceivedId ->
-                navController.navigate(Screen.PenaltyReceivedEdit.route + "/$penaltyReceivedId")
+            onEditClicked = {
+                navController.navigate(Screen.PenaltyReceivedEdit.passPenaltyReceivedId(it))
             }
         )
 

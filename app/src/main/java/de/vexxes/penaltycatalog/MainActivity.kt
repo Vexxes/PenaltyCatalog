@@ -6,7 +6,7 @@ import androidx.activity.compose.setContent
 import androidx.activity.viewModels
 import androidx.navigation.compose.rememberNavController
 import dagger.hilt.android.AndroidEntryPoint
-import de.vexxes.penaltycatalog.navigation.MainScreen
+import de.vexxes.penaltycatalog.navigation.SetupNavGraph
 import de.vexxes.penaltycatalog.ui.theme.PenaltyCatalogTheme
 import de.vexxes.penaltycatalog.viewmodels.CancellationViewModel
 import de.vexxes.penaltycatalog.viewmodels.EventViewModel
@@ -28,7 +28,7 @@ class MainActivity : ComponentActivity() {
         setContent {
             PenaltyCatalogTheme {
                 val navController = rememberNavController()
-                MainScreen(
+                SetupNavGraph(
                     navController = navController,
                     playerViewModel = playerViewModel,
                     penaltyTypeViewModel = penaltyTypeViewModel,

@@ -5,7 +5,6 @@ import androidx.navigation.NavGraphBuilder
 import androidx.navigation.navigation
 import de.vexxes.penaltycatalog.navigation.Graph
 import de.vexxes.penaltycatalog.navigation.Screen
-import de.vexxes.penaltycatalog.navigation.ScreenNavigation
 import de.vexxes.penaltycatalog.navigation.composables.event.eventDetailComposable
 import de.vexxes.penaltycatalog.navigation.composables.event.eventEditComposable
 import de.vexxes.penaltycatalog.navigation.composables.event.eventListComposable
@@ -16,26 +15,26 @@ fun NavGraphBuilder.eventScreensGraph(
     eventViewModel: EventViewModel
 ) {
     navigation(
-        startDestination = ScreenNavigation.Events.route,
+        startDestination = Screen.Events.route,
         route = Graph.EVENTS
     ) {
         eventListComposable(
             eventViewModel = eventViewModel,
-            navigateToEventDetailScreen = { eventId ->
-                navController.navigate(route = Screen.EventDetail.route + "/$eventId")
+            navigateToEventDetailScreen = {
+                navController.navigate(route = Screen.EventDetail.passEventId(it))
             },
-            navigateToEventEditScreen = { eventId ->
-                navController.navigate(route = Screen.EventEdit.route + "/$eventId")
+            navigateToEventEditScreen = {
+                navController.navigate(route = Screen.EventEdit.passEventId(it))
             }
         )
 
         eventDetailComposable(
             eventViewModel = eventViewModel,
             navigateToEventList = {
-                navController.navigate(ScreenNavigation.Events.route)
+                navController.popBackStack()
             },
-            onEditClicked = { eventId ->
-                navController.navigate(Screen.EventEdit.route + "/$eventId")
+            onEditClicked = {
+                navController.navigate(Screen.EventEdit.passEventId(it))
             }
         )
 
@@ -43,6 +42,5 @@ fun NavGraphBuilder.eventScreensGraph(
             eventViewModel = eventViewModel,
             navigateBack = { navController.popBackStack() }
         )
-
     }
 }

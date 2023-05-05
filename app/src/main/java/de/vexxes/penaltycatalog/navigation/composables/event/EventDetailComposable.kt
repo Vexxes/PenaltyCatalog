@@ -15,6 +15,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
 import de.vexxes.penaltycatalog.navigation.Screen
 import de.vexxes.penaltycatalog.presentation.screen.events.EventDetailScreen
+import de.vexxes.penaltycatalog.util.EVENT_ID
 import de.vexxes.penaltycatalog.viewmodels.EventViewModel
 
 fun NavGraphBuilder.eventDetailComposable(
@@ -23,19 +24,15 @@ fun NavGraphBuilder.eventDetailComposable(
     onEditClicked: (String) -> Unit
 ) {
     composable(
-        route = Screen.EventDetail.route + Screen.EventDetail.argument,
-        arguments = listOf(navArgument("eventId") {
+        route = Screen.EventDetail.route,
+        arguments = listOf(navArgument(EVENT_ID) {
             type = NavType.StringType
         })
     ) { navBackStackEntry ->
 
         // Get eventId from argument
-        val eventId = navBackStackEntry.arguments?.getString("eventId")
-        LaunchedEffect(key1 = eventId) {
-            if (!eventId.isNullOrEmpty() && eventId != "-1") {
-                eventViewModel.getEventById(eventId = eventId)
-            }
-        }
+        val eventId = navBackStackEntry.arguments?.getString(EVENT_ID)
+        eventViewModel.getEventById(eventId = eventId!!)
 
         var visible by remember {
             mutableStateOf(false)

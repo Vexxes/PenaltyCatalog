@@ -15,6 +15,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
 import de.vexxes.penaltycatalog.navigation.Screen
 import de.vexxes.penaltycatalog.presentation.screen.cancel.CancellationDetailScreen
+import de.vexxes.penaltycatalog.util.CANCELLATION_ID
 import de.vexxes.penaltycatalog.viewmodels.CancellationViewModel
 
 fun NavGraphBuilder.cancellationDetailComposable(
@@ -23,19 +24,15 @@ fun NavGraphBuilder.cancellationDetailComposable(
     onEditClicked: (String) -> Unit
 ) {
     composable(
-        route = Screen.CancellationDetail.route + Screen.CancellationDetail.argument,
-        arguments = listOf(navArgument("cancellationId") {
+        route = Screen.CancellationDetail.route,
+        arguments = listOf(navArgument(CANCELLATION_ID) {
             type = NavType.StringType
         })
     ) { navBackStackEntry ->
 
         // Get cancellationId from argument
-        val cancellationId = navBackStackEntry.arguments?.getString("cancellationId")
-        LaunchedEffect(key1 = cancellationId) {
-            if (!cancellationId.isNullOrEmpty() && cancellationId != "-1") {
-                cancellationViewModel.getCancellationById(cancellationId = cancellationId)
-            }
-        }
+        val cancellationId = navBackStackEntry.arguments?.getString(CANCELLATION_ID)
+        cancellationViewModel.getCancellationById(cancellationId = cancellationId!!)
 
         var visible by remember {
             mutableStateOf(false)

@@ -5,7 +5,6 @@ import androidx.navigation.NavGraphBuilder
 import androidx.navigation.navigation
 import de.vexxes.penaltycatalog.navigation.Graph
 import de.vexxes.penaltycatalog.navigation.Screen
-import de.vexxes.penaltycatalog.navigation.ScreenNavigation
 import de.vexxes.penaltycatalog.navigation.composables.cancellation.cancellationDetailComposable
 import de.vexxes.penaltycatalog.navigation.composables.cancellation.cancellationEditComposable
 import de.vexxes.penaltycatalog.navigation.composables.cancellation.cancellationListComposable
@@ -16,26 +15,26 @@ fun NavGraphBuilder.cancellationScreensGraph(
     cancellationViewModel: CancellationViewModel
 ) {
     navigation(
-        startDestination = ScreenNavigation.Cancellations.route,
+        startDestination = Screen.Cancellations.route,
         route = Graph.CANCELLATIONS
     ) {
         cancellationListComposable(
             cancellationViewModel = cancellationViewModel,
-            navigateToCancellationDetailScreen = { cancellationId ->
-                navController.navigate(route = Screen.CancellationDetail.route + "/$cancellationId")
+            navigateToCancellationDetailScreen = {
+                navController.navigate(route = Screen.CancellationDetail.passCancellationId(it))
             },
-            navigateToCancellationEditScreen = { cancellationId ->
-                navController.navigate(route = Screen.CancellationEdit.route + "/$cancellationId")
+            navigateToCancellationEditScreen = {
+                navController.navigate(route = Screen.CancellationEdit.passCancellationId(it))
             }
         )
 
         cancellationDetailComposable(
             cancellationViewModel = cancellationViewModel,
             navigateToCancellationList = {
-                navController.navigate(ScreenNavigation.Cancellations.route)
+                navController.popBackStack()
             },
-            onEditClicked = { cancellationId ->
-                navController.navigate(Screen.CancellationEdit.route + "/$cancellationId")
+            onEditClicked = {
+                navController.navigate(Screen.CancellationEdit.passCancellationId(it))
             }
         )
 

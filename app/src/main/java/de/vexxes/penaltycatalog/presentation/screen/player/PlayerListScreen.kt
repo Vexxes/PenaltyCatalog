@@ -138,7 +138,7 @@ private fun PlayerFab(
 ) {
     FloatingActionButton(
         onClick = {
-            navigateToPlayerDetailScreen("-1")
+            navigateToPlayerDetailScreen("")
         }) {
         Icon(
             imageVector = Icons.Default.Add,

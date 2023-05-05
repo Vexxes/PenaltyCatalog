@@ -113,7 +113,7 @@ private fun CancellationFab(
 ) {
     FloatingActionButton(
         onClick = {
-            navigateToCancellationEditScreen("-1")
+            navigateToCancellationEditScreen("")
         }) {
         Icon(
             imageVector = Icons.Default.Add,

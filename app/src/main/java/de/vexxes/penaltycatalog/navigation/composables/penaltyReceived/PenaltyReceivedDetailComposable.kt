@@ -15,6 +15,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
 import de.vexxes.penaltycatalog.navigation.Screen
 import de.vexxes.penaltycatalog.presentation.screen.penaltyReceived.PenaltyReceivedDetailScreen
+import de.vexxes.penaltycatalog.util.PENALTY_RECEIVED_ID
 import de.vexxes.penaltycatalog.viewmodels.PenaltyReceivedViewModel
 
 fun NavGraphBuilder.penaltyReceivedDetailComposable(
@@ -23,19 +24,15 @@ fun NavGraphBuilder.penaltyReceivedDetailComposable(
     onEditClicked: (String) -> Unit
 ) {
     composable(
-        route = Screen.PenaltyReceivedDetail.route + Screen.PenaltyReceivedDetail.argument,
-        arguments = listOf(navArgument("penaltyReceivedId") {
+        route = Screen.PenaltyReceivedDetail.route,
+        arguments = listOf(navArgument(PENALTY_RECEIVED_ID) {
             type = NavType.StringType
         })
     ) { navBackStackEntry ->
 
         // Get penaltyReceivedId from argument
-        val penaltyReceivedId = navBackStackEntry.arguments?.getString("penaltyReceivedId")
-        LaunchedEffect(key1 = penaltyReceivedId) {
-            if (!penaltyReceivedId.isNullOrEmpty() && penaltyReceivedId != "-1") {
-                penaltyReceivedViewModel.getPenaltyReceivedById(penaltyReceivedId = penaltyReceivedId)
-            }
-        }
+        val penaltyReceivedId = navBackStackEntry.arguments?.getString(PENALTY_RECEIVED_ID)
+        penaltyReceivedViewModel.getPenaltyReceivedById(penaltyReceivedId = penaltyReceivedId!!)
 
         var visible by remember {
             mutableStateOf(false)

@@ -1,6 +1,5 @@
 package de.vexxes.penaltycatalog.navigation
 
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
@@ -19,7 +18,6 @@ import de.vexxes.penaltycatalog.viewmodels.PenaltyTypeViewModel
 import de.vexxes.penaltycatalog.viewmodels.PlayerViewModel
 
 object Graph {
-    const val ROOT = "root_graph"
     const val PENALTY = "penalty_graph"
     const val PLAYER = "player_graph"
     const val PENALTY_RECEIVED = "penalty_received_graph"
@@ -29,50 +27,6 @@ object Graph {
 
 @Composable
 fun SetupNavGraph(
-    paddingValues: PaddingValues,
-    navController: NavHostController,
-    playerViewModel: PlayerViewModel,
-    penaltyTypeViewModel: PenaltyTypeViewModel,
-    penaltyReceivedViewModel: PenaltyReceivedViewModel,
-    eventViewModel: EventViewModel,
-    cancellationViewModel: CancellationViewModel
-) {
-    NavHost(
-        modifier = Modifier.padding(paddingValues),
-        navController = navController,
-        startDestination = Graph.PENALTY,
-        route = Graph.ROOT,
-    ) {
-        penaltyScreensGraph(
-            navController = navController,
-            penaltyTypeViewModel = penaltyTypeViewModel
-        )
-
-        playerScreensGraph(
-            navController = navController,
-            playerViewModel = playerViewModel
-        )
-
-        penaltyReceivedScreensGraph(
-            navController = navController,
-            penaltyReceivedViewModel = penaltyReceivedViewModel
-        )
-
-        cancellationScreensGraph(
-            navController = navController,
-            cancellationViewModel = cancellationViewModel
-        )
-
-        eventScreensGraph(
-            navController = navController,
-            eventViewModel = eventViewModel
-        )
-
-    }
-}
-
-@Composable
-fun MainScreen(
     navController: NavHostController,
     playerViewModel: PlayerViewModel,
     penaltyTypeViewModel: PenaltyTypeViewModel,
@@ -82,15 +36,36 @@ fun MainScreen(
 ) {
     Scaffold(
         bottomBar = { BottomBar(navController = navController) }
-    ) { paddingValues ->
-        SetupNavGraph(
-            paddingValues = paddingValues,
+    ) {
+        NavHost(
+            modifier = Modifier.padding(it),
             navController = navController,
-            playerViewModel = playerViewModel,
-            penaltyTypeViewModel = penaltyTypeViewModel,
-            penaltyReceivedViewModel = penaltyReceivedViewModel,
-            eventViewModel = eventViewModel,
-            cancellationViewModel = cancellationViewModel
-        )
+            startDestination = Graph.PENALTY
+        ) {
+            penaltyScreensGraph(
+                navController = navController,
+                penaltyTypeViewModel = penaltyTypeViewModel
+            )
+
+            playerScreensGraph(
+                navController = navController,
+                playerViewModel = playerViewModel
+            )
+
+            penaltyReceivedScreensGraph(
+                navController = navController,
+                penaltyReceivedViewModel = penaltyReceivedViewModel
+            )
+
+            cancellationScreensGraph(
+                navController = navController,
+                cancellationViewModel = cancellationViewModel
+            )
+
+            eventScreensGraph(
+                navController = navController,
+                eventViewModel = eventViewModel
+            )
+        }
     }
 }

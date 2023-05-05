@@ -1,7 +1,7 @@
 package de.vexxes.penaltycatalog.navigation.composables.player
 
 import androidx.compose.runtime.LaunchedEffect
-import de.vexxes.penaltycatalog.navigation.ScreenNavigation
+import de.vexxes.penaltycatalog.navigation.Screen
 import de.vexxes.penaltycatalog.presentation.screen.player.PlayerListScreen
 import de.vexxes.penaltycatalog.domain.enums.SearchAppBarState
 import androidx.navigation.NavGraphBuilder
@@ -15,7 +15,7 @@ fun NavGraphBuilder.playerListComposable(
     navigateToPlayerEditScreen: (String) -> Unit
 ) {
     composable(
-        route = ScreenNavigation.Players.route
+        route = Screen.Players.route
     ) {
         LaunchedEffect(true) {
             playerViewModel.onSearchUiEvent(SearchUiEvent.SearchAppBarStateChanged(SearchAppBarState.CLOSED))

@@ -5,7 +5,6 @@ import androidx.navigation.NavGraphBuilder
 import androidx.navigation.navigation
 import de.vexxes.penaltycatalog.navigation.Graph
 import de.vexxes.penaltycatalog.navigation.Screen
-import de.vexxes.penaltycatalog.navigation.ScreenNavigation
 import de.vexxes.penaltycatalog.navigation.composables.player.playerDetailComposable
 import de.vexxes.penaltycatalog.navigation.composables.player.playerEditComposable
 import de.vexxes.penaltycatalog.navigation.composables.player.playerListComposable
@@ -16,34 +15,32 @@ fun NavGraphBuilder.playerScreensGraph(
     playerViewModel: PlayerViewModel
 ) {
     navigation(
-        startDestination = ScreenNavigation.Players.route,
+        startDestination = Screen.Players.route,
         route = Graph.PLAYER
     ) {
         playerListComposable(
             playerViewModel = playerViewModel,
-            navigateToPlayerDetailScreen = { playerId ->
-                navController.navigate(route = Screen.PlayerDetail.route + "/$playerId")
+            navigateToPlayerDetailScreen = {
+                navController.navigate(Screen.PlayerDetail.passPlayerId(it))
             },
-            navigateToPlayerEditScreen = { playerId ->
-                navController.navigate(route = Screen.PlayerEdit.route + "/$playerId")
+            navigateToPlayerEditScreen = {
+                navController.navigate(Screen.PlayerEdit.passPlayerId(it))
             }
         )
 
         playerDetailComposable(
             playerViewModel = playerViewModel,
             navigateToPlayerList = {
-                navController.navigate(ScreenNavigation.Players.route)
+                navController.popBackStack()
             },
-            onEditClicked = { playerId ->
-                navController.navigate(Screen.PlayerEdit.route + "/$playerId")
+            onEditClicked = {
+                navController.navigate(Screen.PlayerEdit.passPlayerId(it))
             }
         )
 
         playerEditComposable(
             playerViewModel = playerViewModel,
-            navigateBack = {
-                navController.popBackStack()
-            }
+            navigateBack = { navController.popBackStack() }
         )
     }
 }

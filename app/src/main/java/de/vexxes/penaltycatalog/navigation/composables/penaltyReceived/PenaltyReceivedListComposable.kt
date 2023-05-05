@@ -5,7 +5,7 @@ import androidx.navigation.NavGraphBuilder
 import androidx.navigation.compose.composable
 import de.vexxes.penaltycatalog.domain.enums.SearchAppBarState
 import de.vexxes.penaltycatalog.domain.uievent.SearchUiEvent
-import de.vexxes.penaltycatalog.navigation.ScreenNavigation
+import de.vexxes.penaltycatalog.navigation.Screen
 import de.vexxes.penaltycatalog.presentation.screen.penaltyReceived.PenaltyReceivedListScreen
 import de.vexxes.penaltycatalog.viewmodels.PenaltyReceivedViewModel
 
@@ -15,7 +15,7 @@ fun NavGraphBuilder.penaltyReceivedListComposable(
     navigateToPenaltyReceivedEditScreen: (String) -> Unit,
 ) {
     composable(
-        route = ScreenNavigation.PenaltyReceived.route
+        route = Screen.PenaltyReceived.route
     ) {
         LaunchedEffect(true) {
             penaltyReceivedViewModel.onSearchUiEvent(SearchUiEvent.SearchAppBarStateChanged(SearchAppBarState.CLOSED))

@@ -5,7 +5,7 @@ import androidx.navigation.NavGraphBuilder
 import androidx.navigation.compose.composable
 import de.vexxes.penaltycatalog.domain.enums.SearchAppBarState
 import de.vexxes.penaltycatalog.domain.uievent.SearchUiEvent
-import de.vexxes.penaltycatalog.navigation.ScreenNavigation
+import de.vexxes.penaltycatalog.navigation.Screen
 import de.vexxes.penaltycatalog.presentation.screen.cancel.CancellationListScreen
 import de.vexxes.penaltycatalog.viewmodels.CancellationViewModel
 
@@ -15,7 +15,7 @@ fun NavGraphBuilder.cancellationListComposable(
     navigateToCancellationEditScreen: (String) -> Unit
 ) {
     composable(
-        route = ScreenNavigation.Cancellations.route
+        route = Screen.Cancellations.route
     ) {
         LaunchedEffect(true) {
             cancellationViewModel.onSearchUiEvent(SearchUiEvent.SearchAppBarStateChanged(SearchAppBarState.CLOSED))

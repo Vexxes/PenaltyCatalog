@@ -265,7 +265,7 @@ private fun PenaltyReceivedFab(
 ) {
     FloatingActionButton(
         onClick = {
-            navigateToPenaltyReceivedEditScreen("-1")
+            navigateToPenaltyReceivedEditScreen("")
         }) {
         Icon(
             imageVector = Icons.Default.Add,

@@ -184,7 +184,7 @@ private fun EventFab(
 ) {
     FloatingActionButton(
         onClick = {
-            navigateToEventEditScreen("-1")
+            navigateToEventEditScreen("")
         }) {
         Icon(
             imageVector = Icons.Default.Add,

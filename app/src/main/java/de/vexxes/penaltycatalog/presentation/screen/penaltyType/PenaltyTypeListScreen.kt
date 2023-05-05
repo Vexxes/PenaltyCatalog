@@ -8,7 +8,6 @@ import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.pullrefresh.PullRefreshIndicator
 import androidx.compose.material.pullrefresh.pullRefresh
 import androidx.compose.material.pullrefresh.rememberPullRefreshState
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Scaffold
@@ -69,7 +68,6 @@ fun PenaltyTypeListScreen(
     }
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun PenaltyTypeListScaffold(
     searchAppBarState: SearchAppBarState,
@@ -113,7 +111,7 @@ private fun PenaltyTypeFab(
 ) {
     FloatingActionButton(
         onClick = {
-            navigateToPenaltyEditScreen("-1")
+            navigateToPenaltyEditScreen("")
         }) {
         Icon(
             imageVector = Icons.Default.Add,

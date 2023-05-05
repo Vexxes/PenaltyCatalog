@@ -15,6 +15,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
 import de.vexxes.penaltycatalog.navigation.Screen
 import de.vexxes.penaltycatalog.presentation.screen.player.PlayerEditScreen
+import de.vexxes.penaltycatalog.util.PLAYER_ID
 import de.vexxes.penaltycatalog.viewmodels.PlayerViewModel
 
 fun NavGraphBuilder.playerEditComposable(
@@ -22,16 +23,18 @@ fun NavGraphBuilder.playerEditComposable(
     navigateBack: () -> Unit
 ) {
     composable(
-        route = Screen.PlayerEdit.route + Screen.PlayerEdit.argument,
-        arguments = listOf(navArgument("playerId") {
+        route = Screen.PlayerEdit.route,
+        arguments = listOf(navArgument(PLAYER_ID) {
             type = NavType.StringType
+            nullable = true
+            defaultValue = ""
         })
     ) { navBackStackEntry ->
 
         // Get playerId from argument
-        val playerId = navBackStackEntry.arguments?.getString("playerId")
+        val playerId = navBackStackEntry.arguments?.getString(PLAYER_ID)
         LaunchedEffect(key1 = playerId) {
-            if(playerId == "-1")
+            if(playerId == "")
                 playerViewModel.resetPlayerUiState()
         }
 
